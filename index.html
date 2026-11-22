@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ласточка МТППК — Официальный Рапорт (ФДУ)</title>
+    <style>
+        :root {
+            --primary-color: #003366;
+            --accent-color: #cc0000;
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #000000;
+            --border-color: #000000;
+            --sidebar-bg: #002244;
+            --sidebar-header: #001830;
+        }
+
+        body.dark-theme {
+            --primary-color: #1a5c9a;
+            --accent-color: #e63946;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --border-color: #444444;
+            --sidebar-bg: #161b22;
+            --sidebar-header: #0d1117;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            background-image: url('train.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ЗАСТАВКА */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-image: url('train.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            transition: opacity 0.8s ease;
+        }
+
+            #splash-screen::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.45);
+                z-index: 1;
+            }
+
+        .splash-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+        }
+
+        .animated-title {
+            font-size: 52px;
+            font-weight: bold;
+            color: #ff3333;
+            text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.9);
+            opacity: 0;
+            transform: scale(0.8);
+            animation: fadeInScale 2s forwards 0.3s;
+            font-family: Arial, sans-serif;
+        }
+
+        @keyframes fadeInScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* БОКОВОЕ МЕНЮ */
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: 320px;
+            height: 100%;
+            background: var(--sidebar-bg);
+            color: #ffffff;
+            z-index: 1500;
+            transition: left 0.3s ease;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.5);
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+        }
+
+            #sidebar.open {
+                left: 0;
+            }
+
+        .sidebar-header {
+            padding: 20px 15px;
+            background: var(--sidebar-header);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+            .sidebar-header h3 {
+                margin: 0;
+                color: #ffffff;
+                font-size: 15px;
+                line-height: 1.3;
+            }
+
+        .close-sidebar-btn {
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 24px;
+            cursor: pointer;
+            width: auto;
+            margin: 0;
+            padding: 0;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+            .sidebar-menu li a {
+                display: block;
+                padding: 10px 18px;
+                color: #e0e6ed;
+                text-decoration: none;
+                font-size: 13px;
+                border-left: 4px solid transparent;
+                transition: background 0.2s, border-left 0.2s;
+            }
+
+                .sidebar-menu li a:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                    border-left: 4px solid var(--accent-color);
+                    color: #ffffff;
+                }
+
+        .sidebar-bottom {
+            padding: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            background: var(--sidebar-header);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1400;
+        }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+
+        .menu-toggle-btn {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1300;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            width: auto;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* ЭКРАНЫ */
+        .screen {
+            display: none;
+            max-width: 1550px;
+            margin: 20px auto;
+            padding: 10px;
+        }
+
+        .active-screen {
+            display: block;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        h2, h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 13px;
+            margin-top: 4px;
+            background: #fff;
+            color: #000;
+            font-family: Arial, sans-serif;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+            .form-group label {
+                font-weight: bold;
+                font-size: 13px;
+                color: var(--text-color);
+                display: block;
+            }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+            .form-row .form-group {
+                flex: 1;
+                margin-bottom: 0;
+            }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+            font-family: Arial, sans-serif;
+        }
+
+            button:hover {
+                filter: brightness(0.9);
+            }
+
+        .btn-danger {
+            background-color: var(--accent-color);
+        }
+
+        .btn-success {
+            background-color: #28a745;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-action {
+            background-color: #004080;
+            padding: 12px 8px;
+            font-size: 14px;
+            margin-top: 0;
+            border-radius: 6px;
+        }
+
+        .btn-shift-status {
+            font-size: 16px;
+            padding: 12px;
+            flex: 1;
+            transition: background 0.3s ease;
+        }
+
+        /* СТАТИСТИКА (Главный экран) */
+        .stats-dashboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+            font-family: Arial, sans-serif;
+        }
+
+        .stat-card {
+            background: #0055aa;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+            .stat-card h4 {
+                margin: 0 0 5px 0;
+                font-size: 14px;
+                color: #bce8f1;
+            }
+
+            .stat-card .val {
+                font-size: 22px;
+                font-weight: bold;
+            }
+
+            .stat-card .tickets {
+                position: absolute;
+                bottom: 10px;
+                right: 15px;
+                font-size: 12px;
+                opacity: 0.8;
+            }
+
+        /* ИДЕАЛЬНАЯ СЕТКА ФДУ */
+        .journal-spread {
+            background: #ffffff;
+            border: 2px solid #333;
+            padding: 12px;
+            display: flex;
+            gap: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.4);
+            color: #000;
+            overflow-x: auto;
+        }
+
+        .journal-page {
+            flex: 1;
+            min-width: 500px;
+        }
+
+        .doc-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 13px;
+            line-height: 1.2;
+            margin-bottom: 5px;
+        }
+
+        table.fdu-grid {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+        }
+
+            table.fdu-grid th, table.fdu-grid td {
+                border: 1px solid #000;
+                padding: 1px 2px;
+                text-align: center;
+                vertical-align: middle;
+                height: 20px;
+                box-sizing: border-box;
+            }
+
+            table.fdu-grid th {
+                font-weight: normal;
+            }
+
+        .th-title {
+            font-size: 9.5px;
+            line-height: 1.1;
+        }
+
+        .cell-left-text {
+            text-align: left !important;
+            font-size: 9px;
+            padding-left: 3px !important;
+            white-space: nowrap;
+            font-weight: bold;
+            background: #fdfdfd;
+        }
+
+        table.fdu-grid input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            font-size: 11px;
+            font-family: inherit;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+            color: #000;
+        }
+
+            table.fdu-grid input:focus {
+                outline: 1px solid #0055aa;
+                background: #fff9e6;
+            }
+
+        .shift-summary-table {
+            border-collapse: collapse;
+            margin: 12px 0;
+            width: 320px;
+            font-size: 10px;
+            background: #fff;
+            border: 1px solid #000;
+        }
+
+            .shift-summary-table th, .shift-summary-table td {
+                border: 1px solid #000;
+                padding: 3px 6px;
+                text-align: center;
+            }
+
+            .shift-summary-table th {
+                background: #f2f2f2;
+                font-weight: bold;
+            }
+
+        /* ТАБЕЛЬ */
+        .tabel-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            background: #fff;
+            color: #000;
+        }
+
+            .tabel-table th, .tabel-table td {
+                border: 1px solid #000;
+                padding: 2px;
+                text-align: center;
+                height: 20px;
+            }
+
+        .tabel-cell-day {
+            cursor: pointer;
+            user-select: none;
+        }
+
+            .tabel-cell-day:hover {
+                background: #e8f4fc;
+            }
+
+        .nav-circle-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #003366;
+            color: #fff;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0;
+            margin: 0 4px;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ccc;
+            margin-left: 4px;
+        }
+
+            .status-dot.active {
+                background: #28a745;
+                box-shadow: 0 0 5px #28a745;
+            }
+
+        .cell-shift-active {
+            background-color: #d4edda !important;
+            font-weight: bold;
+        }
+
+        /* Журнал и Модалки */
+        .audit-log-container {
+            margin-top: 20px;
+            text-align: left;
+            background: rgba(0, 51, 102, 0.04);
+            border: 1px solid #cce0f5;
+            border-radius: 6px;
+            padding: 12px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .audit-log-entry {
+            font-size: 12px;
+            padding: 5px 0;
+            border-bottom: 1px dashed #ccc;
+            font-family: Arial, sans-serif;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 3000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.65);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 480px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            font-family: Arial, sans-serif;
+            text-align: left;
+            color: #000;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* Чаты */
+        .chat-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-family: Arial, sans-serif;
+        }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            color: #000;
+        }
+
+            .chat-item:hover {
+                background: #e2e6ea;
+            }
+
+        .chat-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #003366;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chat-window {
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        .chat-header {
+            background: #003366;
+            color: white;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #e5ddd5;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .msg-bubble {
+            max-width: 70%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            color: #000;
+        }
+
+        .msg-in {
+            background: #fff;
+            align-self: flex-start;
+            border-bottom-left-radius: 0;
+        }
+
+        .msg-out {
+            background: #dcf8c6;
+            align-self: flex-end;
+            border-bottom-right-radius: 0;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 8px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-top: 1px solid #ccc;
+            align-items: center;
+        }
+
+            .chat-input-area input {
+                flex: 1;
+                padding: 10px;
+                border-radius: 20px;
+                border: 1px solid #ccc;
+                outline: none;
+            }
+
+        .chat-icon-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            color: #555;
+            width: auto;
+            margin: 0;
+        }
+
+        /* Синхрон */
+        .sync-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #000;
+            font-family: Arial, sans-serif;
+        }
+
+        .sync-red {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        .sync-yellow {
+            background: #fff3cd;
+            border-color: #ffeeba;
+        }
+
+        .sync-white {
+            background: #ffffff;
+            border-color: #ccc;
+        }
+
+        .auto-sync-toast {
+            display: none;
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 51, 102, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            z-index: 9999;
+            font-size: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ЗАСТАВКА -->
+    <div id="splash-screen"><div class="splash-content"><div class="animated-title">АО "МТ ППК"<br>«Ласточка»</div></div></div>
+
+    <!-- АВТО-СИНХРОНИЗАЦИЯ -->
+    <div id="autoSyncToast" class="auto-sync-toast">🔄 Авто-синхронизация...</div>
+
+    <!-- КНОПКА МЕНЮ -->
+    <button id="menuBtn" class="menu-toggle-btn" style="display:none;" onclick="toggleSidebar()">☰ Меню</button>
+
+    <!-- БОКОВОЕ МЕНЮ -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div id="sidebar">
+        <div class="sidebar-header"><h3 id="sidebarUserName">Сотрудник</h3><button class="close-sidebar-btn" onclick="toggleSidebar()">✕</button></div>
+        <ul class="sidebar-menu">
+            <li><a href="#" onclick="sidebarNav('main'); return false;">🏠 Главный экран</a></li>
+            <li><a href="#" onclick="sidebarNav('tabel'); return false;">📅 Табель</a></li>
+            <li><a href="#" onclick="openSyncLoginModal(); return false;">🔄 Синхрон</a></li>
+            <li><a href="#" onclick="sidebarNav('chats'); return false;">💬 Чаты</a></li>
+            <li><a href="#" onclick="sidebarNav('org'); return false;">🏢 Орг. Структура</a></li>
+            <li><a href="#" onclick="sidebarNav('stats'); return false;">📈 Статистика</a></li>
+            <li><a href="#" onclick="sidebarNav('reports'); return false;">📑 Отчеты</a></li>
+            <li id="menuSettings" style="display:none;"><a href="#" onclick="sidebarNav('settings'); return false;">⚙️ Настройки</a></li>
+        </ul>
+        <div class="sidebar-bottom">
+            <button type="button" class="btn-secondary" style="padding: 8px; font-size: 13px; margin-top: 0;" onclick="toggleTheme()">🌓 Выбор темы</button>
+            <button type="button" class="btn-danger" style="padding: 8px; font-size: 13px; margin-top: 8px;" onclick="logout()">🚪 Выйти из профиля</button>
+        </div>
+    </div>
+
+    <!-- ЭКРАН ВХОДА -->
+    <div id="login-screen" class="screen">
+        <div class="card" style="max-width: 400px; margin: 80px auto;">
+            <h2>Вход в систему</h2>
+            <div id="loginStep1">
+                <div class="form-group"><label>Табельный номер:</label><input type="text" id="loginTab" value="8065" class="form-input"></div>
+                <div class="form-group"><label>Фамилия:</label><input type="text" id="loginLast" value="Волков" class="form-input"></div>
+                <button onclick="checkUserStep1()">Продолжить</button>
+            </div>
+            <div id="loginStep2" style="display:none; text-align:center; padding-top:10px;">
+                <h4 style="margin-bottom: 5px; color:#555;">Найден сотрудник:</h4>
+                <div style="font-size:18px; font-weight:bold; color:var(--primary-color); margin-bottom:15px;" id="logFoundName">Фамилия</div>
+                <div style="font-size:13px; color:#333; margin-bottom:20px;">Таб. №: <span id="logFoundTab" style="font-weight:bold;">0000</span><br><span id="logFoundFull">Иванов Иван Иванович</span></div>
+                <button class="btn-success" onclick="goToRegistration()">Да, это я</button>
+                <button class="btn-secondary" onclick="resetLogin()">Нет, назад</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН РЕГИСТРАЦИИ -->
+    <div id="register-screen" class="screen">
+        <div class="card" style="max-width: 600px; margin: 40px auto;">
+            <h2>Установка данных профиля</h2>
+            <div class="form-row"><div class="form-group"><label>Табельный:</label><input type="text" id="regTab" class="form-input" readonly></div><div class="form-group"><label>Ф.И.О.:</label><input type="text" id="regFio" class="form-input" readonly></div></div>
+            <div class="form-row"><div class="form-group"><label>Должность:</label><input type="text" id="regPos" value="Кассир-контролер" class="form-input"></div><div class="form-group"><label>№ удостоверения:</label><input type="text" id="regDoc" value="571" class="form-input"></div></div>
+            <div class="form-row"><div class="form-group"><label>Дата выдачи:</label><input type="date" id="regIssue" class="form-input"></div><div class="form-group"><label>Дата окончания:</label><input type="date" id="regExpiry" class="form-input"></div></div>
+            <div class="form-group"><label>Станция прикрепления:</label><input type="text" id="regStation" value="Клин" class="form-input"></div>
+            <div class="form-group"><label>Пароль для входа:</label><input type="password" id="regPass" class="form-input" placeholder="Для входа в систему" value="1234"></div>
+            <div class="form-group" style="margin-top: 10px;">
+                <label>Личная подпись:</label>
+                <canvas id="sigCanvas" style="border: 2px dashed #003366; background: #fafafa; width: 100%; height: 90px; cursor:crosshair;"></canvas>
+                <button type="button" class="btn-danger" style="width:auto; padding:4px 8px; font-size:11px;" onclick="clearSignature()">Очистить</button>
+            </div>
+            <button onclick="saveRegistration()">Сохранить профиль и войти</button>
+        </div>
+    </div>
+
+    <!-- ПРОФИЛЬ -->
+    <div id="profile-screen" class="screen">
+        <div class="card" style="max-width: 600px; margin: 30px auto;">
+            <h2>Ваш профиль</h2>
+            <div class="form-group"><label>ФИО:</label><input type="text" id="profFio" class="form-input" readonly></div>
+            <div class="form-row"><div class="form-group"><label>Таб №:</label><input type="text" id="profTab" class="form-input" readonly></div><div class="form-group"><label>№ удост.:</label><input type="text" id="profDoc" class="form-input"></div></div>
+            <div class="form-group" style="margin-top:15px; text-align:center;">
+                <label style="text-align:left;">Ваша подпись:</label>
+                <img id="profSigImg" src="" style="max-width:100%; max-height:100px; border:1px solid #ccc; background:#fff; display:block; margin:5px auto;">
+            </div>
+            <button class="btn-success" onclick="alert('Данные профиля обновлены!')">Сохранить изменения</button>
+            <button class="btn-secondary" onclick="backToMain()">Назад</button>
+        </div>
+    </div>
+
+    <!-- ГЛАВНЫЙ ЭКРАН -->
+    <div id="main-screen" class="screen">
+        <div class="card" style="max-width: 760px; margin: 40px auto; text-align: center;">
+            <h2>Личный кабинет сотрудника</h2>
+
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <button class="btn-success" style="font-size: 16px; padding: 12px; flex:1;" onclick="openFduScreen()">📄 Открыть ФДУ</button>
+                <button id="btnMainShift" class="btn-shift-status btn-danger" onclick="openModal('shiftModal')">🔴 Смена не открыта</button>
+            </div>
+            <div class="action-grid">
+                <button class="btn-action" onclick="openOccupancy()">👥 Населенность поезда</button>
+                <button class="btn-action" onclick="openTrainReport()">📊 Отчет по поезду</button>
+                <button class="btn-action" onclick="sidebarNav('registry')">📑 Реестр</button>
+            </div>
+
+            <div class="stats-dashboard">
+                <div class="stat-card" style="background:#28a745;"><h4>Без доп.Сбор</h4><div class="val" id="dashTariff">0.00 ₽</div></div>
+                <div class="stat-card" style="background:#17a2b8;"><h4>Сбор</h4><div class="val" id="dashFee">0.00 ₽</div></div>
+                <div class="stat-card" style="background:#6f42c1;" onclick="openModal('benefitsDetailModal')"><h4>Льготники ℹ️</h4><div class="val" id="dashBenSum">0.00 ₽</div><div class="tickets" id="dashBenTix">Билетов: 0</div></div>
+                <div class="stat-card" style="background:#dc3545; grid-column: span 3; display:flex; justify-content:space-between; align-items:center;">
+                    <div><h4 style="color:#fff;">Общая выручка (Тариф + Сбор)</h4><div class="val" id="dashTotalRev">0.00 ₽</div></div>
+                    <div class="tickets" style="position:static; font-size:16px; font-weight:bold;" id="dashTotalTix">Билетов: 0</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; text-align: left; background: #f8f9fa; border: 1px solid #ddd; border-radius: 6px; padding: 12px; height: 130px; overflow-y: auto;">
+                <h4 style="margin:0 0 8px 0; color:var(--primary-color);">Журнал внесенных и измененных данных:</h4>
+                <div id="auditLogList" style="font-size:11px; color:#555;"><div style="padding:4px 0;">Записи смены пока отсутствуют...</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- === ИДЕАЛЬНАЯ СЕТКА ФДУ (ЧЕРЕДОВАНИЕ СТРОК) === -->
+    <div id="fdu-screen" class="screen">
+        <div class="journal-spread">
+            <!-- ЛЕВАЯ СТРАНИЦА -->
+            <div class="journal-page">
+                <div class="doc-title">РАПОРТ<br>о результатах произведенных проверок поездов</div>
+                <table class="fdu-grid" id="fduLeftTable">
+                    <colgroup><col style="width: 17%;"><col style="width: 14%;"><col style="width: 25%;"><col style="width: 24%;"><col style="width: 10%;"><col style="width: 10%;"></colgroup>
+                    <thead>
+                        <tr>
+                            <th rowspan="2" class="th-title">Дата<br>проверки</th>
+                            <th rowspan="2" class="th-title">№ поезда</th>
+                            <th rowspan="2" class="th-title">Перегон<br>фактич.<br>проверки<br>поезда</th>
+                            <th rowspan="2" class="th-title">Отметка<br>об отмене или<br>сбое графика<br>эл. поезда</th>
+                            <th colspan="2" class="th-title">Оформлено всего тарифа</th>
+                        </tr>
+                        <tr><th class="th-title">кол-во</th><th class="th-title">на сумму</th></tr>
+                        <tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr>
+                    </thead>
+                    <tbody id="fduLeftBody">
+                        <tr class="train-slot-row"><td><input type="text" id="fduD0"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <tr><td class="cell-left-text">Номер маршрута <span id="fduRouteL" style="font-weight:normal;"></span></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+
+                        <tr class="train-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <tr><td class="cell-left-text">№ МКассы <span id="fduCashL" style="font-weight:normal;"></span></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+
+                        <tr class="train-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <tr><td class="cell-left-text">Сумма разм. фонда <span id="fduFundL" style="font-weight:normal;"></span></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+
+                        <tr class="train-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <tr><td class="cell-left-text">Сумма личн. денег <span id="fduPersL" style="font-weight:normal;"></span></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+
+                        <tr class="train-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <tr><td class="cell-left-text">Вид работы <span style="font-weight:normal;">Осн.</span></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+
+                        <tr class="train-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <tr>
+                            <td class="cell-left-text">№ Видеорег. <span style="font-weight:normal;">24484</span></td>
+                            <td><input type="text"></td>
+                            <td><input type="text"></td>
+                            <td style="text-align: right; padding-right: 5px; font-weight: bold;">Итого:</td>
+                            <td id="fduGrandTickets" style="font-weight: bold; color: #cc0000;">0</td>
+                            <td id="fduGrandSum" style="font-weight: bold; color: #cc0000;">0.00</td>
+                        </tr>
+
+                        <tr class="train-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <tr><th colspan="6" class="th-title" style="text-align: left; padding-left: 10px; font-weight: bold;">Внесенные изменения по маршруту</th></tr>
+                        <tr><td><input type="text"></td><td><input type="text"></td><td colspan="2"><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <tr><td><input type="text"></td><td><input type="text"></td><td colspan="2"><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <tr>
+                            <td><input type="text"></td>
+                            <td><input type="text"></td>
+                            <td><input type="text"></td>
+                            <td colspan="2" style="font-weight: bold; font-size: 9.5px; text-align: right; padding-right: 5px;">Всего по<br>маршруту:</td>
+                            <td><input type="text" id="fduTotalSumBottom"></td>
+                        </tr>
+                        <tr><td colspan="6" style="text-align: left; padding-left: 60px; font-size: 9.5px;">Окончание смены: <input type="text" id="fduShiftEndTime" style="display: inline-block; width: 140px; text-align: left;"></td></tr>
+                        <tr>
+                            <td colspan="2" style="font-size: 9px; line-height: 1.1;">Кол. пробных<br>билетов<br><input type="text" id="fduTestTicketCount"></td>
+                            <td colspan="2" style="font-size: 9px; line-height: 1.1;">Остаток бил.<br>ленты<br><input type="text"></td>
+                            <td colspan="2" style="font-size: 9px; line-height: 1.1;">Роспись<br>оператора<br>ГУО<br><input type="text"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="fduShiftBlock" style="display:block; margin-top:12px;">
+                    <h4 style="margin:4px 0; font-size:11px; text-align:left;">Учет показателей смены:</h4>
+                    <table class="shift-summary-table">
+                        <thead><tr><th style="width:120px;">Показатель</th><th style="width:100px;">Открытие смены</th><th style="width:100px;">Закрытие смены</th></tr></thead>
+                        <tbody>
+                            <tr><td>Смена</td><td id="shCellNum1">—</td><td id="shCellNum2">—</td></tr>
+                            <tr><td>Пробники</td><td id="shCellTest1">—</td><td id="shCellTest2">—</td></tr>
+                            <tr><td>Тариф</td><td id="shCellTariff1">—</td><td id="shCellTariff2">—</td></tr>
+                            <tr><td>Сбор</td><td id="shCellFee1">—</td><td id="shCellFee2">—</td></tr>
+                            <tr><td>Нал.</td><td id="shCellCash1">—</td><td id="shCellCash2">—</td></tr>
+                            <tr><td>Безнал.</td><td id="shCellCard1">—</td><td id="shCellCard2">—</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ПРАВАЯ СТРАНИЦА -->
+            <div class="journal-page">
+                <div class="doc-title">РАПОРТ<br>о результатах произведенных проверок поездов</div>
+                <table class="fdu-grid" id="fduRightTable">
+                    <colgroup><col style="width: 12.5%;"><col style="width: 12.5%;"><col style="width: 12.5%;"><col style="width: 12.5%;"><col style="width: 12.5%;"><col style="width: 12.5%;"><col style="width: 12.5%;"><col style="width: 12.5%;"></colgroup>
+                    <thead>
+                        <tr><th colspan="2" class="th-title">Работники РЖД</th><th colspan="2" class="th-title">Федеральная<br>льгота</th><th colspan="2" class="th-title">Региональная<br>льгота</th><th colspan="2" class="th-title">Школьники,<br>студенты</th></tr>
+                        <tr><th class="th-title">кол-во</th><th class="th-title">на сумму</th><th class="th-title">кол-во</th><th class="th-title">на сумму</th><th class="th-title">кол-во</th><th class="th-title">на сумму</th><th class="th-title">кол-во</th><th class="th-title">на сумму</th></tr>
+                        <tr><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th></tr>
+                    </thead>
+                    <tbody id="fduRightBody">
+                        <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+
+                        <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+
+                        <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+
+                        <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+
+                        <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+
+                        <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+
+                        <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+
+                        <tr id="vohrRow"><td colspan="2" class="cell-left-text" style="font-weight: bold;">ВОХР</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button onclick="closeShiftProcess()" class="btn-success">💾 Сохранить рапорт смены</button>
+            <button onclick="backToMain()" style="background-color: #6c757d;">Назад в личный кабинет</button>
+        </div>
+    </div>
+
+    <!-- ОТЧЕТ ПО ПОЕЗДУ -->
+    <div id="trainReport-screen" class="screen">
+        <div class="card" style="max-width: 800px; margin: 30px auto;">
+            <h2>Отчет по поезду</h2>
+            <div class="form-row">
+                <div class="form-group"><label>Номер поезда:</label><input type="text" id="trNum" class="form-input" placeholder="7549" onchange="autoFillTrainSchedule(this.value)"></div>
+                <div class="form-group"><label>С какой станции едет:</label><input type="text" id="trFrom" class="form-input" value="Москва Окт."></div>
+                <div class="form-group"><label>До какой станции:</label><input type="text" id="trTo" class="form-input" value="Тверь"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Время отправления:</label><input type="text" id="trDepTime" class="form-input" placeholder="11:27"></div>
+                <div class="form-group"><label>Время прибытия:</label><input type="text" id="trArrTime" class="form-input" placeholder="13:30"></div>
+            </div>
+            <h3 style="border-bottom: 1px solid #ccc; padding-bottom: 6px; font-size: 15px;">Статистика с МКассы на конец пути</h3>
+            <div class="form-row">
+                <div class="form-group"><label>Общее кол-во билетов (с МКассы):</label><input type="number" id="trStatTickets" class="form-input" value="0" oninput="calculateTrainStats()"></div>
+                <div class="form-group"><label>Общая выручка (с МКассы, руб.):</label><input type="number" id="trStatMoney" class="form-input" value="0" oninput="calculateTrainStats()"></div>
+            </div>
+            <h3 style="border-bottom: 1px solid #ccc; padding-bottom: 6px; font-size: 15px;">Багаж (живность / велосипед)</h3>
+            <div class="form-row">
+                <div class="form-group" style="flex:1.5;"><label>Тип багажа:</label><select id="trBaggageType" class="form-input"><option value="none">Без багажа</option><option value="pet">Живность (149 руб.)</option><option value="bike">Велосипед (0 руб.)</option></select></div>
+                <div class="form-group"><label>Кол-во билетов багажа:</label><input type="number" id="trBaggageCount" class="form-input" value="0" oninput="calculateTrainStats()"></div>
+                <div class="form-group"><label>Сумма за багаж (руб.):</label><input type="number" id="trBaggageSum" class="form-input" value="0" oninput="calculateTrainStats()"></div>
+            </div>
+            <div style="background:#eaf2f8; border:1px solid #b8daff; padding:12px; border-radius:6px; margin: 15px 0; color:#000;">
+                <h4 style="margin:0 0 6px 0; color:#003366;">Итог оформленных за деньги по данному поезду:</h4>
+                <p style="margin:3px 0;">Билетов за поезд: <strong id="resTrainTickets" style="color:#cc0000; font-size:16px;">—</strong> | Выручка за поезд: <strong id="resTrainMoney" style="color:#cc0000; font-size:16px;">—</strong> руб.</p>
+                <small style="color:#666;">(Сбор льготников и багаж плюсуются в общий тариф и билеты)</small>
+            </div>
+            <h3 style="font-size: 15px;">Оформление льготных категорий:</h3>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:8px;">
+                <button type="button" class="btn-action" style="padding:10px;" onclick="openBenefitModal('rzd', 'Работники РЖД')">1. Работники РЖД</button>
+                <button type="button" class="btn-action" style="padding:10px;" onclick="openBenefitModal('fed', 'Федеральная льгота')">2. Федералы</button>
+                <button type="button" class="btn-action" style="padding:10px;" onclick="openBenefitModal('reg', 'Региональная льгота')">3. Регионалы</button>
+                <button type="button" class="btn-action" style="padding:10px;" onclick="openBenefitModal('stud', 'Школьники / Студенты')">4. Школьники</button>
+                <button type="button" class="btn-action" style="padding:10px;" onclick="openBenefitModal('vohr', 'ВОХР')">5. ВОХР</button>
+            </div>
+            <div id="benefitSummary" style="margin-top:12px; font-size:12px; color:#333; background:#fff; padding:8px; border:1px solid #ddd; border-radius:4px;">Внесенные льготы по рейсу: РЖД (0), Фед (0), Рег (0), Школьн (0), ВОХР (0)</div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button type="button" class="btn-success" onclick="saveTrainToFdu()">💾 Сохранить и занести в Рапорт ФДУ</button>
+                <button type="button" class="btn-secondary" onclick="backToMain()">Назад</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН НАСЕЛЕННОСТИ (ТЕМНЫЙ ДИЗАЙН ИЗ ФОТО) -->
+    <div id="occupancy-screen" class="screen">
+        <div style="max-width: 600px; margin: 20px auto; background-color: #1a1e29; color: #e2e8f0; border-radius: 12px; border: 1px solid #2d3748; padding: 25px; font-family: Arial, sans-serif;">
+            <div id="occStatusBar1" style="background-color: #172a23; border-left: 4px solid #2f855a; padding: 10px 15px; margin-bottom: 10px; border-radius: 4px; font-size: 14px; color: #68d391;">
+                Маршруты загружены. Введите номер поезда.
+            </div>
+            <div style="background-color: #172a23; border-left: 4px solid #2f855a; padding: 10px 15px; margin-bottom: 20px; border-radius: 4px; font-size: 14px; color: #68d391;">Рабочий день</div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 14px; color: #a0aec0; margin-bottom: 8px;">Номер поезда</label>
+                <input type="text" id="occTrainInput" oninput="checkOccupancyTrain(this.value)" placeholder="Например, 7903" style="width: 100%; background-color: #11151c; border: 1px solid #2d3748; border-radius: 8px; padding: 15px; color: #e2e8f0; font-size: 28px; font-weight: bold; text-align: center; outline: none; box-sizing: border-box;">
+            </div>
+            <div id="occRouteTitle" style="text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 20px; display: none;">Клин → Москва</div>
+            <div id="occWarningBox" style="display: none; background-color: #443214; border-left: 4px solid #d69e2e; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h4 style="margin: 0 0 10px 0; color: #ecc94b; font-size: 15px;">Поезд уже заполнен</h4>
+                <p style="margin: 0 0 15px 0; font-size: 13px; color: #fbd38d; line-height: 1.5;">Последние данные внесены...</p>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="continueOccupancy()" style="background-color: #3182ce; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; width: auto; margin: 0;">Продолжить</button>
+                    <button onclick="backToMain()" style="background-color: #2d3748; color: #e2e8f0; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; width: auto; margin: 0;">Вернуться</button>
+                </div>
+            </div>
+            <div id="occStopsContainer" style="display: none; margin-bottom: 20px;">
+                <div id="occStopsList" style="display: flex; flex-direction: column; gap: 12px;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                <button onclick="openModal('occNoteModal')" style="background-color: #2d3748; color: #e2e8f0; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; width: auto; margin: 0;">Примечание</button>
+                <button id="occSaveBtn" onclick="saveOccupancyChanges()" style="background-color: #3182ce; color: #fff; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; margin-left: 15px; margin-top: 0; font-size: 16px; opacity: 0.5; pointer-events: none;">Сохранить изменения</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ТАБЕЛЬ -->
+    <div id="tabel-screen" class="screen">
+        <div class="card" style="max-width: 1450px; margin: 20px auto; overflow-x:auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <h2 style="margin:0; text-align:left;">График работы работников участка на</h2>
+                    <select id="tabelMonthSelect" class="form-input" style="width:130px; font-weight:bold;" onchange="renderTabel()"><option value="9">Октябрь</option><option value="10">Ноябрь</option><option value="11">Декабрь</option></select>
+                    <select id="tabelYearSelect" class="form-input" style="width:100px; font-weight:bold;" onchange="renderTabel()"><option value="2026">2026 г.</option><option value="2025">2025 г.</option><option value="2027">2027 г.</option></select>
+                    <div style="display:flex; align-items:center; margin-left:10px;"><button type="button" class="nav-circle-btn" onclick="prevTabelMonth()">◀</button><button type="button" class="nav-circle-btn" onclick="nextTabelMonth()">▶</button></div>
+                </div>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <button type="button" id="btnTabelCreateWorker" class="btn-success" style="width:auto; margin:0;" onclick="openModal('createWorkerModal')">+ Создать</button>
+                    <button type="button" class="btn-warning" style="width:auto; margin:0;" onclick="alert('Маршруты загружены и распределены!')">📁 Загрузить из файла</button>
+                    <button type="button" id="btnTabelNotify" class="btn-action" style="background:#0055aa; width:auto; margin:0;" onclick="saveAndNotifyStaff()">📢 Сохранить и оповестить персонал</button>
+                    <button type="button" class="btn-secondary" style="width:auto; margin:0;" onclick="backToMain()">Назад</button>
+                </div>
+            </div>
+            <table class="tabel-table" id="tabelMainTable">
+                <thead><tr><th rowspan="2" style="width:25px;">№<br>п/п</th><th rowspan="2" style="width:35px;">№ таб.</th><th rowspan="2" style="width:160px;">ФИО ККЛ</th><th rowspan="2" style="width:65px;">Показатель</th><th colspan="31">Дата, номер маршрута, часов в смену</th><th rowspan="2" style="width:35px;">Раб.<br>дни</th><th rowspan="2" style="width:45px;">Часы работы</th></tr><tr id="tabelDaysHeaderRow"></tr></thead>
+                <tbody id="tabelBody"></tbody>
+            </table>
+            <div id="tabelShiftDetailView" style="display:none; margin-top:15px; background:#eaf2f8; border:1px solid #bce8f1; padding:12px; border-radius:6px; text-align:left;">
+                <h4 style="margin:0 0 6px 0; color:#003366;">Информация о смене на выбранную дату:</h4>
+                <div id="tabelShiftDetailContent" style="font-size:13px; line-height:1.5;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- СИНХРОН (Дашборд) -->
+    <div id="sync-dashboard-screen" class="screen">
+        <div class="card" style="max-width: 900px; margin: 20px auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--primary-color); padding-bottom:10px; margin-bottom:15px;">
+                <h3 style="margin:0;">Синхронизация МКасс</h3>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <div style="position:relative;"><span style="position:absolute; left:8px; top:6px; color:#555;">🔍</span><input type="text" placeholder="Поиск МКассы..." class="form-input" style="width:150px; padding-left:30px; margin:0;"></div>
+                    <button class="btn-warning" style="margin:0; width:auto; padding:6px 12px;" onclick="openModal('syncUnfinishedModal')" id="btnSyncUnf">Не завершенные (0)</button>
+                    <button class="btn-success" style="margin:0; width:auto; padding:6px 12px;" onclick="finishAllSync()">Завершить Синхрон</button>
+                </div>
+            </div>
+            <button class="btn-action" style="margin-bottom:15px;" onclick="openModal('syncAnalysisModal')">➕ Анализ МКассы (Добавить)</button>
+            <div style="background:#f4f6f9; padding:10px; border-radius:6px; min-height:200px;">
+                <div style="display:flex; font-weight:bold; font-size:11px; margin-bottom:8px; padding:0 10px;"><div style="width:60px;">МКасса</div><div style="flex:1;">ФИО</div><div style="width:50px;">Пост.</div><div style="width:50px;">Снятие</div><div style="width:60px;">Статус</div></div>
+                <div id="syncListContainer"></div>
+            </div>
+            <button class="btn-secondary" style="margin-top:20px;" onclick="backToMain()">Выйти в Главное меню</button>
+        </div>
+    </div>
+
+    <!-- ЧАТЫ -->
+    <div id="chats-screen" class="screen">
+        <div class="card" style="max-width: 800px; margin: 0 auto; padding:0; display:flex; height:600px;">
+            <div style="width: 300px; border-right: 1px solid #ccc; display:flex; flex-direction:column; background:#f4f6f9;">
+                <div style="padding:15px; background:var(--primary-color); color:white; display:flex; justify-content:space-between;"><h3 style="color:white; margin:0;">Чаты</h3><button style="width:auto; margin:0; padding:4px 8px; font-size:16px; background:none; border:none; cursor:pointer;" onclick="alert('Создание группы...')">➕</button></div>
+                <div class="chat-list" style="padding:10px; overflow-y:auto; flex:1;" id="chatList">
+                    <div class="chat-item" onclick="openChat('Бригада №1')"><div class="chat-avatar">Б1</div><div><strong>Бригада №1</strong></div></div>
+                </div>
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; background:#e5ddd5;" id="chatArea">
+                <div class="chat-header"><strong id="chatActiveName">Бригада №1</strong></div>
+                <div class="chat-messages" id="chatMsgs"><div class="msg-bubble msg-in">Привет всем, как смена?</div></div>
+                <div class="chat-input-area"><input type="text" placeholder="Сообщение..." id="chatInput"><button class="chat-icon-btn" onclick="sendMsg()">✈️</button></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ОРГ СТРУКТУРА -->
+    <div id="org-screen" class="screen">
+        <div class="card" style="max-width: 700px; margin: 30px auto;">
+            <h2>Организационная структура</h2>
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <button class="btn-action" onclick="alert('Модуль: Должности')">1. Должности</button>
+                <button class="btn-action" style="background:#28a745;" onclick="openModal('createWorkerModal')">2. Сотрудники (+)</button>
+                <button class="btn-action" onclick="alert('Модуль: Подразделения')">3. Подразделение</button>
+            </div>
+            <button class="btn-secondary" onclick="backToMain()">Назад</button>
+        </div>
+    </div>
+
+    <!-- РЕЕСТР, СТАТИСТИКА, ОТЧЕТЫ, НАСТРОЙКИ -->
+    <div id="registry-screen" class="screen"><div class="card"><h2>Реестр</h2><div class="form-group"><label>Дата оформления:</label><input type="date" id="regDate" class="form-input"></div><button class="btn-success" onclick="saveRegistryEntry()">Сохранить</button><button class="btn-secondary" onclick="backToMain()">Назад</button></div></div>
+    <div id="stats-screen" class="screen"><div class="card"><h2>Статистика (Декада)</h2><div class="form-row"><div class="form-group"><label>С:</label><input type="date" id="statDateFrom" class="form-input"></div><div class="form-group"><label>По:</label><input type="date" id="statDateTo" class="form-input"></div></div><button class="btn-success" onclick="generateDecadeTable()">Сформировать</button><button class="btn-secondary" onclick="backToMain()">Назад</button></div></div>
+    <div id="reports-screen" class="screen"><div class="card"><h2>Архив Отчетов</h2><button class="btn-secondary" onclick="backToMain()">Назад</button></div></div>
+    <div id="settings-screen" class="screen"><div class="card"><h2>Настройки</h2><button class="btn-secondary" onclick="backToMain()">Назад</button></div></div>
+
+    <!-- МОДАЛЬНЫЕ ОКНА -->
+    <div id="shiftModal" class="modal">
+        <div class="modal-content">
+            <h3 id="shiftModalTitle" style="margin-top:0;">Параметры смены</h3>
+            <div class="form-row"><div class="form-group"><label>Номер Маршрута:</label><input type="text" id="shRouteNum" class="form-input" placeholder="22"></div><div class="form-group"><label>№ МКассы:</label><input type="text" id="shCashNum" class="form-input" placeholder="13340"></div></div>
+            <div class="form-row"><div class="form-group"><label>Сумма разм. фонда (руб.):</label><input type="number" id="shFundSum" class="form-input" placeholder="50000"></div><div class="form-group"><label>Сумма личн. денег (руб.):</label><input type="number" id="shPersonalMoney" class="form-input" placeholder="0"></div></div>
+            <div class="form-row">
+                <div class="form-group"><label>Смена:</label><input type="text" id="shNum" class="form-input" placeholder="1-я или 6"></div>
+                <div class="form-group"><label>Пробники: <span id="shTestVal" style="color:var(--accent-color);">1 шт.</span></label><div style="display:flex; gap:5px;"><input type="text" id="shTestInp" placeholder="128/124" class="form-input"><button class="btn-action" style="width:auto; margin-top:4px;" onclick="addTestTix()">➕</button></div></div>
+            </div>
+            <div class="form-row"><div class="form-group"><label>Тариф:</label><input type="number" id="shTariff" class="form-input" placeholder="2390"></div><div class="form-group"><label>Сбор:</label><input type="number" id="shFee" class="form-input" placeholder="300"></div></div>
+            <div class="form-row"><div class="form-group"><label>Нал.:</label><input type="number" id="shCash" class="form-input" placeholder="411"></div><div class="form-group"><label>Безнал.:</label><input type="number" id="shCard" class="form-input" placeholder="2846"></div></div>
+            <div style="display:flex; gap:10px; margin-top:15px;"><button type="button" class="btn-success" onclick="saveShiftData()">Сохранить и Открыть</button><button type="button" class="btn-secondary" onclick="closeModal('shiftModal')">Отменить</button></div>
+        </div>
+    </div>
+
+    <div id="benefitModal" class="modal">
+        <div class="modal-content">
+            <h3 id="benefitModalTitle" style="margin-top:0;">Оформление льготы</h3>
+            <div class="form-group"><label>Количество билетов:</label><input type="number" id="benCount" class="form-input" value="1"></div>
+            <div class="form-group"><label>Сумма дохода (по тарифу без сбора):</label><input type="number" id="benIncome" class="form-input" value="0"></div>
+            <div class="form-group"><label>Сумма сбора (если оформлял в поезде):</label><input type="number" id="benFee" class="form-input" value="0"></div>
+            <div style="display:flex; gap:10px; margin-top:15px;"><button type="button" class="btn-success" onclick="saveBenefitCategory()">Сохранить</button><button type="button" class="btn-secondary" onclick="closeModal('benefitModal')">Назад</button></div>
+        </div>
+    </div>
+
+    <!-- Модалки Детализации и Синхрона -->
+    <div id="benefitsDetailModal" class="modal">
+        <div class="modal-content" style="max-width: 350px;">
+            <h3 style="margin-top:0;">Детализация льгот</h3>
+            <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;"><span>РЖД</span> <strong><span id="bdRzdS">0</span> ₽ (<span id="bdRzdC">0</span> шт)</strong></div>
+            <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;"><span>Федералы</span> <strong><span id="bdFedS">0</span> ₽ (<span id="bdFedC">0</span> шт)</strong></div>
+            <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;"><span>Регионалы</span> <strong><span id="bdRegS">0</span> ₽ (<span id="bdRegC">0</span> шт)</strong></div>
+            <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;"><span>Школьники/Студенты</span> <strong><span id="bdStudS">0</span> ₽ (<span id="bdStudC">0</span> шт)</strong></div>
+            <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;"><span>ВОХР</span> <strong><span id="bdVohrS">0</span> ₽ (<span id="bdVohrC">0</span> шт)</strong></div>
+            <button class="btn-success" style="margin-top:15px;" onclick="closeModal('benefitsDetailModal')">Хорошо</button>
+        </div>
+    </div>
+
+    <div id="occNoteModal" class="modal">
+        <div class="modal-content" style="max-width: 400px; background-color:#1a1e29; color:#e2e8f0;">
+            <h3 style="margin-top:0; color:#fff;">Примечание</h3>
+            <textarea id="occNoteText" rows="4" style="width:100%; border:1px solid #2d3748; background:#11151c; color:#fff; padding:6px; border-radius: 4px; font-family:Arial;"></textarea>
+            <div style="display:flex; gap:10px; margin-top:12px;">
+                <button type="button" class="btn-success" onclick="closeModal('occNoteModal')">Готово</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="syncLoginModal" class="modal"><div class="modal-content" style="max-width:350px;"><h3>Синхронизация МКасс</h3><div class="form-group"><label>Станция синхронизации:</label><input type="text" value="Клин" class="form-input"></div><div class="form-group"><label>Номер Маршрута:</label><input type="text" value="22" class="form-input"></div><button class="btn-success" onclick="enterSyncDashboard()">Войти</button></div></div>
+    <div id="syncAnalysisModal" class="modal"><div class="modal-content"><h3>Анализ МКассы</h3><div class="form-row"><div class="form-group"><label>№ МКассы:</label><input type="text" id="saCash" class="form-input"></div><div class="form-group"><label>ФИО Кассира:</label><input type="text" id="saFio" class="form-input"></div></div><div class="form-row"><div class="form-group"><label>Время постановки (ччмм):</label><input type="text" id="saTimeIn" class="form-input"></div><div class="form-group"><label>Время снятия (ччмм):</label><input type="text" id="saTimeOut" class="form-input"></div></div><button class="btn-success" onclick="saveSyncAnalysis()">Сохранить</button></div></div>
+    <div id="syncUnfinishedModal" class="modal"><div class="modal-content"><h3>Не завершенные МКассы</h3><div id="syncUnfList"></div><button class="btn-secondary" style="margin-top:15px;" onclick="closeModal('syncUnfinishedModal')">Закрыть</button></div></div>
+    <div id="syncReasonModal" class="modal"><div class="modal-content" style="max-width:300px;"><h3 style="color:var(--accent-color);">Ошибка Синхронизации</h3><p id="srText"></p><div class="form-group"><label>Причина:</label><select id="srReason" class="form-input"><option value="Р">В работе</option><option value="З">В ремонте</option></select></div><button class="btn-success" onclick="resolveSyncError()">Применить</button></div></div>
+    <div id="createWorkerModal" class="modal"><div class="modal-content"><h3>Создать сотрудника в табеле</h3><div class="form-group"><label>Табельный номер:</label><input type="text" id="newWorkerTab" class="form-input"></div><div class="form-group"><label>ФИО:</label><input type="text" id="newWorkerFio" class="form-input"></div><button class="btn-success" onclick="createWorker()">Создать</button></div></div>
+
+    <script>
+        const trainScheduleDb = {
+            "7903": { name: "Клин — Москва Окт.", dep: "06:25", arr: "07:40", from: "Клин", to: "Москва Окт.", stops: ["Клин — Покровка", "Покровка — Фроловское"] },
+            "7549": { name: "Москва Окт. — Тверь", dep: "11:27", arr: "13:30", from: "Москва Окт.", to: "Тверь", stops: ["Москва Окт. — Крюково", "Крюково — Клин"] }
+        };
+
+        const occupancyDb = {
+            "7903": { title: "Клин → Москва", stops: ["Клин — Подсолнечная", "Подсолнечная — Поварово", "Поварово — Крюково", "Крюково — Сходня", "Сходня — Химки", "Химки — Москва"] },
+            "7556": { title: "Москва → Тверь", stops: ["Москва — Химки", "Химки — Крюково", "Крюково — Клин", "Клин — Тверь"] },
+            "6946": { title: "Крюково → Москва", stops: ["Крюково — Сходня", "Сходня — Химки", "Химки — Москва"] },
+            "7549": { title: "Москва → Тверь", stops: ["Москва — Крюково", "Крюково — Клин", "Клин — Тверь"] }
+        };
+
+        let workersTabelDb = [
+            { tab: "6527", fio: "Бурлаков Даниил Сергеевич", role: "viewer", days: { 1: { type: "shift", route: "22", hours: "10,3", senior: false }, 2: { type: "shift", route: "11-1", hours: "6,9", senior: false } } },
+            { tab: "8065", fio: "Волков Виктор Сергеевич", role: "admin", days: { 1: { type: "weekend" }, 2: { type: "shift", route: "22", hours: "10,3", senior: true } } }
+        ];
+
+        let currentUserRole = "admin";
+        let lastStatTickets = 0; let lastStatMoney = 0;
+
+        let appState = {
+            user: null, testTickets: 0, trainsInFdu: 0,
+            stats: { tariff: 0, fee: 0, benSum: 0, tickets: 0, benTix: 0 },
+            syncRecords: [], workers: workersTabelDb
+        };
+
+        let currentTrainBenefits = { rzd: { count: 0, sum: 0, feeCount: 0, feeSum: 0 }, fed: { count: 0, sum: 0, feeCount: 0, feeSum: 0 }, reg: { count: 0, sum: 0, feeCount: 0, feeSum: 0 }, stud: { count: 0, sum: 0, feeCount: 0, feeSum: 0 }, vohr: { count: 0, sum: 0, feeCount: 0, feeSum: 0 } };
+        let activeBenefitCategory = null;
+
+        // БЕЗОПАСНАЯ ЗАГРУЗКА
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                let splash = document.getElementById('splash-screen');
+                if (splash) {
+                    splash.style.opacity = '0';
+                    setTimeout(() => {
+                        splash.style.display = 'none';
+                        document.getElementById('login-screen').classList.add('active-screen');
+                        initCanvas();
+                    }, 500);
+                }
+            }, 2000);
+
+            try {
+                let today = new Date().toISOString().split('T')[0];
+                if (document.getElementById('regDate')) document.getElementById('regDate').value = today;
+                if (document.getElementById('statDateFrom')) document.getElementById('statDateFrom').value = today;
+                if (document.getElementById('statDateTo')) document.getElementById('statDateTo').value = today;
+            } catch (e) { }
+
+            setInterval(autoSyncTask, 120000);
+        });
+
+        function toggleTheme() { document.body.classList.toggle('dark-theme'); }
+        function addAuditLog(text) {
+            let list = document.getElementById('auditLogList'); if (!list) return;
+            let timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            let entry = document.createElement('div'); entry.className = 'audit-log-entry'; entry.innerHTML = `<strong>[${timeStr}]</strong> ${text}`;
+            if (list.children.length === 1 && list.children[0].innerText.includes('отсутствуют')) { list.innerHTML = ''; }
+            list.prepend(entry);
+        }
+
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('active'); }
+        function sidebarNav(target) {
+            toggleSidebar(); hideAllScreens();
+            if (target === 'tabel') { openTabelScreen(); } else if (target === 'main' || target === 'profile') { backToMain(); } else { let scr = document.getElementById(target + '-screen'); if (scr) scr.classList.add('active-screen'); }
+        }
+
+        function hideAllScreens() { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen')); }
+        function backToMain() { let savedProfile = JSON.parse(localStorage.getItem('kkl_profile')) || { fio: "Иванов Иван Иванович", lastName: "Иванов", tab: "0001", position: "Кассир-контролер", doc: "571", station: "Клин" }; showMainScreen(savedProfile); }
+        function logout() { toggleSidebar(); hideAllScreens(); document.getElementById('menuBtn').style.display = 'none'; document.getElementById('login-screen').classList.add('active-screen'); addAuditLog("Сотрудник вышел из профиля."); }
+
+        function checkUserStep1() {
+            let tab = document.getElementById('loginTab').value.trim();
+            let last = document.getElementById('loginLast').value.trim();
+
+            let found = appState.workers.find(w => w.tab === tab && w.fio.includes(last));
+            if (found) {
+                appState.user = found;
+                document.getElementById('loginStep1').style.display = 'none';
+                document.getElementById('logFoundName').innerText = last;
+                document.getElementById('logFoundTab').innerText = tab;
+                document.getElementById('logFoundFull').innerText = found.fio;
+                document.getElementById('loginStep2').style.display = 'block';
+            } else {
+                alert('Сотрудник не найден в системе! (Попробуй: 8065 и Волков)');
+            }
+        }
+
+        function resetLogin() { document.getElementById('loginStep2').style.display = 'none'; document.getElementById('loginStep1').style.display = 'block'; appState.user = null; }
+        function goToRegistration() { hideAllScreens(); document.getElementById('register-screen').classList.add('active-screen'); document.getElementById('regTab').value = appState.user.tab; document.getElementById('regFio').value = appState.user.fio; }
+
+        let canvas, ctx, painting = false;
+        function initCanvas() {
+            canvas = document.getElementById('sigCanvas'); if (!canvas) return;
+            ctx = canvas.getContext('2d'); canvas.width = canvas.offsetWidth || 400; canvas.height = canvas.offsetHeight || 90;
+            ctx.lineWidth = 2; ctx.strokeStyle = '#003366';
+            canvas.addEventListener('mousedown', (e) => { painting = true; draw(e); }); canvas.addEventListener('mouseup', () => { painting = false; ctx.beginPath(); }); canvas.addEventListener('mousemove', draw);
+        }
+        function draw(e) { if (!painting) return; let rect = canvas.getBoundingClientRect(); ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top); ctx.stroke(); ctx.beginPath(); ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top); }
+        function clearSignature() { if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height); }
+
+        function saveRegistration() {
+            appState.user.doc = document.getElementById('regDoc').value; appState.user.signed = true;
+            document.getElementById('sidebarUserName').innerText = appState.user.fio;
+            if (appState.user.role === 'admin') { let setMenu = document.getElementById('menuSettings'); if (setMenu) setMenu.style.display = 'block'; }
+            if (document.getElementById('profFio')) {
+                document.getElementById('profFio').value = appState.user.fio; document.getElementById('profTab').value = appState.user.tab; document.getElementById('profDoc').value = appState.user.doc;
+                if (canvas) document.getElementById('profSigImg').src = canvas.toDataURL();
+            }
+            let profile = { tab: appState.user.tab, lastName: appState.user.fio.split(' ')[0], fio: appState.user.fio, position: document.getElementById('regPos').value, doc: appState.user.doc, station: document.getElementById('regStation').value };
+            localStorage.setItem('kkl_profile', JSON.stringify(profile));
+            addLog("Вход в систему выполнен успешно."); showMainScreen(profile);
+        }
+
+        function showMainScreen(user) {
+            hideAllScreens(); document.getElementById('main-screen').classList.add('active-screen'); document.getElementById('menuBtn').style.display = 'block';
+            let fullName = user.fio || user.lastName;
+            if (document.getElementById('dispName')) {
+                document.getElementById('dispName').innerText = fullName; document.getElementById('dispTab').innerText = user.tab; document.getElementById('dispPos').innerText = user.position; document.getElementById('dispDoc').innerText = user.doc; document.getElementById('dispStation').innerText = user.station; document.getElementById('sidebarUserName').innerText = fullName;
+            }
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function addLog(txt) { addAuditLog(txt); }
+        function navTo(id) {
+            hideAllScreens(); let scr = document.getElementById(id + '-screen'); if (scr) scr.classList.add('active-screen');
+            if (id !== 'login' && id !== 'register') { let btn = document.getElementById('menuBtn'); if (btn) btn.style.display = 'block'; }
+            let side = document.getElementById('sidebar'); if (side) side.classList.remove('open');
+            let over = document.getElementById('sidebarOverlay'); if (over) over.classList.remove('active');
+            if (id === 'tabel') renderTabel();
+        }
+
+        // ОТКРЫТИЕ СМЕНЫ И ФДУ
+        function openFduScreen() { navTo('fdu'); }
+        function openShiftModal() { openModal('shiftModal'); }
+        function addTestTix() {
+            let val = document.getElementById('shTestInp').value;
+            if (val) { appState.testTickets++; document.getElementById('shTestVal').innerText = `${appState.testTickets} шт. (добавлен ${val})`; document.getElementById('shTestInp').value = ''; }
+        }
+
+        function saveShiftData() {
+            if (appState.testTickets === 0) appState.testTickets = 1;
+            let route = document.getElementById('shRouteNum').value; let cash = document.getElementById('shCashNum').value;
+
+            if (document.getElementById('fduRouteVal')) document.getElementById('fduRouteVal').value = route;
+            if (document.getElementById('fduCashVal')) document.getElementById('fduCashVal').value = cash;
+            if (document.getElementById('fduFundVal')) document.getElementById('fduFundVal').value = document.getElementById('shFundSum').value;
+            if (document.getElementById('fduPersonalVal')) document.getElementById('fduPersonalVal').value = document.getElementById('shPersonalMoney').value;
+            if (document.getElementById('fduTopDate')) document.getElementById('fduTopDate').value = new Date().toLocaleDateString('ru-RU');
+            if (document.getElementById('fduTestTicketCount')) document.getElementById('fduTestTicketCount').value = appState.testTickets;
+
+            // Заполнение маленькой таблицы Учет показателей
+            document.getElementById('shCellNum1').innerText = document.getElementById('shNum').value || "1-я";
+            document.getElementById('shCellTest1').innerText = document.getElementById('shTestInp').placeholder || "0";
+            document.getElementById('shCellTariff1').innerText = document.getElementById('shTariff').value || "0";
+            document.getElementById('shCellFee1').innerText = document.getElementById('shFee').value || "0";
+            document.getElementById('shCellCash1').innerText = document.getElementById('shCash').value || "0";
+            document.getElementById('shCellCard1').innerText = document.getElementById('shCard').value || "0";
+
+            if (appState.user) appState.user.shiftActive = true;
+            let btn = document.getElementById('btnMainShift');
+            if (btn) { btn.className = "btn-shift-status btn-success"; btn.innerText = "🟢 Смена открыта (Редакт.)"; }
+
+            addLog(`Смена открыта: Маршрут ${route}, МКасса ${cash}`); closeModal('shiftModal');
+        }
+
+        // ОТЧЕТ ПО ПОЕЗДУ И ФДУ-СЕТКА (Идеальное построчное заполнение)
+        function openTrainReport() { navTo('trainReport'); }
+        function autoFillTrainSchedule(trainNum) {
+            trainNum = trainNum.trim();
+            if (trainScheduleDb[trainNum]) {
+                document.getElementById('trFrom').value = trainScheduleDb[trainNum].from; document.getElementById('trTo').value = trainScheduleDb[trainNum].to;
+                document.getElementById('trDepTime').value = trainScheduleDb[trainNum].dep; document.getElementById('trArrTime').value = trainScheduleDb[trainNum].arr;
+            }
+        }
+        function calculateTrainStats() {
+            let tix = parseInt(document.getElementById('trStatTickets').value) || 0; let money = parseFloat(document.getElementById('trStatMoney').value) || 0;
+            document.getElementById('resTrainTickets').innerText = tix; document.getElementById('resTrainMoney').innerText = money.toFixed(2);
+        }
+        function openBenefitModal(catKey, catTitle) {
+            activeBenefitCategory = catKey; document.getElementById('benefitModalTitle').innerText = catTitle; document.getElementById('benCount').value = '1'; document.getElementById('benIncome').value = '0'; document.getElementById('benFee').value = '0'; openModal('benefitModal');
+        }
+        function saveBenefitCategory() {
+            let c = parseInt(document.getElementById('benCount').value) || 0, i = parseFloat(document.getElementById('benIncome').value) || 0, f = parseFloat(document.getElementById('benFee').value) || 0;
+            if (activeBenefitCategory) { currentTrainBenefits[activeBenefitCategory] = { count: c, sum: i, feeCount: (f > 0 ? c : 0), feeSum: f }; }
+            closeModal('benefitModal');
+        }
+
+        function saveTrainToFdu() {
+            let trNum = document.getElementById('trNum').value; let from = document.getElementById('trFrom').value; let to = document.getElementById('trTo').value;
+            let tix = parseInt(document.getElementById('resTrainTickets').innerText) || 0; let money = parseFloat(document.getElementById('resTrainMoney').innerText) || 0;
+            let timeStr = document.getElementById('trDepTime').value + " - " + document.getElementById('trArrTime').value;
+
+            let lRows = document.querySelectorAll('#fduLeftBody .train-slot-row');
+            if (appState.trainsInFdu >= lRows.length) { alert("Строки рапорта заполнены!"); return; }
+
+            let lInputs = lRows[appState.trainsInFdu].querySelectorAll('input');
+
+            // Заполнение левой стороны (БЕЗ ПРОПУСКОВ И СДВИГОВ)
+            if (appState.trainsInFdu === 0) {
+                lInputs[1].value = trNum; lInputs[2].value = from + " - " + to; lInputs[3].value = timeStr; lInputs[4].value = tix; lInputs[5].value = money.toFixed(2);
+            } else {
+                lInputs[0].value = trNum; lInputs[1].value = from + " - " + to; lInputs[2].value = timeStr; lInputs[3].value = tix; lInputs[4].value = money.toFixed(2);
+            }
+
+            if (document.getElementById('fduGrandTickets')) document.getElementById('fduGrandTickets').innerText = (parseInt(document.getElementById('fduGrandTickets').innerText) || 0) + tix;
+            if (document.getElementById('fduGrandSum')) document.getElementById('fduGrandSum').innerText = ((parseFloat(document.getElementById('fduGrandSum').innerText) || 0) + money).toFixed(2);
+
+            let rRows = document.querySelectorAll('#fduRightBody .benefit-slot-row');
+            if (rRows.length > appState.trainsInFdu) {
+                let rInputs = rRows[appState.trainsInFdu].querySelectorAll('input');
+                rInputs[0].value = currentTrainBenefits.rzd.count > 0 ? currentTrainBenefits.rzd.count : "—"; rInputs[1].value = currentTrainBenefits.rzd.sum > 0 ? currentTrainBenefits.rzd.sum : "—";
+                rInputs[2].value = currentTrainBenefits.fed.count > 0 ? currentTrainBenefits.fed.count : "—"; rInputs[3].value = currentTrainBenefits.fed.sum > 0 ? currentTrainBenefits.fed.sum : "—";
+                rInputs[4].value = currentTrainBenefits.reg.count > 0 ? currentTrainBenefits.reg.count : "—"; rInputs[5].value = currentTrainBenefits.reg.sum > 0 ? currentTrainBenefits.reg.sum : "—";
+                rInputs[6].value = currentTrainBenefits.stud.count > 0 ? currentTrainBenefits.stud.count : "—"; rInputs[7].value = currentTrainBenefits.stud.sum > 0 ? currentTrainBenefits.stud.sum : "—";
+            }
+
+            let totalBenSum = currentTrainBenefits.rzd.sum + currentTrainBenefits.fed.sum + currentTrainBenefits.reg.sum + currentTrainBenefits.stud.sum + currentTrainBenefits.vohr.sum;
+            let totalBenTix = currentTrainBenefits.rzd.count + currentTrainBenefits.fed.count + currentTrainBenefits.reg.count + currentTrainBenefits.stud.count + currentTrainBenefits.vohr.count;
+
+            appState.stats.tariff += (money - totalBenSum); appState.stats.benSum += totalBenSum; appState.stats.tickets += tix; appState.stats.benTix += totalBenTix;
+
+            if (document.getElementById('dashTariff')) document.getElementById('dashTariff').innerText = appState.stats.tariff.toFixed(2) + " ₽";
+            if (document.getElementById('dashBenSum')) document.getElementById('dashBenSum').innerText = appState.stats.benSum.toFixed(2) + " ₽";
+            if (document.getElementById('dashTotalRev')) document.getElementById('dashTotalRev').innerText = (appState.stats.tariff + appState.stats.fee + appState.stats.benSum).toFixed(2) + " ₽";
+            if (document.getElementById('dashTotalTickets')) document.getElementById('dashTotalTickets').innerText = "Билетов: " + appState.stats.tickets;
+            if (document.getElementById('dashBenTickets')) document.getElementById('dashBenTickets').innerText = "Билетов: " + appState.stats.benTix;
+
+            appState.trainsInFdu++;
+            addLog(`Поезд №${trNum} занесен в Рапорт ФДУ.`);
+            alert("Данные сохранены в Рапорт ФДУ!");
+            navTo('fdu');
+        }
+
+        function closeShiftProcess() {
+            if (appState.user) appState.user.shiftActive = false;
+            let btn = document.getElementById('btnMainShift'); if (btn) { btn.className = "btn-shift-status btn-danger"; btn.innerText = "🔴 Смена не открыта"; }
+            if (document.getElementById('fduShiftEndTime')) document.getElementById('fduShiftEndTime').value = new Date().toLocaleString('ru-RU');
+            addLog("Смена закрыта. Рапорт ФДУ сохранен."); alert("Рапорт успешно сохранен! PDF и Excel сформированы в Архиве."); navTo('reports');
+        }
+
+        // НАСЕЛЕННОСТЬ ПОЕЗДА (УМНОЕ СОХРАНЕНИЕ)
+        function openOccupancy() {
+            document.getElementById('occTrainInput').value = '';
+            document.getElementById('occWarningBox').style.display = 'none';
+            document.getElementById('occStopsContainer').style.display = 'none';
+            document.getElementById('occRouteTitle').style.display = 'none';
+            document.getElementById('occStatusBar1').innerText = 'Маршруты загружены. Введите номер поезда.';
+            document.getElementById('occSaveBtn').style.opacity = '0.5';
+            document.getElementById('occSaveBtn').style.pointerEvents = 'none';
+            navTo('occupancy');
+        }
+
+        function checkOccupancyTrain(val) {
+            let train = val.trim();
+            let warnBox = document.getElementById('occWarningBox');
+            let stopsCont = document.getElementById('occStopsContainer');
+            let title = document.getElementById('occRouteTitle');
+            let saveBtn = document.getElementById('occSaveBtn');
+            let statusBar = document.getElementById('occStatusBar1');
+
+            warnBox.style.display = 'none'; stopsCont.style.display = 'none'; title.style.display = 'none';
+            saveBtn.style.opacity = '0.5'; saveBtn.style.pointerEvents = 'none';
+            statusBar.innerText = 'Поиск маршрута...';
+
+            if (occupancyDb[train]) {
+                statusBar.innerText = 'Маршрут загружен.';
+                title.innerText = occupancyDb[train].title;
+                title.style.display = 'block';
+
+                let todayStr = new Date().toLocaleDateString('ru-RU');
+                let savedData = localStorage.getItem(`occ_${todayStr}_${train}`);
+
+                if (savedData) {
+                    let parsedData = JSON.parse(savedData);
+                    document.querySelector('#occWarningBox p').innerHTML = `Последние данные внесены: <strong>${parsedData.userName}</strong>, ${parsedData.date} в ${parsedData.time}.<br>Вы можете продолжить и внести исправления. Предыдущие значения сохранятся в истории.`;
+                    warnBox.style.display = 'block';
+                } else {
+                    renderOccupancyStops(train);
+                }
+            }
+        }
+
+        function continueOccupancy() {
+            document.getElementById('occWarningBox').style.display = 'none';
+            let train = document.getElementById('occTrainInput').value.trim();
+            renderOccupancyStops(train);
+        }
+
+        function renderOccupancyStops(train) {
+            let list = document.getElementById('occStopsList');
+            list.innerHTML = '';
+
+            let todayStr = new Date().toLocaleDateString('ru-RU');
+            let savedData = localStorage.getItem(`occ_${todayStr}_${train}`);
+            let percentages = {};
+            if (savedData) percentages = JSON.parse(savedData).percentages || {};
+
+            occupancyDb[train].stops.forEach((stop, index) => {
+                let savedVal = percentages[index] !== undefined ? percentages[index] : '';
+                list.innerHTML += `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #2d3748;">
+                            <span style="font-weight: bold; font-size: 14px;">${stop}</span>
+                            <div style="display: flex; align-items: center; background-color: #11151c; border: 1px solid #4a5568; border-radius: 8px; padding: 5px 10px;">
+                                <input type="number" id="occ_input_${index}" value="${savedVal}" placeholder="0" style="width: 40px; background: transparent; border: none; color: #fff; font-weight: bold; font-size: 16px; text-align: right; outline: none;">
+                                <span style="color: #a0aec0; margin-left: 5px; font-weight: bold;">%</span>
+                            </div>
+                        </div>
+                    `;
+            });
+
+            document.getElementById('occStopsContainer').style.display = 'block';
+            let saveBtn = document.getElementById('occSaveBtn');
+            saveBtn.style.opacity = '1'; saveBtn.style.pointerEvents = 'auto';
+        }
+
+        function saveOccupancyChanges() {
+            let train = document.getElementById('occTrainInput').value.trim();
+            if (!occupancyDb[train]) return;
+
+            let user = JSON.parse(localStorage.getItem('kkl_profile')) || { fio: "Тестовый Пользователь", lastName: "" };
+            let timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            let todayStr = new Date().toLocaleDateString('ru-RU');
+
+            let percentages = {};
+            occupancyDb[train].stops.forEach((stop, index) => {
+                let inp = document.getElementById(`occ_input_${index}`);
+                if (inp) percentages[index] = inp.value;
+            });
+
+            let record = { trainNum: train, userName: user.fio || user.lastName, time: timeStr, date: todayStr, percentages: percentages };
+            localStorage.setItem(`occ_${todayStr}_${train}`, JSON.stringify(record));
+
+            addLog(`Населенность поезда №${train} сохранена (${timeStr}).`);
+            alert(`Данные по поезду №${train} успешно сохранены!`);
+            navTo('main');
+        }
+
+        function openRegistry() { navTo('registry'); }
+        function saveRegistryEntry() { addLog("Реестр сохранен."); alert("Запись сохранена в Реестр!"); navTo('main'); }
+        function openStatsScreen() { navTo('stats'); }
+        function generateDecadeTable() { if (document.getElementById('decadeTableContainer')) document.getElementById('decadeTableContainer').style.display = 'block'; addLog("Сформирован декадный отчет за месяц."); }
+        function openReportsScreen() { navTo('reports'); }
+
+        // ТАБЕЛЬ
+        function openTabelScreen() { navTo('tabel'); }
+        function renderTabel() {
+            let daysRow = document.getElementById('tabelDaysHeaderRow'); if (!daysRow) return; daysRow.innerHTML = '';
+            for (let i = 1; i <= 31; i++) daysRow.innerHTML += `<th>${i}</th>`;
+            let tbody = document.getElementById('tabelBody'); if (!tbody) return; tbody.innerHTML = '';
+            appState.workers.forEach((w, idx) => {
+                let dot = w.shiftActive ? '<span class="status-dot active" title="На смене"></span>' : '<span class="status-dot" title="Не на смене"></span>';
+                let tr1 = `<tr><td rowspan="2">${idx + 1}</td><td rowspan="2">${w.tab}</td><td rowspan="2" style="text-align:left; font-weight:bold; padding-left:4px;">${w.fio} ${dot}</td><td style="font-size:8.5px; background:#f7f7f7;">№ маршрута</td>`;
+                let tr2 = `<tr><td style="font-size:8.5px; background:#f7f7f7;">время</td>`;
+                for (let d = 1; d <= 31; d++) {
+                    let bg = (d === 13 && w.shiftActive) ? 'class="cell-shift-active"' : '';
+                    let valM = (d === 13) ? "22" : "+"; let valT = (d === 13) ? "10,3" : "";
+                    tr1 += `<td ${bg} class="tabel-cell-day">${valM}</td>`; tr2 += `<td ${bg} class="tabel-cell-day">${valT}</td>`;
+                }
+                tr1 += `<td rowspan="2">1</td><td rowspan="2">10,3</td></tr>`; tr2 += `</tr>`; tbody.innerHTML += tr1 + tr2;
+            });
+        }
+        function saveTabel() { alert("Табель сохранен!"); addLog("Табель сохранен, персонал оповещен."); }
+        function createWorker() {
+            let t = document.getElementById('newWorkerTab').value, f = document.getElementById('newWorkerFio').value;
+            if (t && f) { appState.workers.push({ tab: t, fio: f, role: "viewer", shiftActive: false }); addLog(`Добавлен сотрудник: ${f}`); closeModal('createWorkerModal'); renderTabel(); }
+        }
+
+        // ЧАТЫ
+        function sendMsg() {
+            let inp = document.getElementById('chatInput'); if (!inp.value.trim()) return;
+            let msgs = document.getElementById('chatMsgs'); msgs.innerHTML += `<div class="msg-bubble msg-out">${inp.value}</div>`;
+            inp.value = ''; msgs.scrollTop = msgs.scrollHeight;
+        }
+        function openChat(name) { document.getElementById('chatActiveName').innerText = name; }
+
+        // СИНХРОН
+        function autoSyncTask() { let toast = document.getElementById('autoSyncToast'); if (toast) { toast.style.display = 'block'; setTimeout(() => { toast.style.display = 'none'; }, 3000); } }
+        function openSyncLoginModal() { toggleSidebar(); openModal('syncLoginModal'); }
+        function enterSyncDashboard() { closeModal('syncLoginModal'); navTo('sync-dashboard'); renderSyncList(); }
+        function formatTimeInp(val) { if (val.length === 4 && !val.includes(':')) return val.substring(0, 2) + ":" + val.substring(2, 4); return val; }
+        function saveSyncAnalysis() {
+            let m = document.getElementById('saCash').value; let f = document.getElementById('saFio').value;
+            let tin = formatTimeInp(document.getElementById('saTimeIn').value); let tout = formatTimeInp(document.getElementById('saTimeOut').value);
+            if (!m || !f) { alert("Заполните № МКассы и ФИО"); return; }
+            let status = 'white'; if (!tin) status = 'red'; else if (!tout) status = 'yellow';
+            appState.syncRecords.push({ mkassa: m, fio: f, tin: tin, tout: tout, status: status });
+            addLog(`МКасса ${m} добавлена в лист Синхронизации.`); closeModal('syncAnalysisModal'); renderSyncList();
+        }
+        function renderSyncList() {
+            let c = document.getElementById('syncListContainer'); if (!c) return; c.innerHTML = '';
+            let unfC = document.getElementById('syncUnfList'); if (unfC) unfC.innerHTML = '';
+            let unfCount = 0;
+            appState.syncRecords.forEach((r, i) => {
+                let html = `<div class="sync-row sync-${r.status}" onclick="editSync(${i})"><div style="width:60px; font-weight:bold;">${r.mkassa}</div><div style="flex:1;">${r.fio}</div><div style="width:50px;">${r.tin || '--:--'}</div><div style="width:50px;">${r.tout || '--:--'}</div><div style="width:60px;">${r.status === 'white' ? 'Готово' : (r.status === 'red' ? 'Нет Пост.' : 'Нет Снят.')}</div></div>`;
+                c.innerHTML += html; if (r.status !== 'white' && unfC) { unfC.innerHTML += html; unfCount++; }
+            });
+            let btnU = document.getElementById('btnSyncUnf'); if (btnU) btnU.innerText = `Не завершенные (${unfCount})`;
+        }
+        function editSync(index) {
+            let r = appState.syncRecords[index];
+            if (r.status !== 'white') {
+                let tout = prompt("Введите время снятия (ччмм) для МКассы " + r.mkassa + ":");
+                if (tout) { r.tout = formatTimeInp(tout); r.tin = r.tin || "08:00"; r.status = 'white'; renderSyncList(); closeModal('syncUnfinishedModal'); }
+            }
+        }
+        function finishAllSync() {
+            let errorItem = appState.syncRecords.find(r => r.status !== 'white');
+            if (errorItem) {
+                document.getElementById('srText').innerText = `МКасса ${errorItem.mkassa} не завершена! Укажите причину:`;
+                openModal('syncReasonModal'); document.getElementById('syncReasonModal').dataset.errIdx = appState.syncRecords.indexOf(errorItem);
+            } else { alert("Все МКассы просинхронизированы! Файлы PDF и Excel созданы в Отчетах."); addLog("Синхронизация завершена."); }
+        }
+        function resolveSyncError() {
+            let idx = document.getElementById('syncReasonModal').dataset.errIdx; let reason = document.getElementById('srReason').value;
+            appState.syncRecords[idx].status = 'white'; appState.syncRecords[idx].tout = reason;
+            closeModal('syncReasonModal'); renderSyncList(); finishAllSync();
+        }
+    </script>
+</body>
+</html>
