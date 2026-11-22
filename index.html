@@ -6,6 +6,9 @@
     <title>Ласточка МТППК — Официальный Рапорт (ФДУ)</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#003366">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <style>
         :root { --primary-color: #003366; --accent-color: #cc0000; --bg-color: #f4f6f9; --card-bg: #ffffff; --text-color: #000000; --border-color: #000000; --sidebar-bg: #002244; --sidebar-header: #001830; }
         body.dark-theme { --primary-color: #1a5c9a; --accent-color: #e63946; --bg-color: #121212; --card-bg: #1e1e1e; --text-color: #e0e0e0; --border-color: #444444; --sidebar-bg: #161b22; --sidebar-header: #0d1117; }
@@ -52,7 +55,7 @@
         .btn-action { background-color: #004080; padding: 12px 8px; font-size: 14px; margin-top: 0; border-radius: 6px; }
         .btn-shift-status { font-size: 16px; padding: 12px; flex: 1; transition: background 0.3s ease; }
         
-        /* СТАТИСТИКА (Главный экран) */
+        /* СТАТИСТИКА */
         .stats-dashboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; font-family: Arial, sans-serif;}
         .stat-card { background: #0055aa; color: white; padding: 15px; border-radius: 8px; text-align: left; position: relative; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .stat-card h4 { margin: 0 0 5px 0; font-size: 14px; color: #bce8f1; }
@@ -119,7 +122,7 @@
     <div id="splash-screen"><div class="splash-content"><div class="animated-title">АО "МТ ППК"<br>«Ласточка»</div></div></div>
     
     <!-- АВТО-СИНХРОНИЗАЦИЯ -->
-    <div id="autoSyncToast" class="auto-sync-toast">🔄 Авто-синхронизация...</div>
+    <div id="autoSyncToast" class="auto-sync-toast">☁️ Облако синхронизировано</div>
 
     <!-- КНОПКА МЕНЮ -->
     <button id="menuBtn" class="menu-toggle-btn" style="display:none;" onclick="toggleSidebar()">☰ Меню</button>
@@ -228,7 +231,7 @@
         </div>
     </div>
 
-    <!-- === ИДЕАЛЬНАЯ СЕТКА ФДУ (ЧЕРЕДОВАНИЕ СТРОК) === -->
+    <!-- === ИДЕАЛЬНАЯ СЕТКА ФДУ === -->
     <div id="fdu-screen" class="screen">
         <div class="journal-spread">
             <!-- ЛЕВАЯ СТРАНИЦА -->
@@ -389,7 +392,7 @@
         </div>
     </div>
 
-    <!-- ЭКРАН НАСЕЛЕННОСТИ (ТЕМНЫЙ ДИЗАЙН ИЗ ФОТО) -->
+    <!-- ЭКРАН НАСЕЛЕННОСТИ -->
     <div id="occupancy-screen" class="screen">
         <div style="max-width: 600px; margin: 20px auto; background-color: #1a1e29; color: #e2e8f0; border-radius: 12px; border: 1px solid #2d3748; padding: 25px; font-family: Arial, sans-serif;">
             <div id="occStatusBar1" style="background-color: #172a23; border-left: 4px solid #2f855a; padding: 10px 15px; margin-bottom: 10px; border-radius: 4px; font-size: 14px; color: #68d391;">
@@ -447,7 +450,7 @@
         </div>
     </div>
 
-    <!-- СИНХРОН (Дашборд) -->
+    <!-- СИНХРОН -->
     <div id="sync-dashboard-screen" class="screen">
         <div class="card" style="max-width: 900px; margin: 20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--primary-color); padding-bottom:10px; margin-bottom:15px;">
@@ -527,7 +530,6 @@
         </div>
     </div>
 
-    <!-- Модалки Детализации и Синхрона -->
     <div id="benefitsDetailModal" class="modal">
         <div class="modal-content" style="max-width: 350px;">
             <h3 style="margin-top:0;">Детализация льгот</h3>
@@ -557,6 +559,27 @@
     <div id="createWorkerModal" class="modal"><div class="modal-content"><h3>Создать сотрудника в табеле</h3><div class="form-group"><label>Табельный номер:</label><input type="text" id="newWorkerTab" class="form-input"></div><div class="form-group"><label>ФИО:</label><input type="text" id="newWorkerFio" class="form-input"></div><button class="btn-success" onclick="createWorker()">Создать</button></div></div>
 
     <script>
+        // === ПОДКЛЮЧЕНИЕ ОБЛАЧНОЙ БАЗЫ FIREBASE ===
+        const firebaseConfig = {
+            apiKey: "AIzaSyDjrcAZhOTvcTorM-apvpSj6juS6efiPAc",
+            authDomain: "lastochka-mtppk.firebaseapp.com",
+            projectId: "lastochka-mtppk",
+            storageBucket: "lastochka-mtppk.firebasestorage.app",
+            messagingSenderId: "3989081786",
+            appId: "1:3989081786:web:1d2a539775f49ddfd1bc83"
+        };
+
+        let db = null;
+        let cloudOccupancy = {};
+
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            db.enablePersistence().catch((err) => { console.log("Offline persistence:", err.code); });
+        } catch(e) {
+            console.error("Firebase init error:", e);
+        }
+
         const trainScheduleDb = {
             "7903": { name: "Клин — Москва Окт.", dep: "06:25", arr: "07:40", from: "Клин", to: "Москва Окт.", stops: ["Клин — Покровка", "Покровка — Фроловское"] },
             "7549": { name: "Москва Окт. — Тверь", dep: "11:27", arr: "13:30", from: "Москва Окт.", to: "Тверь", stops: ["Москва Окт. — Крюково", "Крюково — Клин"] }
@@ -570,12 +593,9 @@
         };
 
         let workersTabelDb = [
-            { tab: "6527", fio: "Бурлаков Даниил Сергеевич", role: "viewer", days: { 1: { type: "shift", route: "22", hours: "10,3", senior: false }, 2: { type: "shift", route: "11-1", hours: "6,9", senior: false } } },
-            { tab: "8065", fio: "Волков Виктор Сергеевич", role: "admin", days: { 1: { type: "weekend" }, 2: { type: "shift", route: "22", hours: "10,3", senior: true } } }
+            { tab: "6527", fio: "Бурлаков Даниил Сергеевич", role: "viewer", shiftActive: false },
+            { tab: "8065", fio: "Волков Виктор Сергеевич", role: "admin", shiftActive: false }
         ];
-
-        let currentUserRole = "admin";
-        let lastStatTickets = 0; let lastStatMoney = 0;
 
         let appState = {
             user: null, testTickets: 0, trainsInFdu: 0,
@@ -586,8 +606,47 @@
         let currentTrainBenefits = { rzd: { count: 0, sum: 0, feeCount: 0, feeSum: 0 }, fed: { count: 0, sum: 0, feeCount: 0, feeSum: 0 }, reg: { count: 0, sum: 0, feeCount: 0, feeSum: 0 }, stud: { count: 0, sum: 0, feeCount: 0, feeSum: 0 }, vohr: { count: 0, sum: 0, feeCount: 0, feeSum: 0 } };
         let activeBenefitCategory = null;
 
-        // БЕЗОПАСНАЯ ЗАГРУЗКА
+        // === СИНХРОНИЗАЦИЯ В РЕАЛЬНОМ ВРЕМЕНИ ===
+        function startCloudSync() {
+            if (!db) return;
+
+            // 1. Синхронизация сотрудников (Табель)
+            db.collection('workers').onSnapshot((snapshot) => {
+                if (snapshot.empty) {
+                    // Первый запуск: загружаем базовых сотрудников в облако
+                    workersTabelDb.forEach(w => {
+                        db.collection('workers').doc(w.tab).set(w);
+                    });
+                } else {
+                    let list = [];
+                    snapshot.forEach(doc => list.push(doc.data()));
+                    appState.workers = list;
+                    renderTabel();
+                    showSyncToast("☁️ Табель обновлен из облака");
+                }
+            });
+
+            // 2. Синхронизация населенности поездов
+            db.collection('occupancy').onSnapshot((snapshot) => {
+                snapshot.forEach(doc => {
+                    cloudOccupancy[doc.id] = doc.data();
+                });
+            });
+        }
+
+        function showSyncToast(msg) {
+            let toast = document.getElementById('autoSyncToast');
+            if(toast) {
+                toast.innerText = msg || "☁️ Облако синхронизировано";
+                toast.style.display = 'block';
+                setTimeout(() => { toast.style.display = 'none'; }, 2500);
+            }
+        }
+
+        // ЗАГРУЗКА
         window.addEventListener('load', () => {
+            startCloudSync();
+
             setTimeout(() => {
                 let splash = document.getElementById('splash-screen');
                 if(splash) {
@@ -606,8 +665,6 @@
                 if(document.getElementById('statDateFrom')) document.getElementById('statDateFrom').value = today;
                 if(document.getElementById('statDateTo')) document.getElementById('statDateTo').value = today;
             } catch(e) {}
-
-            setInterval(autoSyncTask, 120000);
         });
 
         function toggleTheme() { document.body.classList.toggle('dark-theme'); }
@@ -675,9 +732,7 @@
         function showMainScreen(user) {
             hideAllScreens(); document.getElementById('main-screen').classList.add('active-screen'); document.getElementById('menuBtn').style.display = 'block';
             let fullName = user.fio || user.lastName;
-            if(document.getElementById('dispName')) {
-                document.getElementById('dispName').innerText = fullName; document.getElementById('dispTab').innerText = user.tab; document.getElementById('dispPos').innerText = user.position; document.getElementById('dispDoc').innerText = user.doc; document.getElementById('dispStation').innerText = user.station; document.getElementById('sidebarUserName').innerText = fullName;
-            }
+            if(document.getElementById('sidebarUserName')) document.getElementById('sidebarUserName').innerText = fullName;
         }
 
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
@@ -710,7 +765,6 @@
             if(document.getElementById('fduD0')) document.getElementById('fduD0').value = new Date().toLocaleDateString('ru-RU');
             if(document.getElementById('fduTestTicketCount')) document.getElementById('fduTestTicketCount').value = appState.testTickets;
 
-            // Заполнение маленькой таблицы Учет показателей
             document.getElementById('shCellNum1').innerText = document.getElementById('shNum').value || "1-я";
             document.getElementById('shCellTest1').innerText = document.getElementById('shTestInp').placeholder || "0";
             document.getElementById('shCellTariff1').innerText = document.getElementById('shTariff').value || "0";
@@ -718,7 +772,10 @@
             document.getElementById('shCellCash1').innerText = document.getElementById('shCash').value || "0";
             document.getElementById('shCellCard1').innerText = document.getElementById('shCard').value || "0";
 
-            if(appState.user) appState.user.shiftActive = true; 
+            if(appState.user) {
+                appState.user.shiftActive = true;
+                if(db) db.collection('workers').doc(appState.user.tab).update({ shiftActive: true }).catch(()=>{});
+            }
             let btn = document.getElementById('btnMainShift');
             if(btn) { btn.className = "btn-shift-status btn-success"; btn.innerText = "🟢 Смена открыта (Редакт.)"; }
             
@@ -788,13 +845,16 @@
         }
 
         function closeShiftProcess() {
-            if(appState.user) appState.user.shiftActive = false;
+            if(appState.user) {
+                appState.user.shiftActive = false;
+                if(db) db.collection('workers').doc(appState.user.tab).update({ shiftActive: false }).catch(()=>{});
+            }
             let btn = document.getElementById('btnMainShift'); if(btn) { btn.className = "btn-shift-status btn-danger"; btn.innerText = "🔴 Смена не открыта"; }
             if(document.getElementById('fduShiftEndTime')) document.getElementById('fduShiftEndTime').value = new Date().toLocaleString('ru-RU');
-            addLog("Смена закрыта. Рапорт ФДУ сохранен."); alert("Рапорт успешно сохранен! PDF и Excel сформированы в Архиве."); navTo('reports');
+            addLog("Смена закрыта. Рапорт ФДУ сохранен."); alert("Рапорт успешно сохранен!"); navTo('reports');
         }
 
-        // НАСЕЛЕННОСТЬ ПОЕЗДА (УМНОЕ СОХРАНЕНИЕ)
+        // НАСЕЛЕННОСТЬ ПОЕЗДА (ОБЛАЧНАЯ СИНХРОНИЗАЦИЯ)
         function openOccupancy() { 
             document.getElementById('occTrainInput').value = '';
             document.getElementById('occWarningBox').style.display = 'none';
@@ -804,6 +864,11 @@
             document.getElementById('occSaveBtn').style.opacity = '0.5';
             document.getElementById('occSaveBtn').style.pointerEvents = 'none';
             navTo('occupancy'); 
+        }
+
+        function getOccDocId(train) {
+            let todayStr = new Date().toLocaleDateString('ru-RU').replace(/\./g, '-');
+            return `${todayStr}_${train}`;
         }
 
         function checkOccupancyTrain(val) {
@@ -823,12 +888,11 @@
                 title.innerText = occupancyDb[train].title;
                 title.style.display = 'block';
 
-                let todayStr = new Date().toLocaleDateString('ru-RU');
-                let savedData = localStorage.getItem(`occ_${todayStr}_${train}`);
+                let docId = getOccDocId(train);
+                let parsedData = cloudOccupancy[docId] || JSON.parse(localStorage.getItem(`occ_${docId}`) || 'null');
 
-                if (savedData) {
-                    let parsedData = JSON.parse(savedData);
-                    document.querySelector('#occWarningBox p').innerHTML = `Последние данные внесены: <strong>${parsedData.userName}</strong>, ${parsedData.date} в ${parsedData.time}.<br>Вы можете продолжить и внести исправления. Предыдущие значения сохранятся в истории.`;
+                if (parsedData) {
+                    document.querySelector('#occWarningBox p').innerHTML = `Последние данные внесены: <strong>${parsedData.userName}</strong>, ${parsedData.date} в ${parsedData.time}.<br>Вы можете продолжить и внести исправления.`;
                     warnBox.style.display = 'block';
                 } else {
                     renderOccupancyStops(train);
@@ -846,10 +910,9 @@
             let list = document.getElementById('occStopsList');
             list.innerHTML = '';
             
-            let todayStr = new Date().toLocaleDateString('ru-RU');
-            let savedData = localStorage.getItem(`occ_${todayStr}_${train}`);
-            let percentages = {};
-            if (savedData) percentages = JSON.parse(savedData).percentages || {};
+            let docId = getOccDocId(train);
+            let parsedData = cloudOccupancy[docId] || JSON.parse(localStorage.getItem(`occ_${docId}`) || 'null');
+            let percentages = parsedData ? (parsedData.percentages || {}) : {};
             
             occupancyDb[train].stops.forEach((stop, index) => {
                 let savedVal = percentages[index] !== undefined ? percentages[index] : '';
@@ -873,9 +936,10 @@
             let train = document.getElementById('occTrainInput').value.trim();
             if (!occupancyDb[train]) return;
 
-            let user = JSON.parse(localStorage.getItem('kkl_profile')) || { fio: "Тестовый Пользователь", lastName: "" };
+            let user = JSON.parse(localStorage.getItem('kkl_profile')) || { fio: "Сотрудник", lastName: "" };
             let timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
             let todayStr = new Date().toLocaleDateString('ru-RU');
+            let docId = getOccDocId(train);
 
             let percentages = {};
             occupancyDb[train].stops.forEach((stop, index) => {
@@ -884,10 +948,17 @@
             });
 
             let record = { trainNum: train, userName: user.fio || user.lastName, time: timeStr, date: todayStr, percentages: percentages };
-            localStorage.setItem(`occ_${todayStr}_${train}`, JSON.stringify(record));
+            localStorage.setItem(`occ_${docId}`, JSON.stringify(record));
+            cloudOccupancy[docId] = record;
+
+            if (db) {
+                db.collection('occupancy').doc(docId).set(record).then(() => {
+                    showSyncToast(`☁️ Поезд №${train} сохранен в облако`);
+                }).catch(err => console.error(err));
+            }
 
             addLog(`Населенность поезда №${train} сохранена (${timeStr}).`);
-            alert(`Данные по поезду №${train} успешно сохранены!`);
+            alert(`Данные по поезду №${train} сохранены и отправлены в облако!`);
             navTo('main');
         }
 
@@ -897,7 +968,7 @@
         function generateDecadeTable() { if(document.getElementById('decadeTableContainer')) document.getElementById('decadeTableContainer').style.display = 'block'; addLog("Сформирован декадный отчет за месяц."); }
         function openReportsScreen() { navTo('reports'); }
 
-        // ТАБЕЛЬ
+        // ТАБЕЛЬ (ОБЛАЧНАЯ СИНХРОНИЗАЦИЯ)
         function openTabelScreen() { navTo('tabel'); }
         function renderTabel() {
             let daysRow = document.getElementById('tabelDaysHeaderRow'); if(!daysRow) return; daysRow.innerHTML = '';
@@ -917,8 +988,23 @@
         }
         function saveAndNotifyStaff() { alert("Табель сохранен!"); addLog("Табель сохранен, персонал оповещен."); }
         function createWorker() {
-            let t = document.getElementById('newWorkerTab').value, f = document.getElementById('newWorkerFio').value;
-            if(t && f) { appState.workers.push({ tab: t, fio: f, role: "viewer", shiftActive: false }); addLog(`Добавлен сотрудник: ${f}`); closeModal('createWorkerModal'); renderTabel(); }
+            let t = document.getElementById('newWorkerTab').value.trim();
+            let f = document.getElementById('newWorkerFio').value.trim();
+            if(t && f) {
+                let newWorker = { tab: t, fio: f, role: "viewer", shiftActive: false };
+                if (db) {
+                    db.collection('workers').doc(t).set(newWorker).then(() => {
+                        showSyncToast(`☁️ Сотрудник ${f} добавлен в облако`);
+                    }).catch(err => alert("Ошибка сохранения: " + err.message));
+                } else {
+                    appState.workers.push(newWorker);
+                    renderTabel();
+                }
+                document.getElementById('newWorkerTab').value = '';
+                document.getElementById('newWorkerFio').value = '';
+                addLog(`Добавлен сотрудник: ${f}`);
+                closeModal('createWorkerModal');
+            }
         }
 
         // ЧАТЫ
@@ -930,7 +1016,6 @@
         function openChat(name) { document.getElementById('chatActiveName').innerText = name; }
 
         // СИНХРОН
-        function autoSyncTask() { let toast = document.getElementById('autoSyncToast'); if(toast) { toast.style.display = 'block'; setTimeout(() => { toast.style.display = 'none'; }, 3000); } }
         function openSyncLoginModal() { toggleSidebar(); openModal('syncLoginModal'); }
         function enterSyncDashboard() { closeModal('syncLoginModal'); navTo('sync-dashboard'); renderSyncList(); }
         function formatTimeInp(val) { if(val.length === 4 && !val.includes(':')) return val.substring(0,2) + ":" + val.substring(2,4); return val; }
@@ -964,7 +1049,7 @@
             if(errorItem) {
                 document.getElementById('srText').innerText = `МКасса ${errorItem.mkassa} не завершена! Укажите причину:`;
                 openModal('syncReasonModal'); document.getElementById('syncReasonModal').dataset.errIdx = appState.syncRecords.indexOf(errorItem);
-            } else { alert("Все МКассы просинхронизированы! Файлы PDF и Excel созданы в Отчетах."); addLog("Синхронизация завершена."); }
+            } else { alert("Все МКассы просинхронизированы!"); addLog("Синхронизация завершена."); }
         }
         function resolveSyncError() {
             let idx = document.getElementById('syncReasonModal').dataset.errIdx; let reason = document.getElementById('srReason').value;
@@ -972,7 +1057,7 @@
             closeModal('syncReasonModal'); renderSyncList(); finishAllSync(); 
         }
 
-        // РЕГИСТРАЦИЯ PWA (ОФЛАЙН И АВТООБНОВЛЕНИЕ)
+        // РЕГИСТРАЦИЯ PWA
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js');
         }
