@@ -67,7 +67,7 @@
         .journal-page { flex: 1; min-width: 500px; }
         .doc-title { text-align: center; font-weight: bold; font-size: 13px; line-height: 1.2; margin-bottom: 5px; }
         table.fdu-grid { width: 100%; border-collapse: collapse; font-size: 10px; }
-        table.fdu-grid th, table.fdu-grid td { border: 1px solid #000; padding: 1px 2px; text-align: center; vertical-align: middle; height: 20px; box-sizing: border-box; }
+        table.fdu-grid th, table.fdu-grid td { border: 1px solid #000; padding: 1px 2px; text-align: center; vertical-align: middle; height: 22px; box-sizing: border-box; }
         table.fdu-grid th { font-weight: normal; }
         .th-title { font-size: 9.5px; line-height: 1.1; }
         .cell-left-text { text-align: left !important; font-size: 9px; padding-left: 3px !important; white-space: nowrap; font-weight: bold; background: #fdfdfd; }
@@ -231,7 +231,7 @@
         </div>
     </div>
 
-    <!-- === ИДЕАЛЬНАЯ СЕТКА ФДУ === -->
+    <!-- === ИДЕАЛЬНАЯ СЕТКА ФДУ (ПО ОБРАЗЦУ ПОКАЗ.XLSX) === -->
     <div id="fdu-screen" class="screen">
         <div class="journal-spread">
             <!-- ЛЕВАЯ СТРАНИЦА -->
@@ -246,32 +246,39 @@
                         <tr><th class="th-title">кол-во</th><th class="th-title">на сумму</th></tr><tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr>
                     </thead>
                     <tbody id="fduLeftBody">
-                        <tr class="train-slot-row"><td><input type="text" id="fduD0"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        <tr><td class="cell-left-text">Номер маршрута <span id="fduRouteL" style="font-weight:normal;"></span></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        
-                        <tr class="train-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        <tr><td class="cell-left-text">№ МКассы <span id="fduCashL" style="font-weight:normal;"></span></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        
-                        <tr class="train-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        <tr><td class="cell-left-text">Сумма разм. фонда <span id="fduFundL" style="font-weight:normal;"></span></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        
-                        <tr class="train-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        <tr><td class="cell-left-text">Сумма личн. денег <span id="fduPersL" style="font-weight:normal;"></span></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        
-                        <tr class="train-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        <tr><td class="cell-left-text">Вид работы <span style="font-weight:normal;">Осн.</span></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        
-                        <tr class="train-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <!-- Поезд 1 (Дата) -->
+                        <tr class="train-slot-row"><td><input type="text" id="fduD0"></td><td><input type="text" class="fdu-train-num"></td><td><input type="text" class="fdu-train-route"></td><td><input type="text" class="fdu-train-time"></td><td><input type="text" class="fdu-train-tix"></td><td><input type="text" class="fdu-train-sum"></td></tr>
+                        <!-- Поезд 2 (Заголовок: Номер маршрута) -->
+                        <tr class="train-slot-row"><td class="cell-left-text">Номер маршрута</td><td><input type="text" class="fdu-train-num"></td><td><input type="text" class="fdu-train-route"></td><td><input type="text" class="fdu-train-time"></td><td><input type="text" class="fdu-train-tix"></td><td><input type="text" class="fdu-train-sum"></td></tr>
+                        <!-- Поезд 3 (Значение: Номер маршрута) -->
+                        <tr class="train-slot-row"><td><input type="text" id="fduRouteVal"></td><td><input type="text" class="fdu-train-num"></td><td><input type="text" class="fdu-train-route"></td><td><input type="text" class="fdu-train-time"></td><td><input type="text" class="fdu-train-tix"></td><td><input type="text" class="fdu-train-sum"></td></tr>
+                        <!-- Поезд 4 (Заголовок: № МКассы) -->
+                        <tr class="train-slot-row"><td class="cell-left-text">№ МКассы</td><td><input type="text" class="fdu-train-num"></td><td><input type="text" class="fdu-train-route"></td><td><input type="text" class="fdu-train-time"></td><td><input type="text" class="fdu-train-tix"></td><td><input type="text" class="fdu-train-sum"></td></tr>
+                        <!-- Поезд 5 (Значение: № МКассы) -->
+                        <tr class="train-slot-row"><td><input type="text" id="fduCashVal"></td><td><input type="text" class="fdu-train-num"></td><td><input type="text" class="fdu-train-route"></td><td><input type="text" class="fdu-train-time"></td><td><input type="text" class="fdu-train-tix"></td><td><input type="text" class="fdu-train-sum"></td></tr>
+                        <!-- Поезд 6 (Заголовок: Сумма разм. фонда) -->
+                        <tr class="train-slot-row"><td class="cell-left-text">Сумма разм. фонда</td><td><input type="text" class="fdu-train-num"></td><td><input type="text" class="fdu-train-route"></td><td><input type="text" class="fdu-train-time"></td><td><input type="text" class="fdu-train-tix"></td><td><input type="text" class="fdu-train-sum"></td></tr>
+                        <!-- Поезд 7 (Значение: Сумма разм. фонда) -->
+                        <tr class="train-slot-row"><td><input type="text" id="fduFundVal"></td><td><input type="text" class="fdu-train-num"></td><td><input type="text" class="fdu-train-route"></td><td><input type="text" class="fdu-train-time"></td><td><input type="text" class="fdu-train-tix"></td><td><input type="text" class="fdu-train-sum"></td></tr>
+                        <!-- Поезд 8 (Заголовок: Сумма личн. денег) -->
+                        <tr class="train-slot-row"><td class="cell-left-text">Сумма личн. денег</td><td><input type="text" class="fdu-train-num"></td><td><input type="text" class="fdu-train-route"></td><td><input type="text" class="fdu-train-time"></td><td><input type="text" class="fdu-train-tix"></td><td><input type="text" class="fdu-train-sum"></td></tr>
+                        <!-- Поезд 9 (Значение: Сумма личн. денег) -->
+                        <tr class="train-slot-row"><td><input type="text" id="fduPersVal"></td><td><input type="text" class="fdu-train-num"></td><td><input type="text" class="fdu-train-route"></td><td><input type="text" class="fdu-train-time"></td><td><input type="text" class="fdu-train-tix"></td><td><input type="text" class="fdu-train-sum"></td></tr>
+                        <!-- Поезд 10 (Заголовок: Вид работы) -->
+                        <tr class="train-slot-row"><td class="cell-left-text">Вид работы</td><td><input type="text" class="fdu-train-num"></td><td><input type="text" class="fdu-train-route"></td><td><input type="text" class="fdu-train-time"></td><td><input type="text" class="fdu-train-tix"></td><td><input type="text" class="fdu-train-sum"></td></tr>
+                        <!-- Поезд 11 (Значение: Вид работы) -->
+                        <tr class="train-slot-row"><td><input type="text" id="fduWorkTypeVal"></td><td><input type="text" class="fdu-train-num"></td><td><input type="text" class="fdu-train-route"></td><td><input type="text" class="fdu-train-time"></td><td><input type="text" class="fdu-train-tix"></td><td><input type="text" class="fdu-train-sum"></td></tr>
+                        <!-- Строка Итого (Заголовок: № Видеорег.) -->
                         <tr>
-                            <td class="cell-left-text">№ Видеорег. <span style="font-weight:normal;">24484</span></td>
+                            <td class="cell-left-text">№ Видеорег.</td>
                             <td><input type="text"></td>
                             <td><input type="text"></td>
                             <td style="text-align: right; padding-right: 5px; font-weight: bold;">Итого:</td>
                             <td id="fduGrandTickets" style="font-weight: bold; color: #cc0000;">0</td>
                             <td id="fduGrandSum" style="font-weight: bold; color: #cc0000;">0.00</td>
                         </tr>
-                        
-                        <tr class="train-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <!-- Значение: № Видеорег. -->
+                        <tr><td><input type="text" id="fduVideoRegVal"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                         <tr><th colspan="6" class="th-title" style="text-align: left; padding-left: 10px; font-weight: bold;">Внесенные изменения по маршруту</th></tr>
                         <tr><td><input type="text"></td><td><input type="text"></td><td colspan="2"><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                         <tr><td><input type="text"></td><td><input type="text"></td><td colspan="2"><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
@@ -304,7 +311,7 @@
                 </div>
             </div>
 
-            <!-- ПРАВАЯ СТРАНИЦА -->
+            <!-- ПРАВАЯ СТРАНИЦА (11 строк подряд синхронно с поездами) -->
             <div class="journal-page">
                 <div class="doc-title">РАПОРТ<br>о результатах произведенных проверок поездов</div>
                 <table class="fdu-grid" id="fduRightTable">
@@ -316,25 +323,19 @@
                     </thead>
                     <tbody id="fduRightBody">
                         <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        
                         <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        
                         <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        
                         <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        
                         <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        
                         <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        
                         <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-                        
+                        <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <!-- Строка на уровне Итого -->
+                        <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                        <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                         <tr id="vohrRow"><td colspan="2" class="cell-left-text" style="font-weight: bold;">ВОХР</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                         <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                     </tbody>
@@ -352,13 +353,13 @@
         <div class="card" style="max-width: 800px; margin: 30px auto;">
             <h2>Отчет по поезду</h2>
             <div class="form-row">
-                <div class="form-group"><label>Номер поезда:</label><input type="text" id="trNum" class="form-input" placeholder="7549" onchange="autoFillTrainSchedule(this.value)"></div>
-                <div class="form-group"><label>С какой станции едет:</label><input type="text" id="trFrom" class="form-input" value="Москва Окт."></div>
-                <div class="form-group"><label>До какой станции:</label><input type="text" id="trTo" class="form-input" value="Тверь"></div>
+                <div class="form-group"><label>Номер поезда:</label><input type="text" id="trNum" class="form-input" placeholder="7903" onchange="autoFillTrainSchedule(this.value)"></div>
+                <div class="form-group"><label>С какой станции едет:</label><input type="text" id="trFrom" class="form-input" value="Клин"></div>
+                <div class="form-group"><label>До какой станции:</label><input type="text" id="trTo" class="form-input" value="Москва"></div>
             </div>
             <div class="form-row">
-                <div class="form-group"><label>Время отправления:</label><input type="text" id="trDepTime" class="form-input" placeholder="11:27"></div>
-                <div class="form-group"><label>Время прибытия:</label><input type="text" id="trArrTime" class="form-input" placeholder="13:30"></div>
+                <div class="form-group"><label>Время отправления:</label><input type="text" id="trDepTime" class="form-input" placeholder="6:25"></div>
+                <div class="form-group"><label>Время прибытия:</label><input type="text" id="trArrTime" class="form-input" placeholder="7:40"></div>
             </div>
             <h3 style="border-bottom: 1px solid #ccc; padding-bottom: 6px; font-size: 15px;">Статистика с МКассы на конец пути</h3>
             <div class="form-row">
@@ -510,8 +511,9 @@
     <div id="shiftModal" class="modal">
         <div class="modal-content">
             <h3 id="shiftModalTitle" style="margin-top:0;">Параметры смены</h3>
-            <div class="form-row"><div class="form-group"><label>Номер Маршрута:</label><input type="text" id="shRouteNum" class="form-input" placeholder="22"></div><div class="form-group"><label>№ МКассы:</label><input type="text" id="shCashNum" class="form-input" placeholder="13340"></div></div>
-            <div class="form-row"><div class="form-group"><label>Сумма разм. фонда (руб.):</label><input type="number" id="shFundSum" class="form-input" placeholder="50000"></div><div class="form-group"><label>Сумма личн. денег (руб.):</label><input type="number" id="shPersonalMoney" class="form-input" placeholder="0"></div></div>
+            <div class="form-row"><div class="form-group"><label>Номер Маршрута:</label><input type="text" id="shRouteNum" class="form-input" placeholder="13"></div><div class="form-group"><label>№ МКассы:</label><input type="text" id="shCashNum" class="form-input" placeholder="13347"></div></div>
+            <div class="form-row"><div class="form-group"><label>Сумма разм. фонда (руб.):</label><input type="number" id="shFundSum" class="form-input" placeholder="5000"></div><div class="form-group"><label>Сумма личн. денег (руб.):</label><input type="number" id="shPersonalMoney" class="form-input" value="0"></div></div>
+            <div class="form-row"><div class="form-group"><label>Вид работы:</label><input type="text" id="shWorkType" class="form-input" value="Основной"></div><div class="form-group"><label>№ Видеорег.:</label><input type="text" id="shVideoReg" class="form-input" value="24484"></div></div>
             <div class="form-row"><div class="form-group"><label>Смена:</label><input type="text" id="shNum" class="form-input" placeholder="1-я или 6"></div>
             <div class="form-group"><label>Пробники: <span id="shTestVal" style="color:var(--accent-color);">1 шт.</span></label><div style="display:flex; gap:5px;"><input type="text" id="shTestInp" placeholder="128/124" class="form-input"><button class="btn-action" style="width:auto; margin-top:4px;" onclick="addTestTix()">➕</button></div></div></div>
             <div class="form-row"><div class="form-group"><label>Тариф:</label><input type="number" id="shTariff" class="form-input" placeholder="2390"></div><div class="form-group"><label>Сбор:</label><input type="number" id="shFee" class="form-input" placeholder="300"></div></div>
@@ -581,7 +583,8 @@
         }
 
         const trainScheduleDb = {
-            "7903": { name: "Клин — Москва Окт.", dep: "06:25", arr: "07:40", from: "Клин", to: "Москва Окт.", stops: ["Клин — Покровка", "Покровка — Фроловское"] },
+            "7903": { name: "Клин — Москва", dep: "6:25", arr: "7:40", from: "Клин", to: "Москва", stops: ["Клин — Покровка", "Покровка — Фроловское"] },
+            "7904": { name: "Москва — Клин", dep: "8:32", arr: "9:40", from: "Москва", to: "Клин", stops: ["Москва — Крюково", "Крюково — Клин"] },
             "7549": { name: "Москва Окт. — Тверь", dep: "11:27", arr: "13:30", from: "Москва Окт.", to: "Тверь", stops: ["Москва Окт. — Крюково", "Крюково — Клин"] }
         };
 
@@ -603,17 +606,18 @@
             syncRecords: [], workers: workersTabelDb
         };
 
-        let currentTrainBenefits = { rzd: { count: 0, sum: 0, feeCount: 0, feeSum: 0 }, fed: { count: 0, sum: 0, feeCount: 0, feeSum: 0 }, reg: { count: 0, sum: 0, feeCount: 0, feeSum: 0 }, stud: { count: 0, sum: 0, feeCount: 0, feeSum: 0 }, vohr: { count: 0, sum: 0, feeCount: 0, feeSum: 0 } };
+        function getEmptyBenefits() {
+            return { rzd: { count: 0, sum: 0, feeCount: 0, feeSum: 0 }, fed: { count: 0, sum: 0, feeCount: 0, feeSum: 0 }, reg: { count: 0, sum: 0, feeCount: 0, feeSum: 0 }, stud: { count: 0, sum: 0, feeCount: 0, feeSum: 0 }, vohr: { count: 0, sum: 0, feeCount: 0, feeSum: 0 } };
+        }
+        let currentTrainBenefits = getEmptyBenefits();
         let activeBenefitCategory = null;
 
         // === СИНХРОНИЗАЦИЯ В РЕАЛЬНОМ ВРЕМЕНИ ===
         function startCloudSync() {
             if (!db) return;
 
-            // 1. Синхронизация сотрудников (Табель)
             db.collection('workers').onSnapshot((snapshot) => {
                 if (snapshot.empty) {
-                    // Первый запуск: загружаем базовых сотрудников в облако
                     workersTabelDb.forEach(w => {
                         db.collection('workers').doc(w.tab).set(w);
                     });
@@ -626,7 +630,6 @@
                 }
             });
 
-            // 2. Синхронизация населенности поездов
             db.collection('occupancy').onSnapshot((snapshot) => {
                 snapshot.forEach(doc => {
                     cloudOccupancy[doc.id] = doc.data();
@@ -746,7 +749,7 @@
             if(id === 'tabel') renderTabel();
         }
 
-        // ОТКРЫТИЕ СМЕНЫ И ФДУ
+        // ОТКРЫТИЕ СМЕНЫ И ЗАПОЛНЕНИЕ РЕКВИЗИТОВ ФДУ (СТРОГО ПОД ЗАГОЛОВКАМИ)
         function openFduScreen() { navTo('fdu'); }
         function openShiftModal() { openModal('shiftModal'); }
         function addTestTix() {
@@ -756,14 +759,21 @@
 
         function saveShiftData() {
             if(appState.testTickets === 0) appState.testTickets = 1; 
-            let route = document.getElementById('shRouteNum').value; let cash = document.getElementById('shCashNum').value;
-            
-            if(document.getElementById('fduRouteL')) document.getElementById('fduRouteL').innerText = route;
-            if(document.getElementById('fduCashL')) document.getElementById('fduCashL').innerText = cash;
-            if(document.getElementById('fduFundL')) document.getElementById('fduFundL').innerText = document.getElementById('shFundSum').value;
-            if(document.getElementById('fduPersL')) document.getElementById('fduPersL').innerText = document.getElementById('shPersonalMoney').value;
-            if(document.getElementById('fduD0')) document.getElementById('fduD0').value = new Date().toLocaleDateString('ru-RU');
-            if(document.getElementById('fduTestTicketCount')) document.getElementById('fduTestTicketCount').value = appState.testTickets;
+            let route = document.getElementById('shRouteNum').value;
+            let cash = document.getElementById('shCashNum').value;
+            let fund = document.getElementById('shFundSum').value;
+            let pers = document.getElementById('shPersonalMoney').value;
+            let workType = document.getElementById('shWorkType').value;
+            let videoReg = document.getElementById('shVideoReg').value;
+
+            document.getElementById('fduD0').value = new Date().toLocaleDateString('ru-RU');
+            document.getElementById('fduRouteVal').value = route;
+            document.getElementById('fduCashVal').value = cash;
+            document.getElementById('fduFundVal').value = fund;
+            document.getElementById('fduPersVal').value = pers;
+            document.getElementById('fduWorkTypeVal').value = workType;
+            document.getElementById('fduVideoRegVal').value = videoReg;
+            document.getElementById('fduTestTicketCount').value = appState.testTickets;
 
             document.getElementById('shCellNum1').innerText = document.getElementById('shNum').value || "1-я";
             document.getElementById('shCellTest1').innerText = document.getElementById('shTestInp').placeholder || "0";
@@ -782,49 +792,74 @@
             addLog(`Смена открыта: Маршрут ${route}, МКасса ${cash}`); closeModal('shiftModal');
         }
 
-        // ОТЧЕТ ПО ПОЕЗДУ И ФДУ-СЕТКА
+        // ОТЧЕТ ПО ПОЕЗДУ И ФДУ-СЕТКА (СТРОКА ЗА СТРОКОЙ БЕЗ ПРОПУСКОВ)
         function openTrainReport() { navTo('trainReport'); }
         function autoFillTrainSchedule(trainNum) {
             trainNum = trainNum.trim();
             if (trainScheduleDb[trainNum]) {
-                document.getElementById('trFrom').value = trainScheduleDb[trainNum].from; document.getElementById('trTo').value = trainScheduleDb[trainNum].to;
-                document.getElementById('trDepTime').value = trainScheduleDb[trainNum].dep; document.getElementById('trArrTime').value = trainScheduleDb[trainNum].arr;
+                document.getElementById('trFrom').value = trainScheduleDb[trainNum].from;
+                document.getElementById('trTo').value = trainScheduleDb[trainNum].to;
+                document.getElementById('trDepTime').value = trainScheduleDb[trainNum].dep;
+                document.getElementById('trArrTime').value = trainScheduleDb[trainNum].arr;
             }
         }
         function calculateTrainStats() {
-            let tix = parseInt(document.getElementById('trStatTickets').value) || 0; let money = parseFloat(document.getElementById('trStatMoney').value) || 0;
-            document.getElementById('resTrainTickets').innerText = tix; document.getElementById('resTrainMoney').innerText = money.toFixed(2);
+            let tix = parseInt(document.getElementById('trStatTickets').value) || 0;
+            let money = parseFloat(document.getElementById('trStatMoney').value) || 0;
+            document.getElementById('resTrainTickets').innerText = tix;
+            document.getElementById('resTrainMoney').innerText = money.toFixed(2);
         }
         function openBenefitModal(catKey, catTitle) {
-            activeBenefitCategory = catKey; document.getElementById('benefitModalTitle').innerText = catTitle; document.getElementById('benCount').value = '1'; document.getElementById('benIncome').value = '0'; document.getElementById('benFee').value = '0'; openModal('benefitModal');
+            activeBenefitCategory = catKey;
+            document.getElementById('benefitModalTitle').innerText = catTitle;
+            document.getElementById('benCount').value = '1';
+            document.getElementById('benIncome').value = '0';
+            document.getElementById('benFee').value = '0';
+            openModal('benefitModal');
         }
         function saveBenefitCategory() {
             let c = parseInt(document.getElementById('benCount').value)||0, i = parseFloat(document.getElementById('benIncome').value)||0, f = parseFloat(document.getElementById('benFee').value)||0;
-            if (activeBenefitCategory) { currentTrainBenefits[activeBenefitCategory] = { count: c, sum: i, feeCount: (f>0?c:0), feeSum: f }; }
+            if (activeBenefitCategory) {
+                currentTrainBenefits[activeBenefitCategory] = { count: c, sum: i, feeCount: (f>0?c:0), feeSum: f };
+                document.getElementById('benefitSummary').innerText = `Внесенные льготы по рейсу: РЖД (${currentTrainBenefits.rzd.count}), Фед (${currentTrainBenefits.fed.count}), Рег (${currentTrainBenefits.reg.count}), Школьн (${currentTrainBenefits.stud.count}), ВОХР (${currentTrainBenefits.vohr.count})`;
+            }
             closeModal('benefitModal');
         }
 
         function saveTrainToFdu() {
-            let trNum = document.getElementById('trNum').value; let from = document.getElementById('trFrom').value; let to = document.getElementById('trTo').value;
-            let tix = parseInt(document.getElementById('resTrainTickets').innerText) || 0; let money = parseFloat(document.getElementById('resTrainMoney').innerText) || 0;
-            let timeStr = document.getElementById('trDepTime').value + " - " + document.getElementById('trArrTime').value;
+            let trNum = document.getElementById('trNum').value.trim();
+            let to = document.getElementById('trTo').value.trim();
+            let tix = parseInt(document.getElementById('resTrainTickets').innerText) || 0;
+            let money = parseFloat(document.getElementById('resTrainMoney').innerText) || 0;
+            let timeStr = document.getElementById('trDepTime').value.trim() + " - " + document.getElementById('trArrTime').value.trim();
 
             let lRows = document.querySelectorAll('#fduLeftBody .train-slot-row');
-            if(appState.trainsInFdu >= lRows.length) { alert("Строки рапорта заполнены!"); return; }
+            if(appState.trainsInFdu >= lRows.length) { alert("Все 11 строк рапорта заполнены!"); return; }
 
-            let lInputs = lRows[appState.trainsInFdu].querySelectorAll('input');
-            lInputs[1].value = trNum; lInputs[2].value = from + " - " + to; lInputs[3].value = timeStr; lInputs[4].value = tix; lInputs[5].value = money.toFixed(2);
+            let row = lRows[appState.trainsInFdu];
+            row.querySelector('.fdu-train-num').value = trNum;
+            row.querySelector('.fdu-train-route').value = to;
+            row.querySelector('.fdu-train-time').value = timeStr;
+            row.querySelector('.fdu-train-tix').value = tix;
+            row.querySelector('.fdu-train-sum').value = money;
 
-            if(document.getElementById('fduGrandTickets')) document.getElementById('fduGrandTickets').innerText = (parseInt(document.getElementById('fduGrandTickets').innerText) || 0) + tix;
-            if(document.getElementById('fduGrandSum')) document.getElementById('fduGrandSum').innerText = ((parseFloat(document.getElementById('fduGrandSum').innerText) || 0) + money).toFixed(2);
+            let newGrandTix = (parseInt(document.getElementById('fduGrandTickets').innerText) || 0) + tix;
+            let newGrandSum = (parseFloat(document.getElementById('fduGrandSum').innerText) || 0) + money;
+            document.getElementById('fduGrandTickets').innerText = newGrandTix;
+            document.getElementById('fduGrandSum').innerText = newGrandSum.toFixed(2);
+            document.getElementById('fduTotalSumBottom').value = newGrandSum.toFixed(2);
 
             let rRows = document.querySelectorAll('#fduRightBody .benefit-slot-row');
             if(rRows.length > appState.trainsInFdu) {
                 let rInputs = rRows[appState.trainsInFdu].querySelectorAll('input');
-                rInputs[0].value = currentTrainBenefits.rzd.count > 0 ? currentTrainBenefits.rzd.count : "—"; rInputs[1].value = currentTrainBenefits.rzd.sum > 0 ? currentTrainBenefits.rzd.sum : "—";
-                rInputs[2].value = currentTrainBenefits.fed.count > 0 ? currentTrainBenefits.fed.count : "—"; rInputs[3].value = currentTrainBenefits.fed.sum > 0 ? currentTrainBenefits.fed.sum : "—";
-                rInputs[4].value = currentTrainBenefits.reg.count > 0 ? currentTrainBenefits.reg.count : "—"; rInputs[5].value = currentTrainBenefits.reg.sum > 0 ? currentTrainBenefits.reg.sum : "—";
-                rInputs[6].value = currentTrainBenefits.stud.count > 0 ? currentTrainBenefits.stud.count : "—"; rInputs[7].value = currentTrainBenefits.stud.sum > 0 ? currentTrainBenefits.stud.sum : "—";
+                rInputs[0].value = currentTrainBenefits.rzd.count > 0 ? currentTrainBenefits.rzd.count : "—";
+                rInputs[1].value = currentTrainBenefits.rzd.sum > 0 ? currentTrainBenefits.rzd.sum : "—";
+                rInputs[2].value = currentTrainBenefits.fed.count > 0 ? currentTrainBenefits.fed.count : "—";
+                rInputs[3].value = currentTrainBenefits.fed.sum > 0 ? currentTrainBenefits.fed.sum : "—";
+                rInputs[4].value = currentTrainBenefits.reg.count > 0 ? currentTrainBenefits.reg.count : "—";
+                rInputs[5].value = currentTrainBenefits.reg.sum > 0 ? currentTrainBenefits.reg.sum : "—";
+                rInputs[6].value = currentTrainBenefits.stud.count > 0 ? currentTrainBenefits.stud.count : "—";
+                rInputs[7].value = currentTrainBenefits.stud.sum > 0 ? currentTrainBenefits.stud.sum : "—";
             }
 
             let totalBenSum = currentTrainBenefits.rzd.sum + currentTrainBenefits.fed.sum + currentTrainBenefits.reg.sum + currentTrainBenefits.stud.sum + currentTrainBenefits.vohr.sum;
@@ -837,6 +872,10 @@
             if(document.getElementById('dashTotalRev')) document.getElementById('dashTotalRev').innerText = (appState.stats.tariff + appState.stats.fee + appState.stats.benSum).toFixed(2) + " ₽";
             if(document.getElementById('dashTotalTix')) document.getElementById('dashTotalTix').innerText = "Билетов: " + appState.stats.tickets;
             if(document.getElementById('dashBenTix')) document.getElementById('dashBenTix').innerText = "Билетов: " + appState.stats.benTix;
+
+            // Сброс льгот перед следующим поездом
+            currentTrainBenefits = getEmptyBenefits();
+            document.getElementById('benefitSummary').innerText = 'Внесенные льготы по рейсу: РЖД (0), Фед (0), Рег (0), Школьн (0), ВОХР (0)';
 
             appState.trainsInFdu++;
             addLog(`Поезд №${trNum} занесен в Рапорт ФДУ.`);
