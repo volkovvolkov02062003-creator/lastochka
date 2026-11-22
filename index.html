@@ -4,744 +4,120 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ласточка МТППК — Официальный Рапорт (ФДУ)</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#003366">
     <style>
-        :root {
-            --primary-color: #003366;
-            --accent-color: #cc0000;
-            --bg-color: #f4f6f9;
-            --card-bg: #ffffff;
-            --text-color: #000000;
-            --border-color: #000000;
-            --sidebar-bg: #002244;
-            --sidebar-header: #001830;
-        }
-
-        body.dark-theme {
-            --primary-color: #1a5c9a;
-            --accent-color: #e63946;
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #e0e0e0;
-            --border-color: #444444;
-            --sidebar-bg: #161b22;
-            --sidebar-header: #0d1117;
-        }
-
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: var(--bg-color);
-            background-image: url('train.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-        }
-
+        :root { --primary-color: #003366; --accent-color: #cc0000; --bg-color: #f4f6f9; --card-bg: #ffffff; --text-color: #000000; --border-color: #000000; --sidebar-bg: #002244; --sidebar-header: #001830; }
+        body.dark-theme { --primary-color: #1a5c9a; --accent-color: #e63946; --bg-color: #121212; --card-bg: #1e1e1e; --text-color: #e0e0e0; --border-color: #444444; --sidebar-bg: #161b22; --sidebar-header: #0d1117; }
+        body { font-family: 'Arial', sans-serif; background-color: var(--bg-color); background-image: url('train.jpg'); background-size: cover; background-position: center; background-attachment: fixed; color: var(--text-color); margin: 0; padding: 0; }
+        
         /* ЗАСТАВКА */
-        #splash-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background-image: url('train.jpg');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            transition: opacity 0.8s ease;
-        }
-
-            #splash-screen::after {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.45);
-                z-index: 1;
-            }
-
-        .splash-content {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            color: white;
-        }
-
-        .animated-title {
-            font-size: 52px;
-            font-weight: bold;
-            color: #ff3333;
-            text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.9);
-            opacity: 0;
-            transform: scale(0.8);
-            animation: fadeInScale 2s forwards 0.3s;
-            font-family: Arial, sans-serif;
-        }
-
-        @keyframes fadeInScale {
-            0% {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-
-            50% {
-                opacity: 1;
-                transform: scale(1.05);
-            }
-
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-image: url('train.jpg'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; transition: opacity 0.8s ease; }
+        #splash-screen::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.45); z-index: 1; }
+        .splash-content { position: relative; z-index: 2; text-align: center; color: white; }
+        .animated-title { font-size: 52px; font-weight: bold; color: #ff3333; text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.9); opacity: 0; transform: scale(0.8); animation: fadeInScale 2s forwards 0.3s; font-family: Arial, sans-serif; }
+        @keyframes fadeInScale { 0% { opacity: 0; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
+        
         /* БОКОВОЕ МЕНЮ */
-        #sidebar {
-            position: fixed;
-            top: 0;
-            left: -320px;
-            width: 320px;
-            height: 100%;
-            background: var(--sidebar-bg);
-            color: #ffffff;
-            z-index: 1500;
-            transition: left 0.3s ease;
-            box-shadow: 4px 0 15px rgba(0,0,0,0.5);
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-        }
-
-            #sidebar.open {
-                left: 0;
-            }
-
-        .sidebar-header {
-            padding: 20px 15px;
-            background: var(--sidebar-header);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--accent-color);
-        }
-
-            .sidebar-header h3 {
-                margin: 0;
-                color: #ffffff;
-                font-size: 15px;
-                line-height: 1.3;
-            }
-
-        .close-sidebar-btn {
-            background: transparent;
-            border: none;
-            color: #ffffff;
-            font-size: 24px;
-            cursor: pointer;
-            width: auto;
-            margin: 0;
-            padding: 0;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            padding: 0;
-            margin: 10px 0;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-            .sidebar-menu li a {
-                display: block;
-                padding: 10px 18px;
-                color: #e0e6ed;
-                text-decoration: none;
-                font-size: 13px;
-                border-left: 4px solid transparent;
-                transition: background 0.2s, border-left 0.2s;
-            }
-
-                .sidebar-menu li a:hover {
-                    background: rgba(255, 255, 255, 0.1);
-                    border-left: 4px solid var(--accent-color);
-                    color: #ffffff;
-                }
-
-        .sidebar-bottom {
-            padding: 15px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            background: var(--sidebar-header);
-        }
-
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1400;
-        }
-
-            .sidebar-overlay.active {
-                display: block;
-            }
-
-        .menu-toggle-btn {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 1300;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 8px 14px;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            width: auto;
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-
+        #sidebar { position: fixed; top: 0; left: -320px; width: 320px; height: 100%; background: var(--sidebar-bg); color: #ffffff; z-index: 1500; transition: left 0.3s ease; box-shadow: 4px 0 15px rgba(0,0,0,0.5); font-family: Arial, sans-serif; display: flex; flex-direction: column; }
+        #sidebar.open { left: 0; }
+        .sidebar-header { padding: 20px 15px; background: var(--sidebar-header); display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent-color); }
+        .sidebar-header h3 { margin: 0; color: #ffffff; font-size: 15px; line-height: 1.3; }
+        .close-sidebar-btn { background: transparent; border: none; color: #ffffff; font-size: 24px; cursor: pointer; width: auto; margin: 0; padding: 0; }
+        .sidebar-menu { list-style: none; padding: 0; margin: 10px 0; flex: 1; overflow-y: auto; }
+        .sidebar-menu li a { display: block; padding: 10px 18px; color: #e0e6ed; text-decoration: none; font-size: 13px; border-left: 4px solid transparent; transition: background 0.2s, border-left 0.2s; }
+        .sidebar-menu li a:hover { background: rgba(255, 255, 255, 0.1); border-left: 4px solid var(--accent-color); color: #ffffff; }
+        .sidebar-bottom { padding: 15px; border-top: 1px solid rgba(255,255,255,0.1); background: var(--sidebar-header); }
+        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1400; }
+        .sidebar-overlay.active { display: block; }
+        .menu-toggle-btn { position: fixed; top: 15px; left: 15px; z-index: 1300; background: var(--primary-color); color: white; border: none; border-radius: 6px; padding: 8px 14px; font-size: 16px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3); width: auto; margin: 0; font-family: Arial, sans-serif; }
+        
         /* ЭКРАНЫ */
-        .screen {
-            display: none;
-            max-width: 1550px;
-            margin: 20px auto;
-            padding: 10px;
-        }
-
-        .active-screen {
-            display: block;
-        }
-
-        .card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            margin-bottom: 20px;
-            font-family: Arial, sans-serif;
-        }
-
-        h2, h3 {
-            color: var(--primary-color);
-            margin-top: 0;
-            text-align: center;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 13px;
-            margin-top: 4px;
-            background: #fff;
-            color: #000;
-            font-family: Arial, sans-serif;
-        }
-
-        .form-group {
-            margin-bottom: 12px;
-            text-align: left;
-        }
-
-            .form-group label {
-                font-weight: bold;
-                font-size: 13px;
-                color: var(--text-color);
-                display: block;
-            }
-
-        .form-row {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 10px;
-        }
-
-            .form-row .form-group {
-                flex: 1;
-                margin-bottom: 0;
-            }
-
-        button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 15px;
-            cursor: pointer;
-            font-weight: bold;
-            width: 100%;
-            margin-top: 10px;
-            font-family: Arial, sans-serif;
-        }
-
-            button:hover {
-                filter: brightness(0.9);
-            }
-
-        .btn-danger {
-            background-color: var(--accent-color);
-        }
-
-        .btn-success {
-            background-color: #28a745;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-        }
-
-        .btn-warning {
-            background-color: #ffc107;
-            color: #000;
-        }
-
-        .action-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .btn-action {
-            background-color: #004080;
-            padding: 12px 8px;
-            font-size: 14px;
-            margin-top: 0;
-            border-radius: 6px;
-        }
-
-        .btn-shift-status {
-            font-size: 16px;
-            padding: 12px;
-            flex: 1;
-            transition: background 0.3s ease;
-        }
-
+        .screen { display: none; max-width: 1550px; margin: 20px auto; padding: 10px; }
+        .active-screen { display: block; }
+        .card { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-bottom: 20px; font-family: Arial, sans-serif; }
+        h2, h3 { color: var(--primary-color); margin-top: 0; text-align: center; }
+        .form-input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 13px; margin-top: 4px; background: #fff; color: #000; font-family: Arial, sans-serif; }
+        .form-group { margin-bottom: 12px; text-align: left; }
+        .form-group label { font-weight: bold; font-size: 13px; color: var(--text-color); display: block; }
+        .form-row { display: flex; gap: 12px; margin-bottom: 10px; }
+        .form-row .form-group { flex: 1; margin-bottom: 0; }
+        button { background-color: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 15px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; font-family: Arial, sans-serif; }
+        button:hover { filter: brightness(0.9); }
+        .btn-danger { background-color: var(--accent-color); }
+        .btn-success { background-color: #28a745; }
+        .btn-secondary { background-color: #6c757d; }
+        .btn-warning { background-color: #ffc107; color: #000; }
+        .action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 15px; }
+        .btn-action { background-color: #004080; padding: 12px 8px; font-size: 14px; margin-top: 0; border-radius: 6px; }
+        .btn-shift-status { font-size: 16px; padding: 12px; flex: 1; transition: background 0.3s ease; }
+        
         /* СТАТИСТИКА (Главный экран) */
-        .stats-dashboard {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-            font-family: Arial, sans-serif;
-        }
-
-        .stat-card {
-            background: #0055aa;
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: left;
-            position: relative;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-
-            .stat-card h4 {
-                margin: 0 0 5px 0;
-                font-size: 14px;
-                color: #bce8f1;
-            }
-
-            .stat-card .val {
-                font-size: 22px;
-                font-weight: bold;
-            }
-
-            .stat-card .tickets {
-                position: absolute;
-                bottom: 10px;
-                right: 15px;
-                font-size: 12px;
-                opacity: 0.8;
-            }
+        .stats-dashboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; font-family: Arial, sans-serif;}
+        .stat-card { background: #0055aa; color: white; padding: 15px; border-radius: 8px; text-align: left; position: relative; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .stat-card h4 { margin: 0 0 5px 0; font-size: 14px; color: #bce8f1; }
+        .stat-card .val { font-size: 22px; font-weight: bold; }
+        .stat-card .tickets { position: absolute; bottom: 10px; right: 15px; font-size: 12px; opacity: 0.8; }
 
         /* ИДЕАЛЬНАЯ СЕТКА ФДУ */
-        .journal-spread {
-            background: #ffffff;
-            border: 2px solid #333;
-            padding: 12px;
-            display: flex;
-            gap: 15px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.4);
-            color: #000;
-            overflow-x: auto;
-        }
-
-        .journal-page {
-            flex: 1;
-            min-width: 500px;
-        }
-
-        .doc-title {
-            text-align: center;
-            font-weight: bold;
-            font-size: 13px;
-            line-height: 1.2;
-            margin-bottom: 5px;
-        }
-
-        table.fdu-grid {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 10px;
-        }
-
-            table.fdu-grid th, table.fdu-grid td {
-                border: 1px solid #000;
-                padding: 1px 2px;
-                text-align: center;
-                vertical-align: middle;
-                height: 20px;
-                box-sizing: border-box;
-            }
-
-            table.fdu-grid th {
-                font-weight: normal;
-            }
-
-        .th-title {
-            font-size: 9.5px;
-            line-height: 1.1;
-        }
-
-        .cell-left-text {
-            text-align: left !important;
-            font-size: 9px;
-            padding-left: 3px !important;
-            white-space: nowrap;
-            font-weight: bold;
-            background: #fdfdfd;
-        }
-
-        table.fdu-grid input {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: transparent;
-            font-size: 11px;
-            font-family: inherit;
-            text-align: center;
-            padding: 0;
-            margin: 0;
-            color: #000;
-        }
-
-            table.fdu-grid input:focus {
-                outline: 1px solid #0055aa;
-                background: #fff9e6;
-            }
-
-        .shift-summary-table {
-            border-collapse: collapse;
-            margin: 12px 0;
-            width: 320px;
-            font-size: 10px;
-            background: #fff;
-            border: 1px solid #000;
-        }
-
-            .shift-summary-table th, .shift-summary-table td {
-                border: 1px solid #000;
-                padding: 3px 6px;
-                text-align: center;
-            }
-
-            .shift-summary-table th {
-                background: #f2f2f2;
-                font-weight: bold;
-            }
-
+        .journal-spread { background: #ffffff; border: 2px solid #333; padding: 12px; display: flex; gap: 15px; box-shadow: 0 0 15px rgba(0,0,0,0.4); color: #000; overflow-x: auto; }
+        .journal-page { flex: 1; min-width: 500px; }
+        .doc-title { text-align: center; font-weight: bold; font-size: 13px; line-height: 1.2; margin-bottom: 5px; }
+        table.fdu-grid { width: 100%; border-collapse: collapse; font-size: 10px; }
+        table.fdu-grid th, table.fdu-grid td { border: 1px solid #000; padding: 1px 2px; text-align: center; vertical-align: middle; height: 20px; box-sizing: border-box; }
+        table.fdu-grid th { font-weight: normal; }
+        .th-title { font-size: 9.5px; line-height: 1.1; }
+        .cell-left-text { text-align: left !important; font-size: 9px; padding-left: 3px !important; white-space: nowrap; font-weight: bold; background: #fdfdfd; }
+        table.fdu-grid input { width: 100%; height: 100%; border: none; background: transparent; font-size: 11px; font-family: inherit; text-align: center; padding: 0; margin: 0; color: #000; }
+        table.fdu-grid input:focus { outline: 1px solid #0055aa; background: #fff9e6; }
+        .shift-summary-table { border-collapse: collapse; margin: 12px 0; width: 320px; font-size: 10px; background: #fff; border: 1px solid #000; }
+        .shift-summary-table th, .shift-summary-table td { border: 1px solid #000; padding: 3px 6px; text-align: center; }
+        .shift-summary-table th { background: #f2f2f2; font-weight: bold; }
+        
         /* ТАБЕЛЬ */
-        .tabel-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 10px;
-            background: #fff;
-            color: #000;
-        }
-
-            .tabel-table th, .tabel-table td {
-                border: 1px solid #000;
-                padding: 2px;
-                text-align: center;
-                height: 20px;
-            }
-
-        .tabel-cell-day {
-            cursor: pointer;
-            user-select: none;
-        }
-
-            .tabel-cell-day:hover {
-                background: #e8f4fc;
-            }
-
-        .nav-circle-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: #003366;
-            color: #fff;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 16px;
-            padding: 0;
-            margin: 0 4px;
-        }
-
-        .status-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #ccc;
-            margin-left: 4px;
-        }
-
-            .status-dot.active {
-                background: #28a745;
-                box-shadow: 0 0 5px #28a745;
-            }
-
-        .cell-shift-active {
-            background-color: #d4edda !important;
-            font-weight: bold;
-        }
+        .tabel-table { width: 100%; border-collapse: collapse; font-size: 10px; background: #fff; color: #000; }
+        .tabel-table th, .tabel-table td { border: 1px solid #000; padding: 2px; text-align: center; height: 20px; }
+        .tabel-cell-day { cursor: pointer; user-select: none; }
+        .tabel-cell-day:hover { background: #e8f4fc; }
+        .nav-circle-btn { width: 36px; height: 36px; border-radius: 50%; background: #003366; color: #fff; border: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; padding: 0; margin: 0 4px; }
+        .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #ccc; margin-left: 4px; }
+        .status-dot.active { background: #28a745; box-shadow: 0 0 5px #28a745; }
+        .cell-shift-active { background-color: #d4edda !important; font-weight: bold; }
 
         /* Журнал и Модалки */
-        .audit-log-container {
-            margin-top: 20px;
-            text-align: left;
-            background: rgba(0, 51, 102, 0.04);
-            border: 1px solid #cce0f5;
-            border-radius: 6px;
-            padding: 12px;
-            max-height: 220px;
-            overflow-y: auto;
-        }
-
-        .audit-log-entry {
-            font-size: 12px;
-            padding: 5px 0;
-            border-bottom: 1px dashed #ccc;
-            font-family: Arial, sans-serif;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 3000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.65);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 480px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            font-family: Arial, sans-serif;
-            text-align: left;
-            color: #000;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
+        .audit-log-container { margin-top: 20px; text-align: left; background: rgba(0, 51, 102, 0.04); border: 1px solid #cce0f5; border-radius: 6px; padding: 12px; max-height: 220px; overflow-y: auto; }
+        .audit-log-entry { font-size: 12px; padding: 5px 0; border-bottom: 1px dashed #ccc; font-family: Arial, sans-serif;}
+        .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.65); justify-content: center; align-items: center; }
+        .modal-content { background-color: #ffffff; padding: 20px; border-radius: 8px; width: 90%; max-width: 480px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); font-family: Arial, sans-serif; text-align: left; color: #000; max-height: 90vh; overflow-y: auto; }
 
         /* Чаты */
-        .chat-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            font-family: Arial, sans-serif;
-        }
-
-        .chat-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            cursor: pointer;
-            border: 1px solid #ddd;
-            color: #000;
-        }
-
-            .chat-item:hover {
-                background: #e2e6ea;
-            }
-
-        .chat-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: #003366;
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            font-size: 18px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .chat-window {
-            display: flex;
-            flex-direction: column;
-            height: 500px;
-            background: #fff;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-        }
-
-        .chat-header {
-            background: #003366;
-            color: white;
-            padding: 10px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .chat-messages {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            background: #e5ddd5;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .msg-bubble {
-            max-width: 70%;
-            padding: 8px 12px;
-            border-radius: 12px;
-            font-size: 13px;
-            color: #000;
-        }
-
-        .msg-in {
-            background: #fff;
-            align-self: flex-start;
-            border-bottom-left-radius: 0;
-        }
-
-        .msg-out {
-            background: #dcf8c6;
-            align-self: flex-end;
-            border-bottom-right-radius: 0;
-        }
-
-        .chat-input-area {
-            display: flex;
-            gap: 8px;
-            padding: 10px;
-            background: #f0f0f0;
-            border-top: 1px solid #ccc;
-            align-items: center;
-        }
-
-            .chat-input-area input {
-                flex: 1;
-                padding: 10px;
-                border-radius: 20px;
-                border: 1px solid #ccc;
-                outline: none;
-            }
-
-        .chat-icon-btn {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 5px;
-            color: #555;
-            width: auto;
-            margin: 0;
-        }
+        .chat-list { display: flex; flex-direction: column; gap: 10px; font-family: Arial, sans-serif;}
+        .chat-item { display: flex; align-items: center; gap: 15px; padding: 12px; background: #f8f9fa; border-radius: 8px; cursor: pointer; border: 1px solid #ddd; color:#000; }
+        .chat-item:hover { background: #e2e6ea; }
+        .chat-avatar { width: 45px; height: 45px; border-radius: 50%; background: #003366; color: #fff; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; position:relative; overflow:hidden;}
+        .chat-window { display: flex; flex-direction: column; height: 500px; background: #fff; border: 1px solid #ccc; border-radius: 8px; overflow: hidden; font-family: Arial, sans-serif;}
+        .chat-header { background: #003366; color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; background: #e5ddd5; display: flex; flex-direction: column; gap: 10px; }
+        .msg-bubble { max-width: 70%; padding: 8px 12px; border-radius: 12px; font-size: 13px; color:#000; }
+        .msg-in { background: #fff; align-self: flex-start; border-bottom-left-radius: 0; }
+        .msg-out { background: #dcf8c6; align-self: flex-end; border-bottom-right-radius: 0; }
+        .chat-input-area { display: flex; gap: 8px; padding: 10px; background: #f0f0f0; border-top: 1px solid #ccc; align-items: center; }
+        .chat-input-area input { flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
+        .chat-icon-btn { background: none; border: none; font-size: 20px; cursor: pointer; padding: 5px; color: #555; width: auto; margin:0;}
 
         /* Синхрон */
-        .sync-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            border-radius: 4px;
-            margin-bottom: 4px;
-            font-size: 12px;
-            cursor: pointer;
-            color: #000;
-            font-family: Arial, sans-serif;
-        }
-
-        .sync-red {
-            background: #f8d7da;
-            border-color: #f5c6cb;
-        }
-
-        .sync-yellow {
-            background: #fff3cd;
-            border-color: #ffeeba;
-        }
-
-        .sync-white {
-            background: #ffffff;
-            border-color: #ccc;
-        }
-
-        .auto-sync-toast {
-            display: none;
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            background: rgba(0, 51, 102, 0.9);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            z-index: 9999;
-            font-size: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-            font-family: Arial, sans-serif;
-        }
+        .sync-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #ddd; border-radius: 4px; margin-bottom: 4px; font-size: 12px; cursor:pointer; color:#000; font-family: Arial, sans-serif;}
+        .sync-red { background: #f8d7da; border-color: #f5c6cb; }
+        .sync-yellow { background: #fff3cd; border-color: #ffeeba; }
+        .sync-white { background: #ffffff; border-color: #ccc; }
+        .auto-sync-toast { display: none; position: fixed; top: 15px; right: 15px; background: rgba(0, 51, 102, 0.9); color: white; padding: 10px 20px; border-radius: 20px; z-index: 9999; font-size: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.5); font-family: Arial, sans-serif;}
     </style>
 </head>
 <body>
 
     <!-- ЗАСТАВКА -->
     <div id="splash-screen"><div class="splash-content"><div class="animated-title">АО "МТ ППК"<br>«Ласточка»</div></div></div>
-
+    
     <!-- АВТО-СИНХРОНИЗАЦИЯ -->
     <div id="autoSyncToast" class="auto-sync-toast">🔄 Авто-синхронизация...</div>
 
@@ -824,7 +200,7 @@
     <div id="main-screen" class="screen">
         <div class="card" style="max-width: 760px; margin: 40px auto; text-align: center;">
             <h2>Личный кабинет сотрудника</h2>
-
+            
             <div style="display:flex; gap:10px; margin-bottom:15px;">
                 <button class="btn-success" style="font-size: 16px; padding: 12px; flex:1;" onclick="openFduScreen()">📄 Открыть ФДУ</button>
                 <button id="btnMainShift" class="btn-shift-status btn-danger" onclick="openModal('shiftModal')">🔴 Смена не открыта</button>
@@ -862,31 +238,26 @@
                     <colgroup><col style="width: 17%;"><col style="width: 14%;"><col style="width: 25%;"><col style="width: 24%;"><col style="width: 10%;"><col style="width: 10%;"></colgroup>
                     <thead>
                         <tr>
-                            <th rowspan="2" class="th-title">Дата<br>проверки</th>
-                            <th rowspan="2" class="th-title">№ поезда</th>
-                            <th rowspan="2" class="th-title">Перегон<br>фактич.<br>проверки<br>поезда</th>
-                            <th rowspan="2" class="th-title">Отметка<br>об отмене или<br>сбое графика<br>эл. поезда</th>
-                            <th colspan="2" class="th-title">Оформлено всего тарифа</th>
+                            <th rowspan="2" class="th-title">Дата<br>проверки</th><th rowspan="2" class="th-title">№ поезда</th><th rowspan="2" class="th-title">Перегон<br>фактич.<br>проверки<br>поезда</th><th rowspan="2" class="th-title">Отметка<br>об отмене или<br>сбое графика<br>эл. поезда</th><th colspan="2" class="th-title">Оформлено всего тарифа</th>
                         </tr>
-                        <tr><th class="th-title">кол-во</th><th class="th-title">на сумму</th></tr>
-                        <tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr>
+                        <tr><th class="th-title">кол-во</th><th class="th-title">на сумму</th></tr><tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr>
                     </thead>
                     <tbody id="fduLeftBody">
                         <tr class="train-slot-row"><td><input type="text" id="fduD0"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                         <tr><td class="cell-left-text">Номер маршрута <span id="fduRouteL" style="font-weight:normal;"></span></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-
+                        
                         <tr class="train-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                         <tr><td class="cell-left-text">№ МКассы <span id="fduCashL" style="font-weight:normal;"></span></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-
+                        
                         <tr class="train-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                         <tr><td class="cell-left-text">Сумма разм. фонда <span id="fduFundL" style="font-weight:normal;"></span></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-
+                        
                         <tr class="train-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                         <tr><td class="cell-left-text">Сумма личн. денег <span id="fduPersL" style="font-weight:normal;"></span></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-
+                        
                         <tr class="train-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                         <tr><td class="cell-left-text">Вид работы <span style="font-weight:normal;">Осн.</span></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-
+                        
                         <tr class="train-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                         <tr>
                             <td class="cell-left-text">№ Видеорег. <span style="font-weight:normal;">24484</span></td>
@@ -896,15 +267,13 @@
                             <td id="fduGrandTickets" style="font-weight: bold; color: #cc0000;">0</td>
                             <td id="fduGrandSum" style="font-weight: bold; color: #cc0000;">0.00</td>
                         </tr>
-
+                        
                         <tr class="train-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                         <tr><th colspan="6" class="th-title" style="text-align: left; padding-left: 10px; font-weight: bold;">Внесенные изменения по маршруту</th></tr>
                         <tr><td><input type="text"></td><td><input type="text"></td><td colspan="2"><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                         <tr><td><input type="text"></td><td><input type="text"></td><td colspan="2"><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                         <tr>
-                            <td><input type="text"></td>
-                            <td><input type="text"></td>
-                            <td><input type="text"></td>
+                            <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
                             <td colspan="2" style="font-weight: bold; font-size: 9.5px; text-align: right; padding-right: 5px;">Всего по<br>маршруту:</td>
                             <td><input type="text" id="fduTotalSumBottom"></td>
                         </tr>
@@ -945,24 +314,24 @@
                     <tbody id="fduRightBody">
                         <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                         <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-
+                        
                         <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                         <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-
+                        
                         <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                         <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-
+                        
                         <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                         <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-
+                        
                         <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                         <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-
+                        
                         <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                         <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-
+                        
                         <tr class="benefit-slot-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-
+                        
                         <tr id="vohrRow"><td colspan="2" class="cell-left-text" style="font-weight: bold;">ВОХР</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                         <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
                     </tbody>
@@ -1140,16 +509,14 @@
             <h3 id="shiftModalTitle" style="margin-top:0;">Параметры смены</h3>
             <div class="form-row"><div class="form-group"><label>Номер Маршрута:</label><input type="text" id="shRouteNum" class="form-input" placeholder="22"></div><div class="form-group"><label>№ МКассы:</label><input type="text" id="shCashNum" class="form-input" placeholder="13340"></div></div>
             <div class="form-row"><div class="form-group"><label>Сумма разм. фонда (руб.):</label><input type="number" id="shFundSum" class="form-input" placeholder="50000"></div><div class="form-group"><label>Сумма личн. денег (руб.):</label><input type="number" id="shPersonalMoney" class="form-input" placeholder="0"></div></div>
-            <div class="form-row">
-                <div class="form-group"><label>Смена:</label><input type="text" id="shNum" class="form-input" placeholder="1-я или 6"></div>
-                <div class="form-group"><label>Пробники: <span id="shTestVal" style="color:var(--accent-color);">1 шт.</span></label><div style="display:flex; gap:5px;"><input type="text" id="shTestInp" placeholder="128/124" class="form-input"><button class="btn-action" style="width:auto; margin-top:4px;" onclick="addTestTix()">➕</button></div></div>
-            </div>
+            <div class="form-row"><div class="form-group"><label>Смена:</label><input type="text" id="shNum" class="form-input" placeholder="1-я или 6"></div>
+            <div class="form-group"><label>Пробники: <span id="shTestVal" style="color:var(--accent-color);">1 шт.</span></label><div style="display:flex; gap:5px;"><input type="text" id="shTestInp" placeholder="128/124" class="form-input"><button class="btn-action" style="width:auto; margin-top:4px;" onclick="addTestTix()">➕</button></div></div></div>
             <div class="form-row"><div class="form-group"><label>Тариф:</label><input type="number" id="shTariff" class="form-input" placeholder="2390"></div><div class="form-group"><label>Сбор:</label><input type="number" id="shFee" class="form-input" placeholder="300"></div></div>
             <div class="form-row"><div class="form-group"><label>Нал.:</label><input type="number" id="shCash" class="form-input" placeholder="411"></div><div class="form-group"><label>Безнал.:</label><input type="number" id="shCard" class="form-input" placeholder="2846"></div></div>
             <div style="display:flex; gap:10px; margin-top:15px;"><button type="button" class="btn-success" onclick="saveShiftData()">Сохранить и Открыть</button><button type="button" class="btn-secondary" onclick="closeModal('shiftModal')">Отменить</button></div>
         </div>
     </div>
-
+    
     <div id="benefitModal" class="modal">
         <div class="modal-content">
             <h3 id="benefitModalTitle" style="margin-top:0;">Оформление льготы</h3>
@@ -1223,29 +590,29 @@
         window.addEventListener('load', () => {
             setTimeout(() => {
                 let splash = document.getElementById('splash-screen');
-                if (splash) {
+                if(splash) {
                     splash.style.opacity = '0';
-                    setTimeout(() => {
-                        splash.style.display = 'none';
-                        document.getElementById('login-screen').classList.add('active-screen');
-                        initCanvas();
+                    setTimeout(() => { 
+                        splash.style.display = 'none'; 
+                        document.getElementById('login-screen').classList.add('active-screen'); 
+                        initCanvas(); 
                     }, 500);
                 }
             }, 2000);
 
             try {
                 let today = new Date().toISOString().split('T')[0];
-                if (document.getElementById('regDate')) document.getElementById('regDate').value = today;
-                if (document.getElementById('statDateFrom')) document.getElementById('statDateFrom').value = today;
-                if (document.getElementById('statDateTo')) document.getElementById('statDateTo').value = today;
-            } catch (e) { }
+                if(document.getElementById('regDate')) document.getElementById('regDate').value = today;
+                if(document.getElementById('statDateFrom')) document.getElementById('statDateFrom').value = today;
+                if(document.getElementById('statDateTo')) document.getElementById('statDateTo').value = today;
+            } catch(e) {}
 
             setInterval(autoSyncTask, 120000);
         });
 
         function toggleTheme() { document.body.classList.toggle('dark-theme'); }
         function addAuditLog(text) {
-            let list = document.getElementById('auditLogList'); if (!list) return;
+            let list = document.getElementById('auditLogList'); if(!list) return;
             let timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             let entry = document.createElement('div'); entry.className = 'audit-log-entry'; entry.innerHTML = `<strong>[${timeStr}]</strong> ${text}`;
             if (list.children.length === 1 && list.children[0].innerText.includes('отсутствуют')) { list.innerHTML = ''; }
@@ -1255,7 +622,7 @@
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('active'); }
         function sidebarNav(target) {
             toggleSidebar(); hideAllScreens();
-            if (target === 'tabel') { openTabelScreen(); } else if (target === 'main' || target === 'profile') { backToMain(); } else { let scr = document.getElementById(target + '-screen'); if (scr) scr.classList.add('active-screen'); }
+            if (target === 'tabel') { openTabelScreen(); } else if (target === 'main' || target === 'profile') { backToMain(); } else { let scr = document.getElementById(target + '-screen'); if(scr) scr.classList.add('active-screen'); }
         }
 
         function hideAllScreens() { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen')); }
@@ -1263,19 +630,19 @@
         function logout() { toggleSidebar(); hideAllScreens(); document.getElementById('menuBtn').style.display = 'none'; document.getElementById('login-screen').classList.add('active-screen'); addAuditLog("Сотрудник вышел из профиля."); }
 
         function checkUserStep1() {
-            let tab = document.getElementById('loginTab').value.trim();
+            let tab = document.getElementById('loginTab').value.trim(); 
             let last = document.getElementById('loginLast').value.trim();
-
+            
             let found = appState.workers.find(w => w.tab === tab && w.fio.includes(last));
-            if (found) {
-                appState.user = found;
-                document.getElementById('loginStep1').style.display = 'none';
-                document.getElementById('logFoundName').innerText = last;
-                document.getElementById('logFoundTab').innerText = tab;
-                document.getElementById('logFoundFull').innerText = found.fio;
+            if(found) {
+                appState.user = found; 
+                document.getElementById('loginStep1').style.display = 'none'; 
+                document.getElementById('logFoundName').innerText = last; 
+                document.getElementById('logFoundTab').innerText = tab; 
+                document.getElementById('logFoundFull').innerText = found.fio; 
                 document.getElementById('loginStep2').style.display = 'block';
-            } else {
-                alert('Сотрудник не найден в системе! (Попробуй: 8065 и Волков)');
+            } else { 
+                alert('Сотрудник не найден в системе! (Попробуй: 8065 и Волков)'); 
             }
         }
 
@@ -1284,21 +651,21 @@
 
         let canvas, ctx, painting = false;
         function initCanvas() {
-            canvas = document.getElementById('sigCanvas'); if (!canvas) return;
+            canvas = document.getElementById('sigCanvas'); if(!canvas) return;
             ctx = canvas.getContext('2d'); canvas.width = canvas.offsetWidth || 400; canvas.height = canvas.offsetHeight || 90;
             ctx.lineWidth = 2; ctx.strokeStyle = '#003366';
             canvas.addEventListener('mousedown', (e) => { painting = true; draw(e); }); canvas.addEventListener('mouseup', () => { painting = false; ctx.beginPath(); }); canvas.addEventListener('mousemove', draw);
         }
         function draw(e) { if (!painting) return; let rect = canvas.getBoundingClientRect(); ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top); ctx.stroke(); ctx.beginPath(); ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top); }
-        function clearSignature() { if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height); }
+        function clearSignature() { if(ctx) ctx.clearRect(0, 0, canvas.width, canvas.height); }
 
         function saveRegistration() {
             appState.user.doc = document.getElementById('regDoc').value; appState.user.signed = true;
             document.getElementById('sidebarUserName').innerText = appState.user.fio;
-            if (appState.user.role === 'admin') { let setMenu = document.getElementById('menuSettings'); if (setMenu) setMenu.style.display = 'block'; }
-            if (document.getElementById('profFio')) {
+            if(appState.user.role === 'admin') { let setMenu = document.getElementById('menuSettings'); if(setMenu) setMenu.style.display = 'block'; }
+            if(document.getElementById('profFio')) {
                 document.getElementById('profFio').value = appState.user.fio; document.getElementById('profTab').value = appState.user.tab; document.getElementById('profDoc').value = appState.user.doc;
-                if (canvas) document.getElementById('profSigImg').src = canvas.toDataURL();
+                if(canvas) document.getElementById('profSigImg').src = canvas.toDataURL();
             }
             let profile = { tab: appState.user.tab, lastName: appState.user.fio.split(' ')[0], fio: appState.user.fio, position: document.getElementById('regPos').value, doc: appState.user.doc, station: document.getElementById('regStation').value };
             localStorage.setItem('kkl_profile', JSON.stringify(profile));
@@ -1308,7 +675,7 @@
         function showMainScreen(user) {
             hideAllScreens(); document.getElementById('main-screen').classList.add('active-screen'); document.getElementById('menuBtn').style.display = 'block';
             let fullName = user.fio || user.lastName;
-            if (document.getElementById('dispName')) {
+            if(document.getElementById('dispName')) {
                 document.getElementById('dispName').innerText = fullName; document.getElementById('dispTab').innerText = user.tab; document.getElementById('dispPos').innerText = user.position; document.getElementById('dispDoc').innerText = user.doc; document.getElementById('dispStation').innerText = user.station; document.getElementById('sidebarUserName').innerText = fullName;
             }
         }
@@ -1317,11 +684,11 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function addLog(txt) { addAuditLog(txt); }
         function navTo(id) {
-            hideAllScreens(); let scr = document.getElementById(id + '-screen'); if (scr) scr.classList.add('active-screen');
-            if (id !== 'login' && id !== 'register') { let btn = document.getElementById('menuBtn'); if (btn) btn.style.display = 'block'; }
-            let side = document.getElementById('sidebar'); if (side) side.classList.remove('open');
-            let over = document.getElementById('sidebarOverlay'); if (over) over.classList.remove('active');
-            if (id === 'tabel') renderTabel();
+            hideAllScreens(); let scr = document.getElementById(id + '-screen'); if(scr) scr.classList.add('active-screen');
+            if(id !== 'login' && id !== 'register') { let btn = document.getElementById('menuBtn'); if(btn) btn.style.display = 'block'; }
+            let side = document.getElementById('sidebar'); if(side) side.classList.remove('open');
+            let over = document.getElementById('sidebarOverlay'); if(over) over.classList.remove('active');
+            if(id === 'tabel') renderTabel();
         }
 
         // ОТКРЫТИЕ СМЕНЫ И ФДУ
@@ -1329,19 +696,19 @@
         function openShiftModal() { openModal('shiftModal'); }
         function addTestTix() {
             let val = document.getElementById('shTestInp').value;
-            if (val) { appState.testTickets++; document.getElementById('shTestVal').innerText = `${appState.testTickets} шт. (добавлен ${val})`; document.getElementById('shTestInp').value = ''; }
+            if(val) { appState.testTickets++; document.getElementById('shTestVal').innerText = `${appState.testTickets} шт. (добавлен ${val})`; document.getElementById('shTestInp').value=''; }
         }
 
         function saveShiftData() {
-            if (appState.testTickets === 0) appState.testTickets = 1;
+            if(appState.testTickets === 0) appState.testTickets = 1; 
             let route = document.getElementById('shRouteNum').value; let cash = document.getElementById('shCashNum').value;
-
-            if (document.getElementById('fduRouteVal')) document.getElementById('fduRouteVal').value = route;
-            if (document.getElementById('fduCashVal')) document.getElementById('fduCashVal').value = cash;
-            if (document.getElementById('fduFundVal')) document.getElementById('fduFundVal').value = document.getElementById('shFundSum').value;
-            if (document.getElementById('fduPersonalVal')) document.getElementById('fduPersonalVal').value = document.getElementById('shPersonalMoney').value;
-            if (document.getElementById('fduTopDate')) document.getElementById('fduTopDate').value = new Date().toLocaleDateString('ru-RU');
-            if (document.getElementById('fduTestTicketCount')) document.getElementById('fduTestTicketCount').value = appState.testTickets;
+            
+            if(document.getElementById('fduRouteL')) document.getElementById('fduRouteL').innerText = route;
+            if(document.getElementById('fduCashL')) document.getElementById('fduCashL').innerText = cash;
+            if(document.getElementById('fduFundL')) document.getElementById('fduFundL').innerText = document.getElementById('shFundSum').value;
+            if(document.getElementById('fduPersL')) document.getElementById('fduPersL').innerText = document.getElementById('shPersonalMoney').value;
+            if(document.getElementById('fduD0')) document.getElementById('fduD0').value = new Date().toLocaleDateString('ru-RU');
+            if(document.getElementById('fduTestTicketCount')) document.getElementById('fduTestTicketCount').value = appState.testTickets;
 
             // Заполнение маленькой таблицы Учет показателей
             document.getElementById('shCellNum1').innerText = document.getElementById('shNum').value || "1-я";
@@ -1351,14 +718,14 @@
             document.getElementById('shCellCash1').innerText = document.getElementById('shCash').value || "0";
             document.getElementById('shCellCard1').innerText = document.getElementById('shCard').value || "0";
 
-            if (appState.user) appState.user.shiftActive = true;
+            if(appState.user) appState.user.shiftActive = true; 
             let btn = document.getElementById('btnMainShift');
-            if (btn) { btn.className = "btn-shift-status btn-success"; btn.innerText = "🟢 Смена открыта (Редакт.)"; }
-
+            if(btn) { btn.className = "btn-shift-status btn-success"; btn.innerText = "🟢 Смена открыта (Редакт.)"; }
+            
             addLog(`Смена открыта: Маршрут ${route}, МКасса ${cash}`); closeModal('shiftModal');
         }
 
-        // ОТЧЕТ ПО ПОЕЗДУ И ФДУ-СЕТКА (Идеальное построчное заполнение)
+        // ОТЧЕТ ПО ПОЕЗДУ И ФДУ-СЕТКА
         function openTrainReport() { navTo('trainReport'); }
         function autoFillTrainSchedule(trainNum) {
             trainNum = trainNum.trim();
@@ -1375,8 +742,8 @@
             activeBenefitCategory = catKey; document.getElementById('benefitModalTitle').innerText = catTitle; document.getElementById('benCount').value = '1'; document.getElementById('benIncome').value = '0'; document.getElementById('benFee').value = '0'; openModal('benefitModal');
         }
         function saveBenefitCategory() {
-            let c = parseInt(document.getElementById('benCount').value) || 0, i = parseFloat(document.getElementById('benIncome').value) || 0, f = parseFloat(document.getElementById('benFee').value) || 0;
-            if (activeBenefitCategory) { currentTrainBenefits[activeBenefitCategory] = { count: c, sum: i, feeCount: (f > 0 ? c : 0), feeSum: f }; }
+            let c = parseInt(document.getElementById('benCount').value)||0, i = parseFloat(document.getElementById('benIncome').value)||0, f = parseFloat(document.getElementById('benFee').value)||0;
+            if (activeBenefitCategory) { currentTrainBenefits[activeBenefitCategory] = { count: c, sum: i, feeCount: (f>0?c:0), feeSum: f }; }
             closeModal('benefitModal');
         }
 
@@ -1386,22 +753,16 @@
             let timeStr = document.getElementById('trDepTime').value + " - " + document.getElementById('trArrTime').value;
 
             let lRows = document.querySelectorAll('#fduLeftBody .train-slot-row');
-            if (appState.trainsInFdu >= lRows.length) { alert("Строки рапорта заполнены!"); return; }
+            if(appState.trainsInFdu >= lRows.length) { alert("Строки рапорта заполнены!"); return; }
 
             let lInputs = lRows[appState.trainsInFdu].querySelectorAll('input');
+            lInputs[1].value = trNum; lInputs[2].value = from + " - " + to; lInputs[3].value = timeStr; lInputs[4].value = tix; lInputs[5].value = money.toFixed(2);
 
-            // Заполнение левой стороны (БЕЗ ПРОПУСКОВ И СДВИГОВ)
-            if (appState.trainsInFdu === 0) {
-                lInputs[1].value = trNum; lInputs[2].value = from + " - " + to; lInputs[3].value = timeStr; lInputs[4].value = tix; lInputs[5].value = money.toFixed(2);
-            } else {
-                lInputs[0].value = trNum; lInputs[1].value = from + " - " + to; lInputs[2].value = timeStr; lInputs[3].value = tix; lInputs[4].value = money.toFixed(2);
-            }
-
-            if (document.getElementById('fduGrandTickets')) document.getElementById('fduGrandTickets').innerText = (parseInt(document.getElementById('fduGrandTickets').innerText) || 0) + tix;
-            if (document.getElementById('fduGrandSum')) document.getElementById('fduGrandSum').innerText = ((parseFloat(document.getElementById('fduGrandSum').innerText) || 0) + money).toFixed(2);
+            if(document.getElementById('fduGrandTickets')) document.getElementById('fduGrandTickets').innerText = (parseInt(document.getElementById('fduGrandTickets').innerText) || 0) + tix;
+            if(document.getElementById('fduGrandSum')) document.getElementById('fduGrandSum').innerText = ((parseFloat(document.getElementById('fduGrandSum').innerText) || 0) + money).toFixed(2);
 
             let rRows = document.querySelectorAll('#fduRightBody .benefit-slot-row');
-            if (rRows.length > appState.trainsInFdu) {
+            if(rRows.length > appState.trainsInFdu) {
                 let rInputs = rRows[appState.trainsInFdu].querySelectorAll('input');
                 rInputs[0].value = currentTrainBenefits.rzd.count > 0 ? currentTrainBenefits.rzd.count : "—"; rInputs[1].value = currentTrainBenefits.rzd.sum > 0 ? currentTrainBenefits.rzd.sum : "—";
                 rInputs[2].value = currentTrainBenefits.fed.count > 0 ? currentTrainBenefits.fed.count : "—"; rInputs[3].value = currentTrainBenefits.fed.sum > 0 ? currentTrainBenefits.fed.sum : "—";
@@ -1411,14 +772,14 @@
 
             let totalBenSum = currentTrainBenefits.rzd.sum + currentTrainBenefits.fed.sum + currentTrainBenefits.reg.sum + currentTrainBenefits.stud.sum + currentTrainBenefits.vohr.sum;
             let totalBenTix = currentTrainBenefits.rzd.count + currentTrainBenefits.fed.count + currentTrainBenefits.reg.count + currentTrainBenefits.stud.count + currentTrainBenefits.vohr.count;
-
+            
             appState.stats.tariff += (money - totalBenSum); appState.stats.benSum += totalBenSum; appState.stats.tickets += tix; appState.stats.benTix += totalBenTix;
-
-            if (document.getElementById('dashTariff')) document.getElementById('dashTariff').innerText = appState.stats.tariff.toFixed(2) + " ₽";
-            if (document.getElementById('dashBenSum')) document.getElementById('dashBenSum').innerText = appState.stats.benSum.toFixed(2) + " ₽";
-            if (document.getElementById('dashTotalRev')) document.getElementById('dashTotalRev').innerText = (appState.stats.tariff + appState.stats.fee + appState.stats.benSum).toFixed(2) + " ₽";
-            if (document.getElementById('dashTotalTickets')) document.getElementById('dashTotalTickets').innerText = "Билетов: " + appState.stats.tickets;
-            if (document.getElementById('dashBenTickets')) document.getElementById('dashBenTickets').innerText = "Билетов: " + appState.stats.benTix;
+            
+            if(document.getElementById('dashTariff')) document.getElementById('dashTariff').innerText = appState.stats.tariff.toFixed(2) + " ₽";
+            if(document.getElementById('dashBenSum')) document.getElementById('dashBenSum').innerText = appState.stats.benSum.toFixed(2) + " ₽";
+            if(document.getElementById('dashTotalRev')) document.getElementById('dashTotalRev').innerText = (appState.stats.tariff + appState.stats.fee + appState.stats.benSum).toFixed(2) + " ₽";
+            if(document.getElementById('dashTotalTix')) document.getElementById('dashTotalTix').innerText = "Билетов: " + appState.stats.tickets;
+            if(document.getElementById('dashBenTix')) document.getElementById('dashBenTix').innerText = "Билетов: " + appState.stats.benTix;
 
             appState.trainsInFdu++;
             addLog(`Поезд №${trNum} занесен в Рапорт ФДУ.`);
@@ -1427,14 +788,14 @@
         }
 
         function closeShiftProcess() {
-            if (appState.user) appState.user.shiftActive = false;
-            let btn = document.getElementById('btnMainShift'); if (btn) { btn.className = "btn-shift-status btn-danger"; btn.innerText = "🔴 Смена не открыта"; }
-            if (document.getElementById('fduShiftEndTime')) document.getElementById('fduShiftEndTime').value = new Date().toLocaleString('ru-RU');
+            if(appState.user) appState.user.shiftActive = false;
+            let btn = document.getElementById('btnMainShift'); if(btn) { btn.className = "btn-shift-status btn-danger"; btn.innerText = "🔴 Смена не открыта"; }
+            if(document.getElementById('fduShiftEndTime')) document.getElementById('fduShiftEndTime').value = new Date().toLocaleString('ru-RU');
             addLog("Смена закрыта. Рапорт ФДУ сохранен."); alert("Рапорт успешно сохранен! PDF и Excel сформированы в Архиве."); navTo('reports');
         }
 
         // НАСЕЛЕННОСТЬ ПОЕЗДА (УМНОЕ СОХРАНЕНИЕ)
-        function openOccupancy() {
+        function openOccupancy() { 
             document.getElementById('occTrainInput').value = '';
             document.getElementById('occWarningBox').style.display = 'none';
             document.getElementById('occStopsContainer').style.display = 'none';
@@ -1442,7 +803,7 @@
             document.getElementById('occStatusBar1').innerText = 'Маршруты загружены. Введите номер поезда.';
             document.getElementById('occSaveBtn').style.opacity = '0.5';
             document.getElementById('occSaveBtn').style.pointerEvents = 'none';
-            navTo('occupancy');
+            navTo('occupancy'); 
         }
 
         function checkOccupancyTrain(val) {
@@ -1484,23 +845,23 @@
         function renderOccupancyStops(train) {
             let list = document.getElementById('occStopsList');
             list.innerHTML = '';
-
+            
             let todayStr = new Date().toLocaleDateString('ru-RU');
             let savedData = localStorage.getItem(`occ_${todayStr}_${train}`);
             let percentages = {};
             if (savedData) percentages = JSON.parse(savedData).percentages || {};
-
+            
             occupancyDb[train].stops.forEach((stop, index) => {
                 let savedVal = percentages[index] !== undefined ? percentages[index] : '';
                 list.innerHTML += `
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #2d3748;">
-                            <span style="font-weight: bold; font-size: 14px;">${stop}</span>
-                            <div style="display: flex; align-items: center; background-color: #11151c; border: 1px solid #4a5568; border-radius: 8px; padding: 5px 10px;">
-                                <input type="number" id="occ_input_${index}" value="${savedVal}" placeholder="0" style="width: 40px; background: transparent; border: none; color: #fff; font-weight: bold; font-size: 16px; text-align: right; outline: none;">
-                                <span style="color: #a0aec0; margin-left: 5px; font-weight: bold;">%</span>
-                            </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #2d3748;">
+                        <span style="font-weight: bold; font-size: 14px;">${stop}</span>
+                        <div style="display: flex; align-items: center; background-color: #11151c; border: 1px solid #4a5568; border-radius: 8px; padding: 5px 10px;">
+                            <input type="number" id="occ_input_${index}" value="${savedVal}" placeholder="0" style="width: 40px; background: transparent; border: none; color: #fff; font-weight: bold; font-size: 16px; text-align: right; outline: none;">
+                            <span style="color: #a0aec0; margin-left: 5px; font-weight: bold;">%</span>
                         </div>
-                    `;
+                    </div>
+                `;
             });
 
             document.getElementById('occStopsContainer').style.display = 'block';
@@ -1519,7 +880,7 @@
             let percentages = {};
             occupancyDb[train].stops.forEach((stop, index) => {
                 let inp = document.getElementById(`occ_input_${index}`);
-                if (inp) percentages[index] = inp.value;
+                if(inp) percentages[index] = inp.value;
             });
 
             let record = { trainNum: train, userName: user.fio || user.lastName, time: timeStr, date: todayStr, percentages: percentages };
@@ -1533,74 +894,74 @@
         function openRegistry() { navTo('registry'); }
         function saveRegistryEntry() { addLog("Реестр сохранен."); alert("Запись сохранена в Реестр!"); navTo('main'); }
         function openStatsScreen() { navTo('stats'); }
-        function generateDecadeTable() { if (document.getElementById('decadeTableContainer')) document.getElementById('decadeTableContainer').style.display = 'block'; addLog("Сформирован декадный отчет за месяц."); }
+        function generateDecadeTable() { if(document.getElementById('decadeTableContainer')) document.getElementById('decadeTableContainer').style.display = 'block'; addLog("Сформирован декадный отчет за месяц."); }
         function openReportsScreen() { navTo('reports'); }
 
         // ТАБЕЛЬ
         function openTabelScreen() { navTo('tabel'); }
         function renderTabel() {
-            let daysRow = document.getElementById('tabelDaysHeaderRow'); if (!daysRow) return; daysRow.innerHTML = '';
-            for (let i = 1; i <= 31; i++) daysRow.innerHTML += `<th>${i}</th>`;
-            let tbody = document.getElementById('tabelBody'); if (!tbody) return; tbody.innerHTML = '';
+            let daysRow = document.getElementById('tabelDaysHeaderRow'); if(!daysRow) return; daysRow.innerHTML = '';
+            for(let i=1; i<=31; i++) daysRow.innerHTML += `<th>${i}</th>`;
+            let tbody = document.getElementById('tabelBody'); if(!tbody) return; tbody.innerHTML = '';
             appState.workers.forEach((w, idx) => {
                 let dot = w.shiftActive ? '<span class="status-dot active" title="На смене"></span>' : '<span class="status-dot" title="Не на смене"></span>';
-                let tr1 = `<tr><td rowspan="2">${idx + 1}</td><td rowspan="2">${w.tab}</td><td rowspan="2" style="text-align:left; font-weight:bold; padding-left:4px;">${w.fio} ${dot}</td><td style="font-size:8.5px; background:#f7f7f7;">№ маршрута</td>`;
+                let tr1 = `<tr><td rowspan="2">${idx+1}</td><td rowspan="2">${w.tab}</td><td rowspan="2" style="text-align:left; font-weight:bold; padding-left:4px;">${w.fio} ${dot}</td><td style="font-size:8.5px; background:#f7f7f7;">№ маршрута</td>`;
                 let tr2 = `<tr><td style="font-size:8.5px; background:#f7f7f7;">время</td>`;
-                for (let d = 1; d <= 31; d++) {
-                    let bg = (d === 13 && w.shiftActive) ? 'class="cell-shift-active"' : '';
-                    let valM = (d === 13) ? "22" : "+"; let valT = (d === 13) ? "10,3" : "";
+                for(let d=1; d<=31; d++) {
+                    let bg = (d===13 && w.shiftActive) ? 'class="cell-shift-active"' : '';
+                    let valM = (d===13) ? "22" : "+"; let valT = (d===13) ? "10,3" : "";
                     tr1 += `<td ${bg} class="tabel-cell-day">${valM}</td>`; tr2 += `<td ${bg} class="tabel-cell-day">${valT}</td>`;
                 }
                 tr1 += `<td rowspan="2">1</td><td rowspan="2">10,3</td></tr>`; tr2 += `</tr>`; tbody.innerHTML += tr1 + tr2;
             });
         }
-        function saveTabel() { alert("Табель сохранен!"); addLog("Табель сохранен, персонал оповещен."); }
+        function saveAndNotifyStaff() { alert("Табель сохранен!"); addLog("Табель сохранен, персонал оповещен."); }
         function createWorker() {
             let t = document.getElementById('newWorkerTab').value, f = document.getElementById('newWorkerFio').value;
-            if (t && f) { appState.workers.push({ tab: t, fio: f, role: "viewer", shiftActive: false }); addLog(`Добавлен сотрудник: ${f}`); closeModal('createWorkerModal'); renderTabel(); }
+            if(t && f) { appState.workers.push({ tab: t, fio: f, role: "viewer", shiftActive: false }); addLog(`Добавлен сотрудник: ${f}`); closeModal('createWorkerModal'); renderTabel(); }
         }
 
         // ЧАТЫ
         function sendMsg() {
-            let inp = document.getElementById('chatInput'); if (!inp.value.trim()) return;
+            let inp = document.getElementById('chatInput'); if(!inp.value.trim()) return;
             let msgs = document.getElementById('chatMsgs'); msgs.innerHTML += `<div class="msg-bubble msg-out">${inp.value}</div>`;
             inp.value = ''; msgs.scrollTop = msgs.scrollHeight;
         }
         function openChat(name) { document.getElementById('chatActiveName').innerText = name; }
 
         // СИНХРОН
-        function autoSyncTask() { let toast = document.getElementById('autoSyncToast'); if (toast) { toast.style.display = 'block'; setTimeout(() => { toast.style.display = 'none'; }, 3000); } }
+        function autoSyncTask() { let toast = document.getElementById('autoSyncToast'); if(toast) { toast.style.display = 'block'; setTimeout(() => { toast.style.display = 'none'; }, 3000); } }
         function openSyncLoginModal() { toggleSidebar(); openModal('syncLoginModal'); }
         function enterSyncDashboard() { closeModal('syncLoginModal'); navTo('sync-dashboard'); renderSyncList(); }
-        function formatTimeInp(val) { if (val.length === 4 && !val.includes(':')) return val.substring(0, 2) + ":" + val.substring(2, 4); return val; }
+        function formatTimeInp(val) { if(val.length === 4 && !val.includes(':')) return val.substring(0,2) + ":" + val.substring(2,4); return val; }
         function saveSyncAnalysis() {
             let m = document.getElementById('saCash').value; let f = document.getElementById('saFio').value;
             let tin = formatTimeInp(document.getElementById('saTimeIn').value); let tout = formatTimeInp(document.getElementById('saTimeOut').value);
-            if (!m || !f) { alert("Заполните № МКассы и ФИО"); return; }
-            let status = 'white'; if (!tin) status = 'red'; else if (!tout) status = 'yellow';
+            if(!m || !f) { alert("Заполните № МКассы и ФИО"); return; }
+            let status = 'white'; if(!tin) status = 'red'; else if(!tout) status = 'yellow';
             appState.syncRecords.push({ mkassa: m, fio: f, tin: tin, tout: tout, status: status });
             addLog(`МКасса ${m} добавлена в лист Синхронизации.`); closeModal('syncAnalysisModal'); renderSyncList();
         }
         function renderSyncList() {
-            let c = document.getElementById('syncListContainer'); if (!c) return; c.innerHTML = '';
-            let unfC = document.getElementById('syncUnfList'); if (unfC) unfC.innerHTML = '';
+            let c = document.getElementById('syncListContainer'); if(!c) return; c.innerHTML = '';
+            let unfC = document.getElementById('syncUnfList'); if(unfC) unfC.innerHTML = '';
             let unfCount = 0;
             appState.syncRecords.forEach((r, i) => {
-                let html = `<div class="sync-row sync-${r.status}" onclick="editSync(${i})"><div style="width:60px; font-weight:bold;">${r.mkassa}</div><div style="flex:1;">${r.fio}</div><div style="width:50px;">${r.tin || '--:--'}</div><div style="width:50px;">${r.tout || '--:--'}</div><div style="width:60px;">${r.status === 'white' ? 'Готово' : (r.status === 'red' ? 'Нет Пост.' : 'Нет Снят.')}</div></div>`;
-                c.innerHTML += html; if (r.status !== 'white' && unfC) { unfC.innerHTML += html; unfCount++; }
+                let html = `<div class="sync-row sync-${r.status}" onclick="editSync(${i})"><div style="width:60px; font-weight:bold;">${r.mkassa}</div><div style="flex:1;">${r.fio}</div><div style="width:50px;">${r.tin || '--:--'}</div><div style="width:50px;">${r.tout || '--:--'}</div><div style="width:60px;">${r.status==='white'?'Готово':(r.status==='red'?'Нет Пост.':'Нет Снят.')}</div></div>`;
+                c.innerHTML += html; if(r.status !== 'white' && unfC) { unfC.innerHTML += html; unfCount++; }
             });
-            let btnU = document.getElementById('btnSyncUnf'); if (btnU) btnU.innerText = `Не завершенные (${unfCount})`;
+            let btnU = document.getElementById('btnSyncUnf'); if(btnU) btnU.innerText = `Не завершенные (${unfCount})`;
         }
         function editSync(index) {
             let r = appState.syncRecords[index];
-            if (r.status !== 'white') {
+            if(r.status !== 'white') {
                 let tout = prompt("Введите время снятия (ччмм) для МКассы " + r.mkassa + ":");
-                if (tout) { r.tout = formatTimeInp(tout); r.tin = r.tin || "08:00"; r.status = 'white'; renderSyncList(); closeModal('syncUnfinishedModal'); }
+                if(tout) { r.tout = formatTimeInp(tout); r.tin = r.tin || "08:00"; r.status = 'white'; renderSyncList(); closeModal('syncUnfinishedModal'); }
             }
         }
         function finishAllSync() {
             let errorItem = appState.syncRecords.find(r => r.status !== 'white');
-            if (errorItem) {
+            if(errorItem) {
                 document.getElementById('srText').innerText = `МКасса ${errorItem.mkassa} не завершена! Укажите причину:`;
                 openModal('syncReasonModal'); document.getElementById('syncReasonModal').dataset.errIdx = appState.syncRecords.indexOf(errorItem);
             } else { alert("Все МКассы просинхронизированы! Файлы PDF и Excel созданы в Отчетах."); addLog("Синхронизация завершена."); }
@@ -1608,7 +969,12 @@
         function resolveSyncError() {
             let idx = document.getElementById('syncReasonModal').dataset.errIdx; let reason = document.getElementById('srReason').value;
             appState.syncRecords[idx].status = 'white'; appState.syncRecords[idx].tout = reason;
-            closeModal('syncReasonModal'); renderSyncList(); finishAllSync();
+            closeModal('syncReasonModal'); renderSyncList(); finishAllSync(); 
+        }
+
+        // РЕГИСТРАЦИЯ PWA (ОФЛАЙН И АВТООБНОВЛЕНИЕ)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js');
         }
     </script>
 </body>
