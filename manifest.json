@@ -1,0 +1,16 @@
+{
+  "name": "Ласточка МТППК",
+  "short_name": "Ласточка",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#1a1e29",
+  "theme_color": "#003366",
+  "icons": [
+    {
+      "src": "train.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}
