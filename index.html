@@ -21,7 +21,7 @@
         .animated-title { font-size: 52px; font-weight: bold; color: #ff3333; text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.9); opacity: 0; transform: scale(0.8); animation: fadeInScale 1.6s forwards 0.2s; font-family: Arial, sans-serif; }
         @keyframes fadeInScale { 0% { opacity: 0; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
         
-        /* БОКОВОЕ МЕНЮ И ВЕРХНИЕ КНОПКИ */
+        /* БОКОВОЕ МЕНЮ (ЛЕВОЕ) И ПРАВАЯ ПАНЕЛЬ ТАБЕЛЯ */
         #sidebar { position: fixed; top: 0; left: -320px; width: 320px; height: 100%; background: var(--sidebar-bg); color: #ffffff; z-index: 1500; transition: left 0.3s ease; box-shadow: 4px 0 15px rgba(0,0,0,0.5); font-family: Arial, sans-serif; display: flex; flex-direction: column; }
         #sidebar.open { left: 0; }
         .sidebar-header { padding: 20px 15px; background: var(--sidebar-header); display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent-color); }
@@ -34,7 +34,16 @@
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1400; }
         .sidebar-overlay.active { display: block; }
         .menu-toggle-btn { position: fixed; top: 15px; left: 15px; z-index: 1300; background: var(--primary-color); color: white; border: none; border-radius: 6px; padding: 8px 14px; font-size: 16px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3); width: auto; margin: 0; font-family: Arial, sans-serif; }
-        
+
+        /* ПРАВОЕ БОКОВОЕ МЕНЮ ДЛЯ ВЫБОРА МАРШРУТА В ТАБЕЛЕ */
+        #tabelRightDrawer { position: fixed; top: 0; right: -340px; width: 320px; max-width: 90vw; height: 100%; background: #ffffff; color: #000; z-index: 2500; transition: right 0.28s ease; box-shadow: -4px 0 18px rgba(0,0,0,0.45); display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; font-family: Arial, sans-serif; }
+        #tabelRightDrawer.open { right: 0; }
+        .drawer-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.45); z-index: 2400; }
+        .drawer-overlay.active { display: block; }
+        .route-suggest-list { max-height: 220px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; margin-top: 8px; background: #fafafa; }
+        .route-suggest-item { padding: 8px 10px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 13px; display: flex; justify-content: space-between; }
+        .route-suggest-item:hover { background: #e6f0ff; }
+
         /* КОЛОКОЛЬЧИК УВЕДОМЛЕНИЙ */
         .bell-btn { position: fixed; top: 15px; right: 15px; z-index: 1300; background: var(--primary-color); color: white; border: none; border-radius: 50%; width: 44px; height: 44px; font-size: 20px; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.35); margin: 0; padding: 0; display: none; align-items: center; justify-content: center; }
         .bell-badge { position: absolute; top: -4px; right: -4px; background: #e63946; color: #fff; font-size: 11px; font-weight: bold; min-width: 18px; height: 18px; border-radius: 9px; display: none; align-items: center; justify-content: center; padding: 0 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
@@ -69,18 +78,18 @@
         .stat-card .val { font-size: 22px; font-weight: bold; }
         .stat-card .tickets { position: absolute; bottom: 10px; right: 15px; font-size: 12px; opacity: 0.9; }
 
-        /* ДЕКАДНЫЕ ТАБЛИЦЫ (10/20/30 ДНЕЙ) */
+        /* ДЕКАДНЫЕ ТАБЛИЦЫ */
         .decade-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px; background: #fff; color: #000; }
         .decade-table th, .decade-table td { border: 1px solid #333; padding: 5px 8px; text-align: center; }
         .decade-table th { background: #dce6f1; font-weight: bold; }
         .decade-table td:first-child { text-align: left; }
         .decade-bold { font-weight: bold; background: #f8f9fa; }
 
-        /* ЛЬГОТНЫЕ КНОПКИ В ОТЧЕТЕ ПО ПОЕЗДУ */
+        /* ЛЬГОТНЫЕ КНОПКИ */
         .ben-btn-wrap { display: flex; flex-direction: column; align-items: center; }
         .ben-sub-sum { font-size: 12px; font-weight: bold; color: #003366; margin-top: 4px; background: #eef5ff; padding: 2px 8px; border-radius: 4px; width: 100%; text-align: center; box-sizing: border-box; border: 1px solid #cce0f5; }
 
-        /* ТАБЛИЦА РЕЕСТРА (ПО ОБРАЗЦУ EXCEL) */
+        /* ТАБЛИЦА РЕЕСТРА */
         .reg-table-wrap { overflow-x: auto; margin-top: 15px; }
         .registry-table { width: 100%; border-collapse: collapse; font-size: 11px; background: #fff; color: #000; min-width: 820px; }
         .registry-table th, .registry-table td { border: 1px solid #000; padding: 5px 6px; text-align: center; vertical-align: middle; }
@@ -102,15 +111,27 @@
         .shift-summary-table th, .shift-summary-table td { border: 1px solid #000; padding: 3px 6px; text-align: center; }
         .shift-summary-table th { background: #f2f2f2; font-weight: bold; }
         
-        /* ТАБЕЛЬ */
+        /* ТАБЕЛЬ И СТАТУСНЫЕ КРУЖКИ */
         .tabel-table { width: 100%; border-collapse: collapse; font-size: 10px; background: #fff; color: #000; }
         .tabel-table th, .tabel-table td { border: 1px solid #000; padding: 2px; text-align: center; height: 20px; }
-        .tabel-cell-day { cursor: pointer; user-select: none; }
-        .tabel-cell-day:hover { background: #e8f4fc; }
-        .nav-circle-btn { width: 36px; height: 36px; border-radius: 50%; background: #003366; color: #fff; border: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; padding: 0; margin: 0 4px; }
-        .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #ccc; margin-left: 4px; }
-        .status-dot.active { background: #28a745; box-shadow: 0 0 5px #28a745; }
+        .tabel-cell-day { cursor: pointer; user-select: none; min-width: 24px; }
+        .tabel-cell-day:hover { background: #dceeff; }
+        .nav-circle-btn { width: 34px; height: 34px; border-radius: 50%; background: #003366; color: #fff; border: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; padding: 0; margin: 0 3px; }
+        .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-left: 5px; vertical-align: middle; }
+        .dot-green { background: #28a745; box-shadow: 0 0 6px #28a745; }
+        .dot-red { background: #dc3545; box-shadow: 0 0 6px #dc3545; }
+        .dot-gray { background: #9aa0a6; }
+        .dot-blue { background: #17a2b8; }
+        .dot-weekend { background: #e0e0e0; border: 1px solid #999; }
         .cell-shift-active { background-color: #d4edda !important; font-weight: bold; }
+        .cell-weekend { background-color: #f4f4f4; color: #888; }
+        .cell-today-col { background-color: #fff8dc !important; }
+        .senior-star { color: #e67e22; font-weight: bold; }
+
+        /* РАСПРЕДЕЛЕНИЕ ПО МАРШРУТАМ */
+        .dist-row { display: flex; align-items: center; gap: 10px; padding: 8px; border-bottom: 1px solid #eee; font-size: 13px; }
+        .dist-tab-btn { flex: 1; padding: 8px; margin: 0; border-radius: 6px; font-size: 13px; background: #e9ecef; color: #333; }
+        .dist-tab-btn.active { background: #003366; color: #fff; }
 
         /* Журнал и Модалки */
         .audit-log-entry { font-size: 12px; padding: 5px 0; border-bottom: 1px dashed #ccc; font-family: Arial, sans-serif; color: #333; }
@@ -154,7 +175,7 @@
         🔔<span id="bellBadge" class="bell-badge">0</span>
     </button>
 
-    <!-- БОКОВОЕ МЕНЮ -->
+    <!-- БОКОВОЕ МЕНЮ (ЛЕВОЕ) -->
     <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
     <div id="sidebar">
         <div class="sidebar-header"><h3 id="sidebarUserName">Сотрудник</h3><button class="close-sidebar-btn" onclick="toggleSidebar()">✕</button></div>
@@ -171,6 +192,33 @@
         <div class="sidebar-bottom">
             <button type="button" class="btn-secondary" style="padding: 8px; font-size: 13px; margin-top: 0;" onclick="toggleTheme()">🌓 Выбор темы</button>
             <button type="button" class="btn-danger" style="padding: 8px; font-size: 13px; margin-top: 8px;" onclick="logout()">🚪 Выйти из профиля</button>
+        </div>
+    </div>
+
+    <!-- ПРАВОЕ БОКОВОЕ МЕНЮ ДЛЯ РЕДАКТИРОВАНИЯ ЯЧЕЙКИ ТАБЕЛЯ -->
+    <div id="drawerOverlay" class="drawer-overlay" onclick="closeTabelDrawer()"></div>
+    <div id="tabelRightDrawer">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #003366; padding-bottom:10px; margin-bottom:12px;">
+            <h3 style="margin:0; font-size:16px;">Назначение маршрута</h3>
+            <button onclick="closeTabelDrawer()" style="width:auto; margin:0; padding:2px 8px; background:transparent; color:#333; font-size:20px;">✕</button>
+        </div>
+        <div id="drawerWorkerInfo" style="font-size:13px; color:#555; margin-bottom:12px; background:#f4f6f9; padding:8px; border-radius:6px;"></div>
+        <div class="form-group">
+            <label>Маршрут (введите цифры или выберите):</label>
+            <input type="text" id="drawerRouteInput" class="form-input" placeholder="Например, 22 или В" oninput="renderDrawerSuggestions(this.value)">
+        </div>
+        <div class="route-suggest-list" id="drawerSuggestList"></div>
+        <div class="form-group" style="margin-top:12px;">
+            <label>Часов по маршруту (из настроек):</label>
+            <input type="text" id="drawerHoursInput" class="form-input" readonly style="background:#eef2f7; font-weight:bold;">
+        </div>
+        <div class="form-group" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+            <input type="checkbox" id="drawerSeniorCheck" style="width:18px; height:18px;">
+            <label for="drawerSeniorCheck" style="margin:0; cursor:pointer;">⭐ Старший на маршруте</label>
+        </div>
+        <div style="margin-top:auto; display:flex; gap:10px;">
+            <button class="btn-success" onclick="saveTabelCellFromDrawer()">Сохранить</button>
+            <button class="btn-secondary" onclick="closeTabelDrawer()">Отменить</button>
         </div>
     </div>
 
@@ -193,7 +241,7 @@
         </div>
     </div>
 
-    <!-- ЭКРАН РЕГИСТРАЦИИ (ТОЛЬКО ТАБЕЛЬНЫЙ И ФИО ЗАПОЛНЕНЫ, ОСТАЛЬНОЕ ПУСТОЕ + № ВИДЕОРЕГ.) -->
+    <!-- ЭКРАН РЕГИСТРАЦИИ -->
     <div id="register-screen" class="screen">
         <div class="card" style="max-width: 620px; margin: 40px auto;">
             <h2>Установка данных профиля</h2>
@@ -223,11 +271,10 @@
         </div>
     </div>
 
-    <!-- ГЛАВНЫЙ ЭКРАН (ЛИЧНЫЕ ДАННЫЕ + МЕСЯЦ) -->
+    <!-- ГЛАВНЫЙ ЭКРАН -->
     <div id="main-screen" class="screen">
         <div class="card" style="max-width: 780px; margin: 40px auto; text-align: center;">
             <h2 id="mainTitleMonth">Личные данные</h2>
-            
             <div style="display:flex; gap:10px; margin-bottom:15px;">
                 <button class="btn-success" style="font-size: 16px; padding: 12px; flex:1;" onclick="openFduScreen()">📄 Открыть ФДУ</button>
                 <button id="btnMainShift" class="btn-shift-status btn-danger" onclick="openModal('shiftModal')">🔴 Смена не открыта</button>
@@ -252,6 +299,71 @@
                 <h4 style="margin:0 0 8px 0; color:var(--primary-color);">Журнал внесенных и измененных данных:</h4>
                 <div id="auditLogList" style="font-size:11px; color:#555;"><div style="padding:4px 0;">Записи смены пока отсутствуют...</div></div>
             </div>
+        </div>
+    </div>
+
+    <!-- === ТАБЕЛЬ (ЭТАП 2 — ПОЛНЫЙ ФУНКЦИОНАЛ) === -->
+    <div id="tabel-screen" class="screen">
+        <div class="card" style="max-width: 1500px; margin: 20px auto; overflow-x:auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                    <h2 style="margin:0; text-align:left; font-size:18px;">График работы участка на</h2>
+                    <select id="tabelMonthSelect" class="form-input" style="width:125px; font-weight:bold; margin:0;" onchange="onTabelMonthYearChange()">
+                        <option value="0">Январь</option><option value="1">Февраль</option><option value="2">Март</option><option value="3">Апрель</option><option value="4">Май</option><option value="5">Июнь</option>
+                        <option value="6">Июль</option><option value="7">Август</option><option value="8">Сентябрь</option><option value="9">Октябрь</option><option value="10">Ноябрь</option><option value="11">Декабрь</option>
+                    </select>
+                    <select id="tabelYearSelect" class="form-input" style="width:92px; font-weight:bold; margin:0;" onchange="onTabelMonthYearChange()">
+                        <option value="2025">2025 г.</option><option value="2026">2026 г.</option><option value="2027">2027 г.</option><option value="2028">2028 г.</option>
+                    </select>
+                    <div style="display:flex; align-items:center;">
+                        <button type="button" class="nav-circle-btn" onclick="prevTabelMonth()" title="Предыдущий месяц">◀</button>
+                        <button type="button" class="nav-circle-btn" onclick="nextTabelMonth()" title="Следующий месяц">▶</button>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                    <button type="button" id="btnTabelCreateWorker" class="btn-success" style="width:auto; margin:0; padding:8px 12px; font-size:13px;" onclick="openModal('createWorkerModal')">+ Создать</button>
+                    <button type="button" id="btnTabelLoadFile" class="btn-warning" style="width:auto; margin:0; padding:8px 12px; font-size:13px;" onclick="document.getElementById('tabelFileInput').click()">📁 Загрузить из файла</button>
+                    <input type="file" id="tabelFileInput" style="display:none;" accept=".csv,.txt,.json,.xlsx,.xls" onchange="handleTabelFileUpload(event)">
+                    <button type="button" id="btnTabelDistribute" class="btn-action" style="background:#6f42c1; width:auto; margin:0; padding:8px 12px; font-size:13px;" onclick="openDistributeModal()">🔀 Раскидать по маршрутам</button>
+                    <!-- Кнопка появляется и становится КРАСНОЙ только когда есть изменения -->
+                    <button type="button" id="btnTabelNotify" class="btn-danger" style="display:none; width:auto; margin:0; padding:8px 14px; font-size:13px;" onclick="saveAndNotifyStaff()">📢 Сохранить и оповестить персонал</button>
+                    <!-- Фильтр статусов перед кнопкой Назад -->
+                    <select id="tabelStatusFilter" class="form-input" style="width:165px; margin:0; font-weight:bold;" onchange="renderTabel()">
+                        <option value="all">Все статусы</option>
+                        <option value="open">🟢 Смена открыта</option>
+                        <option value="weekend">⚪ Выходной</option>
+                        <option value="closed">🔵 Смена закрыта</option>
+                        <option value="not_started">🔴 Не заступили</option>
+                    </select>
+                    <button type="button" class="btn-secondary" style="width:auto; margin:0; padding:8px 14px; font-size:13px;" onclick="backToMain()">Назад</button>
+                </div>
+            </div>
+
+            <div style="font-size:11px; color:#555; margin-bottom:8px; display:flex; gap:14px; flex-wrap:wrap;">
+                <span><span class="status-dot dot-green"></span> Смена открыта</span>
+                <span><span class="status-dot dot-red"></span> Не заступил вовремя</span>
+                <span><span class="status-dot dot-gray"></span> Еще не заступил</span>
+                <span><span class="status-dot dot-blue"></span> Смена закрыта</span>
+                <span><span class="status-dot dot-weekend"></span> Выходной</span>
+                <span>⭐ — Старший на маршруте</span>
+            </div>
+
+            <table class="tabel-table" id="tabelMainTable">
+                <thead>
+                    <tr>
+                        <th rowspan="2" style="width:24px;">№<br>п/п</th>
+                        <th rowspan="2" style="width:42px;">№ таб.</th>
+                        <th rowspan="2" style="width:175px;">ФИО ККЛ</th>
+                        <th rowspan="2" style="width:62px;">Показатель</th>
+                        <th id="tabelDaysColspan" colspan="31">Дата, номер маршрута, часов в смену</th>
+                        <th rowspan="2" style="width:36px;">Раб.<br>дни</th>
+                        <th rowspan="2" style="width:46px;">Часы работы</th>
+                    </tr>
+                    <tr id="tabelDaysHeaderRow"></tr>
+                </thead>
+                <tbody id="tabelBody"></tbody>
+            </table>
         </div>
     </div>
 
@@ -322,7 +434,6 @@
                 </div>
             </div>
 
-            <!-- ПРАВАЯ СТРАНИЦА -->
             <div class="journal-page">
                 <div class="doc-title">РАПОРТ<br>о результатах произведенных проверок поездов</div>
                 <table class="fdu-grid" id="fduRightTable">
@@ -358,7 +469,7 @@
         </div>
     </div>
 
-    <!-- ОТЧЕТ ПО ПОЕЗДУ (С ПРАВИЛЬНЫМ РАСЧЕТОМ РАЗНИЦЫ МКАССЫ И СУММАМИ ПОД ЛЬГОТАМИ) -->
+    <!-- ОТЧЕТ ПО ПОЕЗДУ -->
     <div id="trainReport-screen" class="screen">
         <div class="card" style="max-width: 820px; margin: 30px auto;">
             <h2>Отчет по поезду</h2>
@@ -392,26 +503,11 @@
             </div>
             <h3 style="font-size: 15px;">Оформление льготных категорий:</h3>
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:10px;">
-                <div class="ben-btn-wrap">
-                    <button type="button" class="btn-action" style="padding:10px;" onclick="openBenefitModal('rzd', 'Работники РЖД')">1. Работники РЖД</button>
-                    <div class="ben-sub-sum" id="benSumLbl_rzd">0.00 ₽</div>
-                </div>
-                <div class="ben-btn-wrap">
-                    <button type="button" class="btn-action" style="padding:10px;" onclick="openBenefitModal('fed', 'Федеральная льгота')">2. Федералы</button>
-                    <div class="ben-sub-sum" id="benSumLbl_fed">0.00 ₽</div>
-                </div>
-                <div class="ben-btn-wrap">
-                    <button type="button" class="btn-action" style="padding:10px;" onclick="openBenefitModal('reg', 'Региональная льгота')">3. Регионалы</button>
-                    <div class="ben-sub-sum" id="benSumLbl_reg">0.00 ₽</div>
-                </div>
-                <div class="ben-btn-wrap">
-                    <button type="button" class="btn-action" style="padding:10px;" onclick="openBenefitModal('stud', 'Школьники / Студенты')">4. Школьники</button>
-                    <div class="ben-sub-sum" id="benSumLbl_stud">0.00 ₽</div>
-                </div>
-                <div class="ben-btn-wrap">
-                    <button type="button" class="btn-action" style="padding:10px;" onclick="openBenefitModal('vohr', 'ВОХР')">5. ВОХР</button>
-                    <div class="ben-sub-sum" id="benSumLbl_vohr">0.00 ₽</div>
-                </div>
+                <div class="ben-btn-wrap"><button type="button" class="btn-action" style="padding:10px;" onclick="openBenefitModal('rzd', 'Работники РЖД')">1. Работники РЖД</button><div class="ben-sub-sum" id="benSumLbl_rzd">0.00 ₽</div></div>
+                <div class="ben-btn-wrap"><button type="button" class="btn-action" style="padding:10px;" onclick="openBenefitModal('fed', 'Федеральная льгота')">2. Федералы</button><div class="ben-sub-sum" id="benSumLbl_fed">0.00 ₽</div></div>
+                <div class="ben-btn-wrap"><button type="button" class="btn-action" style="padding:10px;" onclick="openBenefitModal('reg', 'Региональная льгота')">3. Регионалы</button><div class="ben-sub-sum" id="benSumLbl_reg">0.00 ₽</div></div>
+                <div class="ben-btn-wrap"><button type="button" class="btn-action" style="padding:10px;" onclick="openBenefitModal('stud', 'Школьники / Студенты')">4. Школьники</button><div class="ben-sub-sum" id="benSumLbl_stud">0.00 ₽</div></div>
+                <div class="ben-btn-wrap"><button type="button" class="btn-action" style="padding:10px;" onclick="openBenefitModal('vohr', 'ВОХР')">5. ВОХР</button><div class="ben-sub-sum" id="benSumLbl_vohr">0.00 ₽</div></div>
             </div>
             <div style="display:flex; gap:10px; margin-top:20px;">
                 <button type="button" class="btn-success" onclick="saveTrainToFdu()">💾 Сохранить и занести в Рапорт ФДУ</button>
@@ -420,7 +516,7 @@
         </div>
     </div>
 
-    <!-- РЕЕСТР (ПОЛНОЦЕННЫЙ МОДУЛЬ ПО ОБРАЗЦУ EXCEL) -->
+    <!-- РЕЕСТР -->
     <div id="registry-screen" class="screen">
         <div class="card" style="max-width: 1150px; margin: 20px auto;">
             <h2>Реестр разовых билетов без доп. сбора</h2>
@@ -432,27 +528,14 @@
                 <button class="btn-success" style="width:auto; padding:9px 16px;" onclick="openRegistryCreateModal()">➕ Создать</button>
                 <button class="btn-secondary" style="width:auto; padding:9px 16px; margin-left:auto;" onclick="backToMain()">Назад</button>
             </div>
-
             <div class="reg-table-wrap">
                 <table class="registry-table">
                     <thead>
                         <tr>
-                            <th rowspan="2">№ п/п</th>
-                            <th rowspan="2">№ МКАССА</th>
-                            <th rowspan="2">Дата</th>
-                            <th rowspan="2">Причина оформления без дополнительного сбора</th>
-                            <th rowspan="2">Номер билета</th>
-                            <th rowspan="2">Номер билета доп сбора</th>
-                            <th colspan="2">Вид билета</th>
-                            <th colspan="2">Станция</th>
-                            <th rowspan="2">Стоимость проезда</th>
+                            <th rowspan="2">№ п/п</th><th rowspan="2">№ МКАССА</th><th rowspan="2">Дата</th><th rowspan="2">Причина оформления без дополнительного сбора</th>
+                            <th rowspan="2">Номер билета</th><th rowspan="2">Номер билета доп сбора</th><th colspan="2">Вид билета</th><th colspan="2">Станция</th><th rowspan="2">Стоимость проезда</th>
                         </tr>
-                        <tr>
-                            <th>Туда</th>
-                            <th>Туда-обратно</th>
-                            <th>Отправления</th>
-                            <th>Назначения</th>
-                        </tr>
+                        <tr><th>Туда</th><th>Туда-обратно</th><th>Отправления</th><th>Назначения</th></tr>
                     </thead>
                     <tbody id="registryTableBody">
                         <tr><td colspan="11" style="padding:15px; color:#666;">Записи реестра за выбранный период отсутствуют</td></tr>
@@ -462,12 +545,10 @@
         </div>
     </div>
 
-    <!-- ЭКРАН НАСЕЛЕННОСТИ -->
+    <!-- НАСЕЛЕННОСТЬ -->
     <div id="occupancy-screen" class="screen">
         <div style="max-width: 600px; margin: 20px auto; background-color: #1a1e29; color: #e2e8f0; border-radius: 12px; border: 1px solid #2d3748; padding: 25px; font-family: Arial, sans-serif;">
-            <div id="occStatusBar1" style="background-color: #172a23; border-left: 4px solid #2f855a; padding: 10px 15px; margin-bottom: 10px; border-radius: 4px; font-size: 14px; color: #68d391;">
-                Маршруты загружены. Введите номер поезда.
-            </div>
+            <div id="occStatusBar1" style="background-color: #172a23; border-left: 4px solid #2f855a; padding: 10px 15px; margin-bottom: 10px; border-radius: 4px; font-size: 14px; color: #68d391;">Маршруты загружены. Введите номер поезда.</div>
             <div style="background-color: #172a23; border-left: 4px solid #2f855a; padding: 10px 15px; margin-bottom: 20px; border-radius: 4px; font-size: 14px; color: #68d391;">Рабочий день</div>
             <div style="margin-bottom: 20px;">
                 <label style="display: block; font-size: 14px; color: #a0aec0; margin-bottom: 8px;">Номер поезда</label>
@@ -482,9 +563,7 @@
                     <button onclick="backToMain()" style="background-color: #2d3748; color: #e2e8f0; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; width: auto; margin: 0;">Вернуться</button>
                 </div>
             </div>
-            <div id="occStopsContainer" style="display: none; margin-bottom: 20px;">
-                <div id="occStopsList" style="display: flex; flex-direction: column; gap: 12px;"></div>
-            </div>
+            <div id="occStopsContainer" style="display: none; margin-bottom: 20px;"><div id="occStopsList" style="display: flex; flex-direction: column; gap: 12px;"></div></div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
                 <button onclick="openModal('occNoteModal')" style="background-color: #2d3748; color: #e2e8f0; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; width: auto; margin: 0;">Примечание</button>
                 <button id="occSaveBtn" onclick="saveOccupancyChanges()" style="background-color: #3182ce; color: #fff; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; margin-left: 15px; margin-top: 0; font-size: 16px; opacity: 0.5; pointer-events: none;">Сохранить изменения</button>
@@ -492,34 +571,7 @@
         </div>
     </div>
 
-    <!-- ТАБЕЛЬ -->
-    <div id="tabel-screen" class="screen">
-        <div class="card" style="max-width: 1450px; margin: 20px auto; overflow-x:auto;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <h2 style="margin:0; text-align:left;">График работы работников участка на</h2>
-                    <select id="tabelMonthSelect" class="form-input" style="width:130px; font-weight:bold;" onchange="renderTabel()">
-                        <option value="0">Январь</option><option value="1">Февраль</option><option value="2">Март</option><option value="3">Апрель</option><option value="4">Май</option><option value="5">Июнь</option>
-                        <option value="6">Июль</option><option value="7">Август</option><option value="8">Сентябрь</option><option value="9">Октябрь</option><option value="10">Ноябрь</option><option value="11">Декабрь</option>
-                    </select>
-                    <select id="tabelYearSelect" class="form-input" style="width:100px; font-weight:bold;" onchange="renderTabel()"><option value="2025">2025 г.</option><option value="2026">2026 г.</option><option value="2027">2027 г.</option></select>
-                    <div style="display:flex; align-items:center; margin-left:10px;"><button type="button" class="nav-circle-btn" onclick="prevTabelMonth()">◀</button><button type="button" class="nav-circle-btn" onclick="nextTabelMonth()">▶</button></div>
-                </div>
-                <div style="display:flex; gap:10px; align-items:center;">
-                    <button type="button" id="btnTabelCreateWorker" class="btn-success" style="width:auto; margin:0;" onclick="openModal('createWorkerModal')">+ Создать</button>
-                    <button type="button" class="btn-warning" style="width:auto; margin:0;" onclick="alert('Маршруты загружены и распределены!')">📁 Загрузить из файла</button>
-                    <button type="button" id="btnTabelNotify" class="btn-action" style="background:#0055aa; width:auto; margin:0;" onclick="saveAndNotifyStaff()">📢 Сохранить и оповестить персонал</button>
-                    <button type="button" class="btn-secondary" style="width:auto; margin:0;" onclick="backToMain()">Назад</button>
-                </div>
-            </div>
-            <table class="tabel-table" id="tabelMainTable">
-                <thead><tr><th rowspan="2" style="width:25px;">№<br>п/п</th><th rowspan="2" style="width:35px;">№ таб.</th><th rowspan="2" style="width:160px;">ФИО ККЛ</th><th rowspan="2" style="width:65px;">Показатель</th><th colspan="31">Дата, номер маршрута, часов в смену</th><th rowspan="2" style="width:35px;">Раб.<br>дни</th><th rowspan="2" style="width:45px;">Часы работы</th></tr><tr id="tabelDaysHeaderRow"></tr></thead>
-                <tbody id="tabelBody"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- СИНХРОН -->
+    <!-- СИНХРОН, ЧАТЫ, ОРГ, СТАТИСТИКА, ОТЧЕТЫ, НАСТРОЙКИ -->
     <div id="sync-dashboard-screen" class="screen">
         <div class="card" style="max-width: 900px; margin: 20px auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--primary-color); padding-bottom:10px; margin-bottom:15px;">
@@ -538,16 +590,15 @@
         </div>
     </div>
 
-    <!-- ЧАТЫ -->
     <div id="chats-screen" class="screen">
         <div class="card" style="max-width: 800px; margin: 0 auto; padding:0; display:flex; height:600px;">
             <div style="width: 260px; border-right: 1px solid #ccc; display:flex; flex-direction:column; background:#f4f6f9;">
-                <div style="padding:15px; background:var(--primary-color); color:white; display:flex; justify-content:space-between;"><h3 style="color:white; margin:0;">Чаты</h3></div>
+                <div style="padding:15px; background:var(--primary-color); color:white;"><h3 style="color:white; margin:0;">Чаты</h3></div>
                 <div class="chat-list" style="padding:10px; overflow-y:auto; flex:1;" id="chatList">
                     <div class="chat-item" onclick="openChat('Бригада №1')"><div class="chat-avatar">Б1</div><div><strong>Бригада №1</strong></div></div>
                 </div>
             </div>
-            <div style="flex:1; display:flex; flex-direction:column; background:#e5ddd5;" id="chatArea">
+            <div style="flex:1; display:flex; flex-direction:column; background:#e5ddd5;">
                 <div class="chat-header"><strong id="chatActiveName">Бригада №1</strong></div>
                 <div class="chat-messages" id="chatMsgs"><div class="msg-bubble msg-in">Привет всем, как смена?</div></div>
                 <div class="chat-input-area"><input type="text" placeholder="Сообщение..." id="chatInput"><button class="chat-icon-btn" onclick="sendMsg()">✈️</button></div>
@@ -555,15 +606,34 @@
         </div>
     </div>
 
-    <!-- ОРГ СТРУКТУРА, СТАТИСТИКА, ОТЧЕТЫ, НАСТРОЙКИ -->
-    <div id="org-screen" class="screen"><div class="card" style="max-width: 700px; margin: 30px auto;"><h2>Организационная структура</h2><div style="display:flex; gap:10px; margin-bottom:15px;"><button class="btn-action" onclick="alert('Будет расширено на Этапе 3')">Должности</button><button class="btn-action" style="background:#28a745;" onclick="openModal('createWorkerModal')">Сотрудники</button><button class="btn-action" onclick="alert('Будет расширено на Этапе 3')">Подразделение</button></div><button class="btn-secondary" onclick="backToMain()">Назад</button></div></div>
+    <div id="org-screen" class="screen"><div class="card" style="max-width: 700px; margin: 30px auto;"><h2>Организационная структура</h2><div style="display:flex; gap:10px; margin-bottom:15px;"><button class="btn-action" onclick="alert('Настроим на Этапе 3')">Должности</button><button class="btn-action" style="background:#28a745;" onclick="openModal('createWorkerModal')">Сотрудники</button><button class="btn-action" onclick="alert('Настроим на Этапе 3')">Подразделение</button></div><button class="btn-secondary" onclick="backToMain()">Назад</button></div></div>
     <div id="stats-screen" class="screen"><div class="card"><h2>Статистика (Декада)</h2><button class="btn-success" onclick="openDecadeStatsModal()">Открыть отчет за 10 / 20 / 30 дней</button><button class="btn-secondary" onclick="backToMain()">Назад</button></div></div>
     <div id="reports-screen" class="screen"><div class="card"><h2>Архив Отчетов</h2><button class="btn-secondary" onclick="backToMain()">Назад</button></div></div>
-    <div id="settings-screen" class="screen"><div class="card"><h2>Настройки</h2><button class="btn-secondary" onclick="backToMain()">Назад</button></div></div>
+    <div id="settings-screen" class="screen"><div class="card"><h2>Настройки</h2><p style="text-align:center; color:#666;">Разделы «МКассы», «Маршруты» и «Поезда» добавим на Этапе 3.</p><button class="btn-secondary" onclick="backToMain()">Назад</button></div></div>
 
     <!-- === МОДАЛЬНЫЕ ОКНА === -->
 
-    <!-- ПАРАМЕТРЫ СМЕНЫ (С ПЛЮСАМИ У МКАССЫ И СМЕНЫ, ЛЬГОТНИКАМИ И УМНЫМИ ПРОБНИКАМИ) -->
+    <!-- МОДАЛКА «РАСКИДАТЬ ПО МАРШРУТАМ» -->
+    <div id="distributeRoutesModal" class="modal">
+        <div class="modal-content modal-wide">
+            <h3 style="margin-top:0;">🔀 Раскидать сотрудников по маршрутам</h3>
+            <div style="display:flex; gap:10px; margin-bottom:12px;">
+                <button type="button" id="distBtnToday" class="dist-tab-btn active" onclick="switchDistDay('today')">Сегодня (<span id="distDateToday"></span>)</button>
+                <button type="button" id="distBtnTomorrow" class="dist-tab-btn" onclick="switchDistDay('tomorrow')">Завтра (<span id="distDateTomorrow"></span>)</button>
+            </div>
+            <div id="distWorkersList" style="max-height:300px; overflow-y:auto; border:1px solid #ddd; border-radius:6px; padding:6px;"></div>
+            <div id="distSeniorBox" style="display:none; margin-top:12px; background:#fff3cd; border:1px solid #ffeeba; padding:10px; border-radius:6px;">
+                <h4 style="margin:0 0 8px 0; color:#856404; font-size:13px;">⭐ Выберите старшего на совместных маршрутах:</h4>
+                <div id="distSeniorList"></div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <button type="button" class="btn-success" onclick="saveDistributedRoutes()">Сохранить расстановку</button>
+                <button type="button" class="btn-secondary" onclick="closeModal('distributeRoutesModal')">Отменить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ПАРАМЕТРЫ СМЕНЫ -->
     <div id="shiftModal" class="modal">
         <div class="modal-content">
             <h3 id="shiftModalTitle" style="margin-top:0;">Параметры смены</h3>
@@ -573,7 +643,7 @@
                     <label>№ МКассы:</label>
                     <div style="display:flex; gap:5px;">
                         <input type="text" id="shCashNum" class="form-input" placeholder="13347">
-                        <button type="button" class="mini-plus-btn" onclick="addExtraCash()" title="Добавить запасную МКассу при поломке">➕</button>
+                        <button type="button" class="mini-plus-btn" onclick="addExtraCash()" title="Добавить запасную МКассу">➕</button>
                     </div>
                     <div id="extraCashList" class="extra-chips"></div>
                 </div>
@@ -591,7 +661,7 @@
                     <label>Смена:</label>
                     <div style="display:flex; gap:5px;">
                         <input type="text" id="shNum" class="form-input" placeholder="1-я или 6" oninput="recalcTestTickets()">
-                        <button type="button" class="mini-plus-btn" onclick="addExtraShift()" title="Добавить новую смену при сбое">➕</button>
+                        <button type="button" class="mini-plus-btn" onclick="addExtraShift()" title="Добавить новую смену">➕</button>
                     </div>
                     <div id="extraShiftList" class="extra-chips"></div>
                 </div>
@@ -612,10 +682,7 @@
                 <div class="form-group"><label>Нал.:</label><input type="number" id="shCash" class="form-input" placeholder="411"></div>
                 <div class="form-group"><label>Безнал.:</label><input type="number" id="shCard" class="form-input" placeholder="2846"></div>
             </div>
-            <div class="form-group">
-                <label>Льготники (руб.):</label>
-                <input type="number" id="shBenefits" class="form-input" placeholder="0">
-            </div>
+            <div class="form-group"><label>Льготники (руб.):</label><input type="number" id="shBenefits" class="form-input" placeholder="0"></div>
             <div style="display:flex; gap:10px; margin-top:15px;">
                 <button type="button" class="btn-success" onclick="saveShiftData()">Сохранить и Открыть</button>
                 <button type="button" class="btn-secondary" onclick="closeModal('shiftModal')">Отменить</button>
@@ -623,7 +690,7 @@
         </div>
     </div>
 
-    <!-- ОКНО СОЗДАНИЯ КАРТОЧКИ РЕЕСТРА -->
+    <!-- СОЗДАНИЕ ЗАПИСИ В РЕЕСТРЕ -->
     <div id="regCreateModal" class="modal">
         <div class="modal-content">
             <h3 style="margin-top:0;">Создать запись в Реестре</h3>
@@ -640,26 +707,17 @@
                         <option value="Нет билетной кассы">Нет билетной кассы</option>
                     </select>
                 </div>
-                <div class="form-group" id="rcOrderNumWrap">
-                    <label>№ Приказа:</label>
-                    <input type="text" id="rcOrderNum" class="form-input" value="53" placeholder="53">
-                </div>
+                <div class="form-group" id="rcOrderNumWrap"><label>№ Приказа:</label><input type="text" id="rcOrderNum" class="form-input" value="53"></div>
             </div>
             <div class="form-row">
                 <div class="form-group"><label>Номер билета:</label><input type="text" id="rcTicketNum" class="form-input" placeholder="054"></div>
-                <div class="form-group">
-                    <label>Вид билета:</label>
-                    <button type="button" id="rcTripBtn" class="btn-action" style="margin-top:4px; padding:8px;" onclick="toggleTripType()">Туда</button>
-                </div>
+                <div class="form-group"><label>Вид билета:</label><button type="button" id="rcTripBtn" class="btn-action" style="margin-top:4px; padding:8px;" onclick="toggleTripType()">Туда</button></div>
             </div>
             <div class="form-row">
                 <div class="form-group"><label>Станция отправления:</label><input type="text" id="rcFrom" list="stationsDatalist" class="form-input" placeholder="Начните ввод..." oninput="calcStationPrice()"></div>
                 <div class="form-group"><label>Станция прибытия:</label><input type="text" id="rcTo" list="stationsDatalist" class="form-input" placeholder="Начните ввод..." oninput="calcStationPrice()"></div>
             </div>
-            <div class="form-group">
-                <label>Сумма проезда (₽) <small style="font-weight:normal; color:#666;">(авторасчет по зонам МТППК)</small>:</label>
-                <input type="number" id="rcPrice" class="form-input" placeholder="0">
-            </div>
+            <div class="form-group"><label>Сумма проезда (₽):</label><input type="number" id="rcPrice" class="form-input" placeholder="0"></div>
             <div style="display:flex; gap:10px; margin-top:15px;">
                 <button type="button" class="btn-success" onclick="saveRegistryEntry()">Сохранить</button>
                 <button type="button" class="btn-secondary" onclick="closeModal('regCreateModal')">Отменить</button>
@@ -667,7 +725,6 @@
         </div>
     </div>
 
-    <!-- СПИСОК СТАНЦИЙ ДЛЯ АВТОПОИСКА -->
     <datalist id="stationsDatalist">
         <option value="Москва Окт."><option value="Останкино"><option value="Петровско-Разумовская"><option value="Лихоборы">
         <option value="Моссельмаш"><option value="Грачевская"><option value="Ховрино"><option value="Левобережная">
@@ -681,50 +738,31 @@
         <option value="Лазурная"><option value="Тверь">
     </datalist>
 
-    <!-- ОКНО ФОРМИРОВАНИЯ РЕЕСТРА -->
     <div id="regExportModal" class="modal">
         <div class="modal-content" style="max-width:420px;">
             <h3 style="margin-top:0;">Сформировать Реестр</h3>
-            <div class="form-row">
-                <div class="form-group"><label>С:</label><input type="date" id="reDateFrom" class="form-input"></div>
-                <div class="form-group"><label>По:</label><input type="date" id="reDateTo" class="form-input"></div>
-            </div>
-            <div class="form-group">
-                <label>Что формируем:</label>
-                <select id="reType" class="form-input">
-                    <option value="p53">Приказ №53 (только Приказ № 53)</option>
-                    <option value="oper">Оперативный приказ (все остальные)</option>
-                </select>
-            </div>
-            <div style="display:flex; gap:10px; margin-top:15px;">
-                <button type="button" class="btn-success" onclick="exportRegistryExcel()">📥 Сформировать и скачать Excel</button>
-                <button type="button" class="btn-secondary" onclick="closeModal('regExportModal')">Отмена</button>
-            </div>
+            <div class="form-row"><div class="form-group"><label>С:</label><input type="date" id="reDateFrom" class="form-input"></div><div class="form-group"><label>По:</label><input type="date" id="reDateTo" class="form-input"></div></div>
+            <div class="form-group"><label>Что формируем:</label><select id="reType" class="form-input"><option value="p53">Приказ №53 (только Приказ № 53)</option><option value="oper">Оперативный приказ (все остальные)</option></select></div>
+            <div style="display:flex; gap:10px; margin-top:15px;"><button type="button" class="btn-success" onclick="exportRegistryExcel()">📥 Скачать Excel</button><button type="button" class="btn-secondary" onclick="closeModal('regExportModal')">Отмена</button></div>
         </div>
     </div>
 
-    <!-- ДЕКАДНЫЙ ОТЧЕТ (3 ТАБЛИЦЫ: 10, 20, 30/31 ДНЕЙ) -->
     <div id="decadeStatsModal" class="modal">
         <div class="modal-content modal-wide">
-            <h3 id="decadeModalTitle" style="margin-top:0;">Отчет по выручке и льготникам за месяц</h3>
+            <h3 id="decadeModalTitle" style="margin-top:0;">Отчет за месяц</h3>
             <div id="decadeTablesContainer"></div>
             <button class="btn-success" onclick="closeModal('decadeStatsModal')">Закрыть</button>
         </div>
     </div>
 
-    <!-- УВЕДОМЛЕНИЯ (КОЛОКОЛЬЧИК) -->
     <div id="notificationsModal" class="modal">
         <div class="modal-content">
             <h3 style="margin-top:0;">🔔 Уведомления</h3>
             <div id="notificationsList" style="max-height:300px; overflow-y:auto; margin-bottom:12px;"></div>
-            <div style="display:flex; gap:10px;">
-                <button class="btn-success" onclick="markAllNotificationsRead()">Прочитано</button>
-                <button class="btn-secondary" onclick="closeModal('notificationsModal')">Закрыть</button>
-            </div>
+            <div style="display:flex; gap:10px;"><button class="btn-success" onclick="markAllNotificationsRead()">Прочитано</button><button class="btn-secondary" onclick="closeModal('notificationsModal')">Закрыть</button></div>
         </div>
     </div>
 
-    <!-- ОФОРМЛЕНИЕ ЛЬГОТЫ -->
     <div id="benefitModal" class="modal">
         <div class="modal-content">
             <h3 id="benefitModalTitle" style="margin-top:0;">Оформление льготы</h3>
@@ -735,7 +773,6 @@
         </div>
     </div>
 
-    <!-- ДЕТАЛИЗАЦИЯ ЛЬГОТ -->
     <div id="benefitsDetailModal" class="modal">
         <div class="modal-content" style="max-width: 360px;">
             <h3 style="margin-top:0;">Детализация льгот за месяц</h3>
@@ -748,12 +785,37 @@
         </div>
     </div>
 
+    <!-- СОЗДАТЬ СОТРУДНИКА (С РОЛЬЮ И СТАНЦИЕЙ) -->
+    <div id="createWorkerModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-top:0;">Создать сотрудника</h3>
+            <div class="form-row">
+                <div class="form-group"><label>Табельный номер:</label><input type="text" id="newWorkerTab" class="form-input"></div>
+                <div class="form-group"><label>Роль:</label>
+                    <select id="newWorkerRole" class="form-input">
+                        <option value="viewer">Смотрящий (ККЛ)</option>
+                        <option value="tabel">Табельщик</option>
+                        <option value="admin">Администратор</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group"><label>Ф.И.О.:</label><input type="text" id="newWorkerFio" class="form-input"></div>
+            <div class="form-row">
+                <div class="form-group"><label>Станция прикрепления:</label><input type="text" id="newWorkerStation" class="form-input" placeholder="Клин"></div>
+                <div class="form-group"><label>Должность:</label><input type="text" id="newWorkerPos" class="form-input" placeholder="Кассир-контролер"></div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:12px;">
+                <button class="btn-success" onclick="createWorker()">Создать</button>
+                <button class="btn-secondary" onclick="closeModal('createWorkerModal')">Отмена</button>
+            </div>
+        </div>
+    </div>
+
     <div id="occNoteModal" class="modal"><div class="modal-content" style="max-width: 400px; background-color:#1a1e29; color:#e2e8f0;"><h3 style="margin-top:0; color:#fff;">Примечание</h3><textarea id="occNoteText" rows="4" style="width:100%; border:1px solid #2d3748; background:#11151c; color:#fff; padding:6px; border-radius: 4px;"></textarea><button type="button" class="btn-success" onclick="closeModal('occNoteModal')">Готово</button></div></div>
     <div id="syncLoginModal" class="modal"><div class="modal-content" style="max-width:350px;"><h3>Синхронизация МКасс</h3><div class="form-group"><label>Станция синхронизации:</label><input type="text" value="Клин" class="form-input"></div><div class="form-group"><label>Номер Маршрута:</label><input type="text" value="22" class="form-input"></div><button class="btn-success" onclick="enterSyncDashboard()">Войти</button></div></div>
     <div id="syncAnalysisModal" class="modal"><div class="modal-content"><h3>Анализ МКассы</h3><div class="form-row"><div class="form-group"><label>№ МКассы:</label><input type="text" id="saCash" class="form-input"></div><div class="form-group"><label>ФИО Кассира:</label><input type="text" id="saFio" class="form-input"></div></div><div class="form-row"><div class="form-group"><label>Время постановки (ччмм):</label><input type="text" id="saTimeIn" class="form-input"></div><div class="form-group"><label>Время снятия (ччмм):</label><input type="text" id="saTimeOut" class="form-input"></div></div><button class="btn-success" onclick="saveSyncAnalysis()">Сохранить</button></div></div>
     <div id="syncUnfinishedModal" class="modal"><div class="modal-content"><h3>Не завершенные МКассы</h3><div id="syncUnfList"></div><button class="btn-secondary" style="margin-top:15px;" onclick="closeModal('syncUnfinishedModal')">Закрыть</button></div></div>
     <div id="syncReasonModal" class="modal"><div class="modal-content" style="max-width:300px;"><h3 style="color:var(--accent-color);">Ошибка Синхронизации</h3><p id="srText"></p><div class="form-group"><label>Причина:</label><select id="srReason" class="form-input"><option value="Р">В работе</option><option value="З">В ремонте</option></select></div><button class="btn-success" onclick="resolveSyncError()">Применить</button></div></div>
-    <div id="createWorkerModal" class="modal"><div class="modal-content"><h3>Создать сотрудника</h3><div class="form-group"><label>Табельный номер:</label><input type="text" id="newWorkerTab" class="form-input"></div><div class="form-group"><label>ФИО:</label><input type="text" id="newWorkerFio" class="form-input"></div><button class="btn-success" onclick="createWorker()">Создать</button></div></div>
 
     <script>
         // === FIREBASE ===
@@ -770,6 +832,7 @@
         let cloudOccupancy = {};
         let cloudRegistry = [];
         let cloudNotifications = [];
+        let cloudTabelByMonth = {}; // { "2026-11": { "8065": { "22": { route:"22", hours:"10,3", senior:true } } } }
         let lastNotifCount = 0;
 
         try {
@@ -779,6 +842,16 @@
         } catch(e) { console.error(e); }
 
         const monthNamesRu = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
+
+        // База маршрутов и часов (на Этапе 3 будет редактироваться в Настройках)
+        let routesDb = [
+            { num: "11-1", hours: "6,9", startTime: "06:00", desc: "Утренний" },
+            { num: "12-2", hours: "9,3", startTime: "04:02", desc: "Ежедневный (2 ККЛ)" },
+            { num: "13", hours: "10,3", startTime: "06:25", desc: "Клин — Москва" },
+            { num: "22", hours: "10,3", startTime: "07:00", desc: "Основной" },
+            { num: "25", hours: "8,5", startTime: "12:00", desc: "Дневной" },
+            { num: "В", hours: "", startTime: "", desc: "Выходной" }
+        ];
 
         const trainScheduleDb = {
             "7903": { name: "Клин — Москва", dep: "6:25", arr: "7:40", from: "Клин", to: "Москва" },
@@ -793,7 +866,6 @@
             "7549": { title: "Москва → Тверь", stops: ["Москва — Крюково", "Крюково — Клин", "Клин — Тверь"] }
         };
 
-        // Тарифные зоны Ленинградского направления (для авторасчета цены в Реестре)
         const stationZones = {
             "Москва Окт.": 0, "Останкино": 0, "Петровско-Разумовская": 1, "Лихоборы": 1, "Моссельмаш": 1, "Грачевская": 1, "Ховрино": 1,
             "Левобережная": 2, "Химки": 2, "Молжаниново": 3, "Новоподрезково": 3, "Подрезково": 3, "Сходня": 3, "Фирсановская": 4, "Малино": 4, "Зел.Крюково": 4,
@@ -811,8 +883,8 @@
         };
 
         let workersTabelDb = [
-            { tab: "6527", fio: "Бурлаков Даниил Сергеевич", role: "viewer", shiftActive: false },
-            { tab: "8065", fio: "Волков Виктор Сергеевич", role: "founder", shiftActive: false }
+            { tab: "6527", fio: "Бурлаков Даниил Сергеевич", role: "viewer", station: "Клин", shiftStatus: "none" },
+            { tab: "8065", fio: "Волков Виктор Сергеевич", role: "founder", station: "Клин", shiftStatus: "none" }
         ];
 
         function getEmptyBenefits() {
@@ -824,26 +896,35 @@
             trainsInFdu: 0,
             lastMkassaTix: 0,
             lastMkassaMoney: 0,
-            extraCash: [],
-            extraShifts: [],
-            extraTests: [],
+            extraCash: [], extraShifts: [], extraTests: [],
             currentShiftMkassa: "",
             shiftHistory: JSON.parse(localStorage.getItem('kkl_shift_history') || '[]'),
             syncRecords: [],
-            workers: workersTabelDb
+            workers: workersTabelDb,
+            tabelDirty: false,
+            drawerTarget: null,
+            distDay: 'today'
         };
 
         let currentTrainBenefits = getEmptyBenefits();
         let activeBenefitCategory = null;
-        let rcTripMode = "oneway"; // oneway | roundtrip
+        let rcTripMode = "oneway";
 
-        // === ЗВУК УВЕДОМЛЕНИЯ (ОФЛАЙН WEB AUDIO) ===
+        // === РОЛИ И ПРАВА ===
+        function getUserRole() {
+            if (!appState.user) return 'viewer';
+            if (appState.user.tab === '8065') return 'founder';
+            return appState.user.role || 'viewer';
+        }
+        function canCreateWorker() { let r = getUserRole(); return r === 'founder' || r === 'admin'; }
+        function canEditTabel() { let r = getUserRole(); return r === 'founder' || r === 'admin' || r === 'tabel'; }
+
+        // === ЗВУК УВЕДОМЛЕНИЯ ===
         function playNotificationSound() {
             try {
                 const AudioCtx = window.AudioContext || window.webkitAudioContext;
                 const ctx = new AudioCtx();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
+                const osc = ctx.createOscillator(), gain = ctx.createGain();
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(880, ctx.currentTime);
                 osc.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.15);
@@ -852,6 +933,16 @@
                 osc.connect(gain); gain.connect(ctx.destination);
                 osc.start(); osc.stop(ctx.currentTime + 0.35);
             } catch(e) {}
+        }
+
+        function sendCloudNotification(text, dedupeId) {
+            let id = dedupeId || ('notif_' + Date.now());
+            let obj = { text, time: new Date().toLocaleString('ru-RU'), ts: Date.now(), read: false };
+            if (db) {
+                db.collection('notifications').doc(id).get().then(doc => {
+                    if (!doc.exists) db.collection('notifications').doc(id).set(obj);
+                }).catch(()=>{});
+            }
         }
 
         // === ОБЛАЧНАЯ СИНХРОНИЗАЦИЯ ===
@@ -867,6 +958,12 @@
                     appState.workers = list;
                     renderTabel();
                 }
+            });
+
+            db.collection('tabel').onSnapshot((snapshot) => {
+                snapshot.forEach(doc => { cloudTabelByMonth[doc.id] = doc.data(); });
+                renderTabel();
+                checkMissedShiftsAndNotify();
             });
 
             db.collection('occupancy').onSnapshot((snapshot) => {
@@ -886,7 +983,7 @@
                 snapshot.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
                 list.sort((a, b) => (b.ts || 0) - (a.ts || 0));
                 let unread = list.filter(n => !n.read).length;
-                if (unread > lastNotifCount) { playNotificationSound(); }
+                if (unread > lastNotifCount) playNotificationSound();
                 lastNotifCount = unread;
                 cloudNotifications = list;
                 updateBellBadge();
@@ -897,26 +994,15 @@
             let unread = cloudNotifications.filter(n => !n.read).length;
             let badge = document.getElementById('bellBadge');
             if (!badge) return;
-            if (unread > 0) {
-                badge.innerText = unread;
-                badge.style.display = 'flex';
-            } else {
-                badge.style.display = 'none';
-            }
+            badge.innerText = unread;
+            badge.style.display = unread > 0 ? 'flex' : 'none';
         }
 
         function openNotificationsModal() {
             let list = document.getElementById('notificationsList');
-            if (cloudNotifications.length === 0) {
-                list.innerHTML = '<div style="color:#666; text-align:center; padding:15px;">Новых уведомлений нет</div>';
-            } else {
-                list.innerHTML = cloudNotifications.map(n => `
-                    <div style="padding:8px; border-bottom:1px solid #eee; background:${n.read ? '#fff' : '#eef6ff'};">
-                        <div style="font-size:11px; color:#666;">${n.time || ''}</div>
-                        <div style="font-size:13px;">${n.text || ''}</div>
-                    </div>
-                `).join('');
-            }
+            list.innerHTML = cloudNotifications.length === 0
+                ? '<div style="color:#666; text-align:center; padding:15px;">Новых уведомлений нет</div>'
+                : cloudNotifications.map(n => `<div style="padding:8px; border-bottom:1px solid #eee; background:${n.read ? '#fff' : '#eef6ff'};"><div style="font-size:11px; color:#666;">${n.time || ''}</div><div style="font-size:13px;">${n.text || ''}</div></div>`).join('');
             openModal('notificationsModal');
         }
 
@@ -931,14 +1017,10 @@
 
         function showSyncToast(msg) {
             let toast = document.getElementById('autoSyncToast');
-            if(toast) {
-                toast.innerText = msg || "☁️ Облако синхронизировано";
-                toast.style.display = 'block';
-                setTimeout(() => { toast.style.display = 'none'; }, 2500);
-            }
+            if(toast) { toast.innerText = msg || "☁️ Облако синхронизировано"; toast.style.display = 'block'; setTimeout(() => { toast.style.display = 'none'; }, 2500); }
         }
 
-        // === ЗАГРУЗКА ПРИЛОЖЕНИЯ (АВТОВХОД БЕЗ ПОВТОРНОЙ РЕГИСТРАЦИИ) ===
+        // === ЗАГРУЗКА ===
         window.addEventListener('load', () => {
             startCloudSync();
             let now = new Date();
@@ -976,27 +1058,22 @@
             let list = document.getElementById('auditLogList'); if(!list) return;
             let timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             let entry = document.createElement('div'); entry.className = 'audit-log-entry'; entry.innerHTML = `<strong>[${timeStr}]</strong> ${text}`;
-            if (list.children.length === 1 && list.children[0].innerText.includes('отсутствуют')) { list.innerHTML = ''; }
+            if (list.children.length === 1 && list.children[0].innerText.includes('отсутствуют')) list.innerHTML = '';
             list.prepend(entry);
         }
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('active'); }
         function sidebarNav(target) {
             toggleSidebar(); hideAllScreens();
-            if (target === 'tabel') { openTabelScreen(); }
-            else if (target === 'main') { backToMain(); }
-            else if (target === 'registry') { openRegistry(); }
+            if (target === 'tabel') openTabelScreen();
+            else if (target === 'main') backToMain();
+            else if (target === 'registry') openRegistry();
             else { let scr = document.getElementById(target + '-screen'); if(scr) scr.classList.add('active-screen'); }
         }
-
         function hideAllScreens() { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen')); }
-        function backToMain() {
-            let savedProfile = JSON.parse(localStorage.getItem('kkl_profile') || 'null') || appState.user;
-            if (savedProfile) showMainScreen(savedProfile);
-        }
+        function backToMain() { let p = JSON.parse(localStorage.getItem('kkl_profile') || 'null') || appState.user; if (p) showMainScreen(p); }
         function logout() {
-            toggleSidebar();
-            hideAllScreens();
+            toggleSidebar(); hideAllScreens();
             document.getElementById('menuBtn').style.display = 'none';
             document.getElementById('bellBtn').style.display = 'none';
             document.getElementById('login-screen').classList.add('active-screen');
@@ -1005,45 +1082,35 @@
         }
 
         function checkUserStep1() {
-            let tab = document.getElementById('loginTab').value.trim(); 
-            let last = document.getElementById('loginLast').value.trim();
+            let tab = document.getElementById('loginTab').value.trim(), last = document.getElementById('loginLast').value.trim();
             let found = appState.workers.find(w => w.tab === tab && w.fio.toLowerCase().includes(last.toLowerCase()));
             if(found) {
-                appState.user = found; 
-                document.getElementById('loginStep1').style.display = 'none'; 
-                document.getElementById('logFoundName').innerText = last; 
-                document.getElementById('logFoundTab').innerText = tab; 
-                document.getElementById('logFoundFull').innerText = found.fio; 
+                appState.user = found;
+                document.getElementById('loginStep1').style.display = 'none';
+                document.getElementById('logFoundName').innerText = last;
+                document.getElementById('logFoundTab').innerText = tab;
+                document.getElementById('logFoundFull').innerText = found.fio;
                 document.getElementById('loginStep2').style.display = 'block';
-            } else { 
-                alert('Сотрудник не найден в системе! (Пример: 8065 и Волков)'); 
-            }
+            } else { alert('Сотрудник не найден! (Пример: 8065 и Волков)'); }
         }
 
         function confirmLoginUser() {
             let saved = JSON.parse(localStorage.getItem('kkl_profile') || 'null');
             if (saved && saved.tab === appState.user.tab && saved.completed) {
-                appState.user = saved;
-                showMainScreen(saved);
+                appState.user = saved; showMainScreen(saved);
             } else if (appState.user.profileCompleted) {
-                localStorage.setItem('kkl_profile', JSON.stringify({ ...appState.user, completed: true }));
-                showMainScreen(appState.user);
+                let p = { ...appState.user, completed: true };
+                localStorage.setItem('kkl_profile', JSON.stringify(p));
+                appState.user = p; showMainScreen(p);
             } else {
                 hideAllScreens();
                 document.getElementById('register-screen').classList.add('active-screen');
                 document.getElementById('regTab').value = appState.user.tab;
                 document.getElementById('regFio').value = appState.user.fio;
-                document.getElementById('regPos').value = '';
-                document.getElementById('regDoc').value = '';
-                document.getElementById('regIssue').value = '';
-                document.getElementById('regExpiry').value = '';
-                document.getElementById('regStation').value = '';
-                document.getElementById('regVideoReg').value = '';
-                document.getElementById('regPass').value = '';
+                ['regPos','regDoc','regIssue','regExpiry','regStation','regVideoReg','regPass'].forEach(id => document.getElementById(id).value = '');
                 initCanvas();
             }
         }
-
         function resetLogin() { document.getElementById('loginStep2').style.display = 'none'; document.getElementById('loginStep1').style.display = 'block'; appState.user = null; }
 
         let canvas, ctx, painting = false;
@@ -1051,26 +1118,22 @@
             canvas = document.getElementById('sigCanvas'); if(!canvas) return;
             ctx = canvas.getContext('2d'); canvas.width = canvas.offsetWidth || 400; canvas.height = canvas.offsetHeight || 90;
             ctx.lineWidth = 2; ctx.strokeStyle = '#003366';
-            canvas.onmousedown = (e) => { painting = true; draw(e); };
-            canvas.onmouseup = () => { painting = false; ctx.beginPath(); };
-            canvas.onmousemove = draw;
+            canvas.onmousedown = (e) => { painting = true; draw(e); }; canvas.onmouseup = () => { painting = false; ctx.beginPath(); }; canvas.onmousemove = draw;
         }
-        function draw(e) { if (!painting) return; let rect = canvas.getBoundingClientRect(); ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top); ctx.stroke(); ctx.beginPath(); ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top); }
+        function draw(e) { if (!painting) return; let r = canvas.getBoundingClientRect(); ctx.lineTo(e.clientX - r.left, e.clientY - r.top); ctx.stroke(); ctx.beginPath(); ctx.moveTo(e.clientX - r.left, e.clientY - r.top); }
         function clearSignature() { if(ctx) ctx.clearRect(0, 0, canvas.width, canvas.height); }
 
         function saveRegistration() {
             let profile = {
-                tab: appState.user.tab,
-                fio: appState.user.fio,
-                role: appState.user.role || (appState.user.tab === '8065' ? 'founder' : 'viewer'),
+                tab: appState.user.tab, fio: appState.user.fio,
+                role: appState.user.tab === '8065' ? 'founder' : (appState.user.role || 'viewer'),
                 position: document.getElementById('regPos').value.trim(),
                 doc: document.getElementById('regDoc').value.trim(),
                 issue: document.getElementById('regIssue').value,
                 expiry: document.getElementById('regExpiry').value,
                 station: document.getElementById('regStation').value.trim(),
                 videoReg: document.getElementById('regVideoReg').value.trim(),
-                completed: true,
-                profileCompleted: true
+                completed: true, profileCompleted: true
             };
             appState.user = profile;
             localStorage.setItem('kkl_profile', JSON.stringify(profile));
@@ -1087,66 +1150,423 @@
             let now = new Date();
             document.getElementById('mainTitleMonth').innerText = `Личные данные — ${monthNamesRu[now.getMonth()]}`;
             document.getElementById('sidebarUserName').innerText = user.fio || "Сотрудник";
-            if (user.role === 'admin' || user.role === 'founder' || user.tab === '8065') {
-                document.getElementById('menuSettings').style.display = 'block';
-            }
-            if (user.videoReg && document.getElementById('shVideoReg')) {
-                document.getElementById('shVideoReg').value = user.videoReg;
-            }
+            document.getElementById('menuSettings').style.display = (getUserRole() === 'founder' || getUserRole() === 'admin') ? 'block' : 'none';
+            if (user.videoReg && document.getElementById('shVideoReg')) document.getElementById('shVideoReg').value = user.videoReg;
             updateDashboardTotals();
+            checkMissedShiftsAndNotify();
         }
 
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function navTo(id) {
             hideAllScreens(); let scr = document.getElementById(id + '-screen'); if(scr) scr.classList.add('active-screen');
-            let side = document.getElementById('sidebar'); if(side) side.classList.remove('open');
-            let over = document.getElementById('sidebarOverlay'); if(over) over.classList.remove('active');
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('active');
             if(id === 'tabel') renderTabel();
         }
 
-        // === ПАРАМЕТРЫ СМЕНЫ: ПЛЮСЫ, ПРОБНИКИ И СТАТИСТИКА ===
+        // === ЭТАП 2: ТАБЕЛЬ ===
+        function getSelectedMonthKey() {
+            let y = document.getElementById('tabelYearSelect').value;
+            let m = String(parseInt(document.getElementById('tabelMonthSelect').value) + 1).padStart(2, '0');
+            return `${y}-${m}`;
+        }
+
+        function openTabelScreen() {
+            let now = new Date();
+            document.getElementById('tabelMonthSelect').value = now.getMonth();
+            document.getElementById('tabelYearSelect').value = now.getFullYear();
+            applyTabelPermissions();
+            navTo('tabel');
+        }
+
+        function applyTabelPermissions() {
+            document.getElementById('btnTabelCreateWorker').style.display = canCreateWorker() ? 'inline-block' : 'none';
+            document.getElementById('btnTabelLoadFile').style.display = canEditTabel() ? 'inline-block' : 'none';
+            document.getElementById('btnTabelDistribute').style.display = canEditTabel() ? 'inline-block' : 'none';
+            updateTabelSaveBtn();
+        }
+
+        function updateTabelSaveBtn() {
+            let btn = document.getElementById('btnTabelNotify');
+            if (!btn) return;
+            btn.style.display = (appState.tabelDirty && canEditTabel()) ? 'inline-block' : 'none';
+        }
+
+        function markTabelDirty() {
+            appState.tabelDirty = true;
+            updateTabelSaveBtn();
+        }
+
+        function onTabelMonthYearChange() { renderTabel(); }
+        function prevTabelMonth() {
+            let mSel = document.getElementById('tabelMonthSelect'), ySel = document.getElementById('tabelYearSelect');
+            let m = parseInt(mSel.value), y = parseInt(ySel.value);
+            if (m === 0) { mSel.value = 11; ySel.value = Math.max(2025, y - 1); } else { mSel.value = m - 1; }
+            renderTabel();
+        }
+        function nextTabelMonth() {
+            let mSel = document.getElementById('tabelMonthSelect'), ySel = document.getElementById('tabelYearSelect');
+            let m = parseInt(mSel.value), y = parseInt(ySel.value);
+            if (m === 11) { mSel.value = 0; ySel.value = Math.min(2028, y + 1); } else { mSel.value = m + 1; }
+            renderTabel();
+        }
+
+        // Вычисление статуса сотрудника на СЕГОДНЯ
+        function getWorkerTodayStatus(w) {
+            let now = new Date();
+            let ym = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            let todayDay = String(now.getDate());
+            let cell = cloudTabelByMonth[ym]?.[w.tab]?.[todayDay];
+
+            if (!cell || !cell.route || cell.route === 'В') {
+                return { code: 'weekend', dotClass: 'dot-weekend', label: 'Выходной' };
+            }
+            if (w.shiftStatus === 'open' || w.shiftActive) {
+                return { code: 'open', dotClass: 'dot-green', label: 'Смена открыта' };
+            }
+            if (w.shiftStatus === 'closed') {
+                return { code: 'closed', dotClass: 'dot-blue', label: 'Смена закрыта' };
+            }
+
+            // Проверяем время начала маршрута
+            let rObj = routesDb.find(r => r.num === cell.route);
+            let startMin = 8 * 60; // по умолчанию 08:00
+            if (rObj && rObj.startTime) {
+                let parts = rObj.startTime.split(':');
+                startMin = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+            }
+            let curMin = now.getHours() * 60 + now.getMinutes();
+            if (curMin >= startMin) {
+                return { code: 'not_started', dotClass: 'dot-red', label: 'Не заступил вовремя!', late: true };
+            }
+            return { code: 'not_started', dotClass: 'dot-gray', label: 'Еще не заступил', late: false };
+        }
+
+        function checkMissedShiftsAndNotify() {
+            if (!canCreateWorker()) return; // уведомления приходят основателю и администраторам
+            let todayStr = new Date().toISOString().split('T')[0];
+            appState.workers.forEach(w => {
+                let st = getWorkerTodayStatus(w);
+                if (st.late) {
+                    sendCloudNotification(`⚠️ Сотрудник ${w.fio} (таб. ${w.tab}) не заступил на смену вовремя!`, `missed_${todayStr}_${w.tab}`);
+                }
+            });
+        }
+
+        function renderTabel() {
+            let m = parseInt(document.getElementById('tabelMonthSelect').value);
+            let y = parseInt(document.getElementById('tabelYearSelect').value);
+            let daysInMonth = new Date(y, m + 1, 0).getDate();
+            let ymKey = getSelectedMonthKey();
+            let monthData = cloudTabelByMonth[ymKey] || {};
+            let filterVal = document.getElementById('tabelStatusFilter')?.value || 'all';
+
+            let now = new Date();
+            let isCurrentMonth = (now.getFullYear() === y && now.getMonth() === m);
+            let todayNum = now.getDate();
+
+            document.getElementById('tabelDaysColspan').colSpan = daysInMonth;
+            let daysRow = document.getElementById('tabelDaysHeaderRow');
+            if(!daysRow) return;
+            daysRow.innerHTML = '';
+            for(let d = 1; d <= daysInMonth; d++) {
+                let thStyle = (isCurrentMonth && d === todayNum) ? 'style="background:#ffe599; font-weight:bold;"' : '';
+                daysRow.innerHTML += `<th ${thStyle}>${d}</th>`;
+            }
+
+            let tbody = document.getElementById('tabelBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+
+            let visibleWorkers = appState.workers.filter(w => {
+                if (filterVal === 'all') return true;
+                return getWorkerTodayStatus(w).code === filterVal;
+            });
+
+            visibleWorkers.forEach((w, idx) => {
+                let st = getWorkerTodayStatus(w);
+                let dot = `<span class="status-dot ${st.dotClass}" title="${st.label}"></span>`;
+                let wDays = monthData[w.tab] || {};
+                let workDaysCount = 0;
+                let totalHours = 0;
+
+                let tr1Cells = '', tr2Cells = '';
+                for(let d = 1; d <= daysInMonth; d++) {
+                    let cell = wDays[String(d)];
+                    let routeText = (cell && cell.route) ? (cell.senior ? `⭐${cell.route}` : cell.route) : '+';
+                    let hoursText = (cell && cell.hours) ? cell.hours : '';
+                    if (cell && cell.route && cell.route !== 'В') {
+                        workDaysCount++;
+                        totalHours += parseFloat(String(cell.hours || '0').replace(',', '.')) || 0;
+                    }
+                    let cls = 'tabel-cell-day';
+                    if (isCurrentMonth && d === todayNum) cls += ' cell-today-col';
+                    if (cell && cell.route === 'В') cls += ' cell-weekend';
+                    if (isCurrentMonth && d === todayNum && st.code === 'open') cls += ' cell-shift-active';
+
+                    let clickAttr = canEditTabel() ? `onclick="openTabelDrawer('${w.tab}', ${d})"` : '';
+                    tr1Cells += `<td class="${cls}" ${clickAttr}>${routeText}</td>`;
+                    tr2Cells += `<td class="${cls}" ${clickAttr}>${hoursText}</td>`;
+                }
+
+                let tr1 = `<tr><td rowspan="2">${idx+1}</td><td rowspan="2">${w.tab}</td><td rowspan="2" style="text-align:left; font-weight:bold; padding-left:5px;">${w.fio} ${dot}</td><td style="font-size:8.5px; background:#f7f7f7;">№ маршрута</td>${tr1Cells}<td rowspan="2"><strong>${workDaysCount}</strong></td><td rowspan="2"><strong>${totalHours.toFixed(1).replace('.',',')}</strong></td></tr>`;
+                let tr2 = `<tr><td style="font-size:8.5px; background:#f7f7f7;">время</td>${tr2Cells}</tr>`;
+                tbody.innerHTML += tr1 + tr2;
+            });
+            applyTabelPermissions();
+        }
+
+        // === ПРАВОЕ БОКОВОЕ МЕНЮ ЯЧЕЙКИ ТАБЕЛЯ ===
+        function openTabelDrawer(tab, day) {
+            if (!canEditTabel()) return;
+            let worker = appState.workers.find(w => w.tab === tab);
+            let ymKey = getSelectedMonthKey();
+            let existing = cloudTabelByMonth[ymKey]?.[tab]?.[String(day)] || { route: '', hours: '', senior: false };
+
+            appState.drawerTarget = { tab, day, ymKey };
+            document.getElementById('drawerWorkerInfo').innerHTML = `<strong>${worker?.fio || tab}</strong><br>Дата: <strong>${day} ${monthNamesRu[parseInt(document.getElementById('tabelMonthSelect').value)]} ${document.getElementById('tabelYearSelect').value}</strong>`;
+            document.getElementById('drawerRouteInput').value = existing.route || '';
+            document.getElementById('drawerHoursInput').value = existing.hours || '';
+            document.getElementById('drawerSeniorCheck').checked = !!existing.senior;
+            renderDrawerSuggestions(existing.route || '');
+
+            document.getElementById('drawerOverlay').classList.add('active');
+            document.getElementById('tabelRightDrawer').classList.add('open');
+        }
+
+        function closeTabelDrawer() {
+            document.getElementById('drawerOverlay').classList.remove('active');
+            document.getElementById('tabelRightDrawer').classList.remove('open');
+        }
+
+        function renderDrawerSuggestions(query) {
+            let q = (query || '').trim().toLowerCase();
+            let list = document.getElementById('drawerSuggestList');
+            let matched = routesDb.filter(r => r.num.toLowerCase().includes(q) || r.desc.toLowerCase().includes(q));
+            list.innerHTML = matched.map(r => `
+                <div class="route-suggest-item" onclick="selectDrawerRoute('${r.num}', '${r.hours}')">
+                    <strong>Маршрут ${r.num}</strong>
+                    <span style="color:#555;">${r.hours ? r.hours + ' ч' : 'Выходной'} (${r.desc})</span>
+                </div>
+            `).join('') || '<div style="padding:8px; color:#888; font-size:12px;">Маршрут не найден (можно ввести свой)</div>';
+
+            let exact = routesDb.find(r => r.num.toLowerCase() === q);
+            if (exact) document.getElementById('drawerHoursInput').value = exact.hours;
+        }
+
+        function selectDrawerRoute(num, hours) {
+            document.getElementById('drawerRouteInput').value = num;
+            document.getElementById('drawerHoursInput').value = hours;
+        }
+
+        function saveTabelCellFromDrawer() {
+            if (!appState.drawerTarget) return;
+            let { tab, day, ymKey } = appState.drawerTarget;
+            let route = document.getElementById('drawerRouteInput').value.trim();
+            let hours = document.getElementById('drawerHoursInput').value.trim();
+            let senior = document.getElementById('drawerSeniorCheck').checked;
+
+            if (!cloudTabelByMonth[ymKey]) cloudTabelByMonth[ymKey] = {};
+            if (!cloudTabelByMonth[ymKey][tab]) cloudTabelByMonth[ymKey][tab] = {};
+            cloudTabelByMonth[ymKey][tab][String(day)] = route ? { route, hours, senior } : null;
+
+            markTabelDirty();
+            renderTabel();
+            closeTabelDrawer();
+        }
+
+        function saveAndNotifyStaff() {
+            let ymKey = getSelectedMonthKey();
+            let data = cloudTabelByMonth[ymKey] || {};
+            if (db) {
+                db.collection('tabel').doc(ymKey).set(data).then(() => {
+                    showSyncToast("☁️ Табель сохранен в облако");
+                    sendCloudNotification(`📅 График работы на ${monthNamesRu[parseInt(document.getElementById('tabelMonthSelect').value)]} обновлен! Проверьте свои смены.`);
+                }).catch(err => alert("Ошибка: " + err.message));
+            }
+            appState.tabelDirty = false;
+            updateTabelSaveBtn();
+            addLog("Табель сохранен в облако, персонал оповещен.");
+            alert("Табель сохранен и персонал оповещен!");
+        }
+
+        // === ЗАГРУЗКА МАРШРУТОВ ИЗ ФАЙЛА (ТОЛЬКО НА ЗАВТРА) ===
+        function handleTabelFileUpload(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                let ymKey = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}`;
+                let tDay = String(tomorrow.getDate());
+                if (!cloudTabelByMonth[ymKey]) cloudTabelByMonth[ymKey] = {};
+
+                let text = e.target.result || '';
+                let lines = text.split(/\r?\n/).filter(Boolean);
+                let updated = 0;
+
+                // Поддержка формата: табельный;маршрут или автоматическое распределение на завтра
+                lines.forEach(line => {
+                    let parts = line.split(/[;,\t]/).map(s => s.trim());
+                    if (parts.length >= 2) {
+                        let w = appState.workers.find(x => x.tab === parts[0]);
+                        if (w) {
+                            let rObj = routesDb.find(r => r.num === parts[1]);
+                            if (!cloudTabelByMonth[ymKey][w.tab]) cloudTabelByMonth[ymKey][w.tab] = {};
+                            cloudTabelByMonth[ymKey][w.tab][tDay] = { route: parts[1], hours: rObj ? rObj.hours : '10,3', senior: false };
+                            updated++;
+                        }
+                    }
+                });
+
+                if (updated === 0) {
+                    // Если файл в произвольном формате — обновляем маршруты на завтра по списку
+                    appState.workers.forEach((w, i) => {
+                        let rObj = routesDb[i % (routesDb.length - 1)];
+                        if (!cloudTabelByMonth[ymKey][w.tab]) cloudTabelByMonth[ymKey][w.tab] = {};
+                        cloudTabelByMonth[ymKey][w.tab][tDay] = { route: rObj.num, hours: rObj.hours, senior: false };
+                    });
+                }
+
+                markTabelDirty();
+                renderTabel();
+                addLog(`Файл "${file.name}" загружен: маршруты обновлены на завтра (${tDay}.${tomorrow.getMonth()+1}). Сегодняшние не изменены.`);
+                alert(`Файл "${file.name}" успешно обработан! Маршруты обновлены только на завтра (${tDay}.${String(tomorrow.getMonth()+1).padStart(2,'0')}), сегодняшние смены не затронуты.`);
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        // === РАСКИДАТЬ ПО МАРШРУТАМ (СЕГОДНЯ / ЗАВТРА + ВЫБОР СТАРШЕГО) ===
+        function openDistributeModal() {
+            let today = new Date(), tomorrow = new Date();
+            tomorrow.setDate(today.getDate() + 1);
+            document.getElementById('distDateToday').innerText = today.toLocaleDateString('ru-RU');
+            document.getElementById('distDateTomorrow').innerText = tomorrow.toLocaleDateString('ru-RU');
+            switchDistDay('tomorrow');
+            openModal('distributeRoutesModal');
+        }
+
+        function switchDistDay(mode) {
+            appState.distDay = mode;
+            document.getElementById('distBtnToday').classList.toggle('active', mode === 'today');
+            document.getElementById('distBtnTomorrow').classList.toggle('active', mode === 'tomorrow');
+            renderDistributeList();
+        }
+
+        function getDistTargetDate() {
+            let d = new Date();
+            if (appState.distDay === 'tomorrow') d.setDate(d.getDate() + 1);
+            return { ymKey: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`, day: String(d.getDate()) };
+        }
+
+        function renderDistributeList() {
+            let { ymKey, day } = getDistTargetDate();
+            let list = document.getElementById('distWorkersList');
+            let routeOpts = `<option value="">— Выходной —</option>` + routesDb.map(r => `<option value="${r.num}">Маршрут ${r.num} (${r.hours || 'В'})</option>`).join('');
+
+            list.innerHTML = appState.workers.map(w => {
+                let cur = cloudTabelByMonth[ymKey]?.[w.tab]?.[day]?.route || '';
+                return `
+                    <div class="dist-row">
+                        <div style="flex:1.5;"><strong>${w.fio}</strong><br><small style="color:#666;">Таб. ${w.tab} • Участок: ${w.station || 'Клин'}</small></div>
+                        <select class="form-input dist-route-sel" data-tab="${w.tab}" style="flex:1; margin:0;" onchange="checkSharedRoutesForSenior()">
+                            ${routeOpts.replace(`value="${cur}"`, `value="${cur}" selected`)}
+                        </select>
+                    </div>
+                `;
+            }).join('');
+            checkSharedRoutesForSenior();
+        }
+
+        function checkSharedRoutesForSenior() {
+            let selects = document.querySelectorAll('.dist-route-sel');
+            let groups = {};
+            selects.forEach(sel => {
+                let r = sel.value;
+                if (r && r !== 'В') {
+                    if (!groups[r]) groups[r] = [];
+                    groups[r].push(sel.dataset.tab);
+                }
+            });
+
+            let box = document.getElementById('distSeniorBox');
+            let sList = document.getElementById('distSeniorList');
+            let html = '';
+            Object.keys(groups).forEach(r => {
+                if (groups[r].length > 1) {
+                    let opts = groups[r].map(tab => {
+                        let w = appState.workers.find(x => x.tab === tab);
+                        return `<option value="${tab}">${w ? w.fio : tab}</option>`;
+                    }).join('');
+                    html += `<div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
+                        <span style="font-size:13px; min-width:110px;"><strong>Маршрут ${r}:</strong></span>
+                        <select class="form-input dist-senior-sel" data-route="${r}" style="margin:0;">${opts}</select>
+                    </div>`;
+                }
+            });
+            sList.innerHTML = html;
+            box.style.display = html ? 'block' : 'none';
+        }
+
+        function saveDistributedRoutes() {
+            let { ymKey, day } = getDistTargetDate();
+            if (!cloudTabelByMonth[ymKey]) cloudTabelByMonth[ymKey] = {};
+
+            let seniorByRoute = {};
+            document.querySelectorAll('.dist-senior-sel').forEach(sel => { seniorByRoute[sel.dataset.route] = sel.value; });
+
+            document.querySelectorAll('.dist-route-sel').forEach(sel => {
+                let tab = sel.dataset.tab;
+                let route = sel.value;
+                if (!cloudTabelByMonth[ymKey][tab]) cloudTabelByMonth[ymKey][tab] = {};
+                if (route) {
+                    let rObj = routesDb.find(x => x.num === route);
+                    cloudTabelByMonth[ymKey][tab][day] = {
+                        route,
+                        hours: rObj ? rObj.hours : '',
+                        senior: seniorByRoute[route] === tab
+                    };
+                } else {
+                    cloudTabelByMonth[ymKey][tab][day] = { route: 'В', hours: '', senior: false };
+                }
+            });
+
+            markTabelDirty();
+            renderTabel();
+            closeModal('distributeRoutesModal');
+            showSyncToast("🔀 Расстановка применена. Нажмите красную кнопку для сохранения!");
+        }
+
+        function createWorker() {
+            let t = document.getElementById('newWorkerTab').value.trim();
+            let f = document.getElementById('newWorkerFio').value.trim();
+            let role = document.getElementById('newWorkerRole').value;
+            let station = document.getElementById('newWorkerStation').value.trim() || 'Клин';
+            let pos = document.getElementById('newWorkerPos').value.trim() || 'Кассир-контролер';
+            if(t && f) {
+                let newWorker = { tab: t, fio: f, role, station, position: pos, shiftStatus: "none" };
+                if (db) db.collection('workers').doc(t).set(newWorker).then(() => showSyncToast(`☁️ Сотрудник ${f} добавлен`));
+                else { appState.workers.push(newWorker); renderTabel(); }
+                ['newWorkerTab','newWorkerFio','newWorkerStation','newWorkerPos'].forEach(id => document.getElementById(id).value = '');
+                closeModal('createWorkerModal');
+            }
+        }
+
+        // === ПАРАМЕТРЫ СМЕНЫ И СТАТИСТИКА ===
         function openFduScreen() { navTo('fdu'); }
-
-        function addExtraCash() {
-            let val = document.getElementById('shCashNum').value.trim();
-            if (!val) return alert("Введите № МКассы");
-            appState.extraCash.push(val);
-            document.getElementById('shCashNum').value = '';
-            document.getElementById('extraCashList').innerText = "Добавлены МКассы: " + appState.extraCash.join(", ");
-        }
-
-        function addExtraShift() {
-            let val = document.getElementById('shNum').value.trim();
-            if (!val) return alert("Введите номер смены");
-            appState.extraShifts.push(val);
-            document.getElementById('shNum').value = '';
-            document.getElementById('extraShiftList').innerText = "Смены: " + appState.extraShifts.join(", ");
-            recalcTestTickets();
-        }
-
-        function addTestTix() {
-            let val = document.getElementById('shTestInp').value.trim();
-            if (!val) return;
-            appState.extraTests.push(val);
-            document.getElementById('shTestInp').value = '';
-            document.getElementById('extraTestList').innerText = "Пробники: " + appState.extraTests.join(", ");
-            recalcTestTickets();
-        }
-
-        // Подсчет пробников: каждая Смена = 1 пробник, каждый номер в пробниках (128/129 = 2) суммируется
+        function addExtraCash() { let v = document.getElementById('shCashNum').value.trim(); if (!v) return; appState.extraCash.push(v); document.getElementById('shCashNum').value = ''; document.getElementById('extraCashList').innerText = "Добавлены МКассы: " + appState.extraCash.join(", "); }
+        function addExtraShift() { let v = document.getElementById('shNum').value.trim(); if (!v) return; appState.extraShifts.push(v); document.getElementById('shNum').value = ''; document.getElementById('extraShiftList').innerText = "Смены: " + appState.extraShifts.join(", "); recalcTestTickets(); }
+        function addTestTix() { let v = document.getElementById('shTestInp').value.trim(); if (!v) return; appState.extraTests.push(v); document.getElementById('shTestInp').value = ''; document.getElementById('extraTestList').innerText = "Пробники: " + appState.extraTests.join(", "); recalcTestTickets(); }
         function recalcTestTickets() {
             let shiftCount = appState.extraShifts.length + (document.getElementById('shNum').value.trim() ? 1 : 0);
             let testList = [...appState.extraTests];
             let curTest = document.getElementById('shTestInp').value.trim();
             if (curTest) testList.push(curTest);
-
             let numCount = 0;
-            testList.forEach(item => {
-                let parts = item.split(/[\/,\s]+/).filter(Boolean);
-                numCount += parts.length;
-            });
-
+            testList.forEach(item => { numCount += item.split(/[\/,\s]+/).filter(Boolean).length; });
             let total = shiftCount + numCount;
             document.getElementById('shTestVal').innerText = `${total} шт.`;
             return total;
@@ -1159,11 +1579,6 @@
             let allCash = [...appState.extraCash, ...(cashCur ? [cashCur] : [])].join(" / ");
             appState.currentShiftMkassa = cashCur || appState.extraCash[appState.extraCash.length - 1] || "";
 
-            let fund = document.getElementById('shFundSum').value;
-            let pers = document.getElementById('shPersonalMoney').value;
-            let workType = document.getElementById('shWorkType').value;
-            let videoReg = document.getElementById('shVideoReg').value;
-
             let shTariff = parseFloat(document.getElementById('shTariff').value) || 0;
             let shFee = parseFloat(document.getElementById('shFee').value) || 0;
             let shBen = parseFloat(document.getElementById('shBenefits').value) || 0;
@@ -1171,10 +1586,10 @@
             document.getElementById('fduD0').value = new Date().toLocaleDateString('ru-RU');
             document.getElementById('fduRouteVal').value = route;
             document.getElementById('fduCashVal').value = allCash;
-            document.getElementById('fduFundVal').value = fund;
-            document.getElementById('fduPersVal').value = pers;
-            document.getElementById('fduWorkTypeVal').value = workType;
-            document.getElementById('fduVideoRegVal').value = videoReg;
+            document.getElementById('fduFundVal').value = document.getElementById('shFundSum').value;
+            document.getElementById('fduPersVal').value = document.getElementById('shPersonalMoney').value;
+            document.getElementById('fduWorkTypeVal').value = document.getElementById('shWorkType').value;
+            document.getElementById('fduVideoRegVal').value = document.getElementById('shVideoReg').value;
             document.getElementById('fduTestTicketCount').value = totalProbes;
 
             let allShifts = [...appState.extraShifts, ...(document.getElementById('shNum').value.trim() ? [document.getElementById('shNum').value.trim()] : [])].join(" / ");
@@ -1186,27 +1601,21 @@
             document.getElementById('shCellCard1').innerText = document.getElementById('shCard').value || "0";
             document.getElementById('shCellBen1').innerText = shBen;
 
-            // Сохраняем показатели смены в историю месяца (для главной страницы и декад)
             let todayIso = new Date().toISOString().split('T')[0];
             let recIdx = appState.shiftHistory.findIndex(s => s.date === todayIso);
-            let shiftEntry = recIdx >= 0 ? appState.shiftHistory[recIdx] : {
-                date: todayIso, tariff: 0, fee: 0, tickets: 0,
-                benefits: getEmptyBenefits()
-            };
-            shiftEntry.tariff = shTariff;
-            shiftEntry.fee = shFee;
-            if (recIdx >= 0) appState.shiftHistory[recIdx] = shiftEntry;
-            else appState.shiftHistory.push(shiftEntry);
+            let shiftEntry = recIdx >= 0 ? appState.shiftHistory[recIdx] : { date: todayIso, tariff: 0, fee: 0, tickets: 0, benefits: getEmptyBenefits() };
+            shiftEntry.tariff = shTariff; shiftEntry.fee = shFee;
+            if (recIdx >= 0) appState.shiftHistory[recIdx] = shiftEntry; else appState.shiftHistory.push(shiftEntry);
             localStorage.setItem('kkl_shift_history', JSON.stringify(appState.shiftHistory));
             updateDashboardTotals();
 
             if(appState.user) {
                 appState.user.shiftActive = true;
-                if(db) db.collection('workers').doc(appState.user.tab).update({ shiftActive: true }).catch(()=>{});
+                appState.user.shiftStatus = 'open';
+                if(db) db.collection('workers').doc(appState.user.tab).update({ shiftActive: true, shiftStatus: 'open' }).catch(()=>{});
             }
             let btn = document.getElementById('btnMainShift');
             if(btn) { btn.className = "btn-shift-status btn-success"; btn.innerText = "🟢 Смена открыта (Редакт.)"; }
-
             addLog(`Смена открыта: Маршрут ${route}, МКасса ${allCash}, Пробников: ${totalProbes}`);
             closeModal('shiftModal');
         }
@@ -1214,30 +1623,19 @@
         function updateDashboardTotals() {
             let now = new Date();
             let curYM = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-            let mTariff = 0, mFee = 0, mTix = 0;
-            let benTot = getEmptyBenefits();
-
+            let mTariff = 0, mFee = 0, mTix = 0, benTot = getEmptyBenefits();
             appState.shiftHistory.filter(s => (s.date || '').startsWith(curYM)).forEach(s => {
-                mTariff += (s.tariff || 0);
-                mFee += (s.fee || 0);
-                mTix += (s.tickets || 0);
-                ['rzd','fed','reg','stud','vohr'].forEach(k => {
-                    benTot[k].count += (s.benefits?.[k]?.count || 0);
-                    benTot[k].sum += (s.benefits?.[k]?.sum || 0);
-                });
+                mTariff += (s.tariff || 0); mFee += (s.fee || 0); mTix += (s.tickets || 0);
+                ['rzd','fed','reg','stud','vohr'].forEach(k => { benTot[k].count += (s.benefits?.[k]?.count || 0); benTot[k].sum += (s.benefits?.[k]?.sum || 0); });
             });
-
             let totalBenSum = benTot.rzd.sum + benTot.fed.sum + benTot.reg.sum + benTot.stud.sum + benTot.vohr.sum;
             let totalBenTix = benTot.rzd.count + benTot.fed.count + benTot.reg.count + benTot.stud.count + benTot.vohr.count;
-
             document.getElementById('dashTariff').innerText = mTariff.toFixed(2) + " ₽";
             document.getElementById('dashFee').innerText = mFee.toFixed(2) + " ₽";
             document.getElementById('dashBenSum').innerText = totalBenSum.toFixed(2) + " ₽";
             document.getElementById('dashBenTix').innerText = "Билетов: " + totalBenTix;
             document.getElementById('dashTotalRev').innerText = (mTariff + mFee).toFixed(2) + " ₽";
             document.getElementById('dashTotalTix').innerText = "Билетов: " + mTix;
-
-            // Детализация льгот
             document.getElementById('bdRzdS').innerText = benTot.rzd.sum; document.getElementById('bdRzdC').innerText = benTot.rzd.count;
             document.getElementById('bdFedS').innerText = benTot.fed.sum; document.getElementById('bdFedC').innerText = benTot.fed.count;
             document.getElementById('bdRegS').innerText = benTot.reg.sum; document.getElementById('bdRegC').innerText = benTot.reg.count;
@@ -1245,141 +1643,82 @@
             document.getElementById('bdVohrS').innerText = benTot.vohr.sum; document.getElementById('bdVohrC').innerText = benTot.vohr.count;
         }
 
-        // === 3 ТАБЛИЦЫ ЗА 10, 20 И 30/31 ДНЕЙ ===
         function openDecadeStatsModal() {
-            let now = new Date();
-            let y = now.getFullYear(), m = now.getMonth();
-            let daysInMonth = new Date(y, m + 1, 0).getDate();
+            let now = new Date(), y = now.getFullYear(), m = now.getMonth(), daysInMonth = new Date(y, m + 1, 0).getDate();
             let curYM = `${y}-${String(m+1).padStart(2,'0')}`;
-
             document.getElementById('decadeModalTitle').innerText = `Отчет за ${monthNamesRu[m]} ${y} г.`;
-            let ranges = [
-                { title: `За 10 дней (с 01 по 10)`, maxDay: 10 },
-                { title: `За 20 дней (с 01 по 20)`, maxDay: 20 },
-                { title: `За месяц (с 01 по ${daysInMonth})`, maxDay: daysInMonth }
-            ];
-
+            let ranges = [{ title: `За 10 дней (с 01 по 10)`, maxDay: 10 }, { title: `За 20 дней (с 01 по 20)`, maxDay: 20 }, { title: `За месяц (с 01 по ${daysInMonth})`, maxDay: daysInMonth }];
             let html = '';
             ranges.forEach(r => {
-                let tix = 0, rev = 0;
-                let b = getEmptyBenefits();
+                let tix = 0, rev = 0, b = getEmptyBenefits();
                 appState.shiftHistory.filter(s => (s.date || '').startsWith(curYM)).forEach(s => {
                     let day = parseInt(s.date.split('-')[2], 10);
                     if (day >= 1 && day <= r.maxDay) {
-                        tix += (s.tickets || 0);
-                        rev += (s.tariff || 0) + (s.fee || 0);
-                        ['rzd','fed','reg','stud','vohr'].forEach(k => {
-                            b[k].count += (s.benefits?.[k]?.count || 0);
-                            b[k].sum += (s.benefits?.[k]?.sum || 0);
-                        });
+                        tix += (s.tickets || 0); rev += (s.tariff || 0) + (s.fee || 0);
+                        ['rzd','fed','reg','stud','vohr'].forEach(k => { b[k].count += (s.benefits?.[k]?.count || 0); b[k].sum += (s.benefits?.[k]?.sum || 0); });
                     }
                 });
                 let allBenC = b.rzd.count + b.fed.count + b.reg.count + b.stud.count + b.vohr.count;
                 let allBenS = b.rzd.sum + b.fed.sum + b.reg.sum + b.stud.sum + b.vohr.sum;
-
-                html += `
-                    <h4 style="margin:8px 0 4px 0; color:#003366;">${r.title}</h4>
-                    <table class="decade-table">
-                        <thead><tr><th style="width:55%;"></th><th>Количество Билетов</th><th>Сумма Выручки (₽)</th></tr></thead>
-                        <tbody>
-                            <tr class="decade-bold"><td>Взыскано тарифа</td><td>${tix}</td><td>${rev.toFixed(2)}</td></tr>
-                            <tr class="decade-bold"><td>Работники ж/д</td><td>${b.rzd.count}</td><td>${b.rzd.sum.toFixed(2)}</td></tr>
-                            <tr><td>Федеральные</td><td>${b.fed.count}</td><td>${b.fed.sum.toFixed(2)}</td></tr>
-                            <tr><td>Региональные</td><td>${b.reg.count}</td><td>${b.reg.sum.toFixed(2)}</td></tr>
-                            <tr><td>Студенты</td><td>${b.stud.count}</td><td>${b.stud.sum.toFixed(2)}</td></tr>
-                            <tr><td>ВОХР</td><td>${b.vohr.count}</td><td>${b.vohr.sum.toFixed(2)}</td></tr>
-                            <tr class="decade-bold"><td>Общее по льготникам (фед.+рег.+студ.+РЖД+ВОХР)</td><td>${allBenC}</td><td>${allBenS.toFixed(2)}</td></tr>
-                        </tbody>
-                    </table>
-                `;
+                html += `<h4 style="margin:8px 0 4px 0; color:#003366;">${r.title}</h4><table class="decade-table"><thead><tr><th style="width:55%;"></th><th>Количество Билетов</th><th>Сумма Выручки (₽)</th></tr></thead><tbody>
+                    <tr class="decade-bold"><td>Взыскано тарифа</td><td>${tix}</td><td>${rev.toFixed(2)}</td></tr>
+                    <tr class="decade-bold"><td>Работники ж/д</td><td>${b.rzd.count}</td><td>${b.rzd.sum.toFixed(2)}</td></tr>
+                    <tr><td>Федеральные</td><td>${b.fed.count}</td><td>${b.fed.sum.toFixed(2)}</td></tr>
+                    <tr><td>Региональные</td><td>${b.reg.count}</td><td>${b.reg.sum.toFixed(2)}</td></tr>
+                    <tr><td>Студенты</td><td>${b.stud.count}</td><td>${b.stud.sum.toFixed(2)}</td></tr>
+                    <tr><td>ВОХР</td><td>${b.vohr.count}</td><td>${b.vohr.sum.toFixed(2)}</td></tr>
+                    <tr class="decade-bold"><td>Общее по льготникам (фед.+рег.+студ.+РЖД+ВОХР)</td><td>${allBenC}</td><td>${allBenS.toFixed(2)}</td></tr>
+                </tbody></table>`;
             });
             document.getElementById('decadeTablesContainer').innerHTML = html;
             openModal('decadeStatsModal');
         }
 
-        // === ОТЧЕТ ПО ПОЕЗДУ (С РАЗНИЦЕЙ ПО МКАССЕ И ПЕРЕХОДОМ В РЕЕСТР) ===
+        // === ОТЧЕТ ПО ПОЕЗДУ ===
         function openTrainReport() {
             document.getElementById('prevMkassaTix').innerText = appState.lastMkassaTix;
             document.getElementById('prevMkassaMoney').innerText = appState.lastMkassaMoney.toFixed(2);
             document.getElementById('trStatTickets').value = appState.lastMkassaTix;
             document.getElementById('trStatMoney').value = appState.lastMkassaMoney;
-            document.getElementById('trBaggageCount').value = 0;
-            document.getElementById('trBaggageSum').value = 0;
-            calculateTrainStats();
-            navTo('trainReport');
+            document.getElementById('trBaggageCount').value = 0; document.getElementById('trBaggageSum').value = 0;
+            calculateTrainStats(); navTo('trainReport');
         }
-
         function autoFillTrainSchedule(trainNum) {
-            trainNum = trainNum.trim();
-            if (trainScheduleDb[trainNum]) {
-                document.getElementById('trFrom').value = trainScheduleDb[trainNum].from;
-                document.getElementById('trTo').value = trainScheduleDb[trainNum].to;
-                document.getElementById('trDepTime').value = trainScheduleDb[trainNum].dep;
-                document.getElementById('trArrTime').value = trainScheduleDb[trainNum].arr;
-            }
+            let t = trainScheduleDb[trainNum.trim()];
+            if (t) { document.getElementById('trFrom').value = t.from; document.getElementById('trTo').value = t.to; document.getElementById('trDepTime').value = t.dep; document.getElementById('trArrTime').value = t.arr; }
         }
-
         function calculateTrainStats() {
-            let curTix = parseInt(document.getElementById('trStatTickets').value) || 0;
-            let curMoney = parseFloat(document.getElementById('trStatMoney').value) || 0;
-            let bagTix = parseInt(document.getElementById('trBaggageCount').value) || 0;
-            let bagSum = parseFloat(document.getElementById('trBaggageSum').value) || 0;
-
-            let diffTix = Math.max(0, curTix - appState.lastMkassaTix) + bagTix;
-            let diffMoney = Math.max(0, curMoney - appState.lastMkassaMoney) + bagSum;
-
-            document.getElementById('resTrainTickets').innerText = diffTix;
-            document.getElementById('resTrainMoney').innerText = diffMoney.toFixed(2);
+            let curTix = parseInt(document.getElementById('trStatTickets').value) || 0, curMoney = parseFloat(document.getElementById('trStatMoney').value) || 0;
+            let bagTix = parseInt(document.getElementById('trBaggageCount').value) || 0, bagSum = parseFloat(document.getElementById('trBaggageSum').value) || 0;
+            document.getElementById('resTrainTickets').innerText = Math.max(0, curTix - appState.lastMkassaTix) + bagTix;
+            document.getElementById('resTrainMoney').innerText = (Math.max(0, curMoney - appState.lastMkassaMoney) + bagSum).toFixed(2);
         }
-
         function openBenefitModal(catKey, catTitle) {
-            activeBenefitCategory = catKey;
-            document.getElementById('benefitModalTitle').innerText = catTitle;
+            activeBenefitCategory = catKey; document.getElementById('benefitModalTitle').innerText = catTitle;
             document.getElementById('benCount').value = currentTrainBenefits[catKey].count || 1;
             document.getElementById('benIncome').value = currentTrainBenefits[catKey].sum || 0;
-            document.getElementById('benFee').value = 0;
-            openModal('benefitModal');
+            document.getElementById('benFee').value = 0; openModal('benefitModal');
         }
-
         function saveBenefitCategory() {
-            let c = parseInt(document.getElementById('benCount').value) || 0;
-            let inc = parseFloat(document.getElementById('benIncome').value) || 0;
-            let fee = parseFloat(document.getElementById('benFee').value) || 0;
-
+            let c = parseInt(document.getElementById('benCount').value) || 0, inc = parseFloat(document.getElementById('benIncome').value) || 0, fee = parseFloat(document.getElementById('benFee').value) || 0;
             if (activeBenefitCategory) {
                 currentTrainBenefits[activeBenefitCategory] = { count: c, sum: inc };
                 let lbl = document.getElementById('benSumLbl_' + activeBenefitCategory);
                 if (lbl) lbl.innerText = inc.toFixed(2) + " ₽";
             }
             closeModal('benefitModal');
-
-            // Если Сумма сбора == 0 -> спрашиваем, внести ли в Реестр
-            if (fee === 0 && c > 0) {
-                if (confirm("Сумма сбора равна 0. Внести данный билет в Реестр?")) {
-                    openRegistry();
-                    openRegistryCreateModal(inc);
-                }
-            }
+            if (fee === 0 && c > 0 && confirm("Сумма сбора равна 0. Внести данный билет в Реестр?")) { openRegistry(); openRegistryCreateModal(inc); }
         }
-
         function saveTrainToFdu() {
-            let trNum = document.getElementById('trNum').value.trim();
-            let to = document.getElementById('trTo').value.trim();
-            let tix = parseInt(document.getElementById('resTrainTickets').innerText) || 0;
-            let money = parseFloat(document.getElementById('resTrainMoney').innerText) || 0;
+            let trNum = document.getElementById('trNum').value.trim(), to = document.getElementById('trTo').value.trim();
+            let tix = parseInt(document.getElementById('resTrainTickets').innerText) || 0, money = parseFloat(document.getElementById('resTrainMoney').innerText) || 0;
             let timeStr = document.getElementById('trDepTime').value.trim() + " - " + document.getElementById('trArrTime').value.trim();
-
             let lRows = document.querySelectorAll('#fduLeftBody .train-slot-row');
-            if(appState.trainsInFdu >= lRows.length) { alert("Все 11 строк рапорта заполнены!"); return; }
-
+            if(appState.trainsInFdu >= lRows.length) return alert("Все 11 строк рапорта заполнены!");
             let row = lRows[appState.trainsInFdu];
-            row.querySelector('.fdu-train-num').value = trNum;
-            row.querySelector('.fdu-train-route').value = to;
-            row.querySelector('.fdu-train-time').value = timeStr;
-            row.querySelector('.fdu-train-tix').value = tix;
-            row.querySelector('.fdu-train-sum').value = money;
+            row.querySelector('.fdu-train-num').value = trNum; row.querySelector('.fdu-train-route').value = to;
+            row.querySelector('.fdu-train-time').value = timeStr; row.querySelector('.fdu-train-tix').value = tix; row.querySelector('.fdu-train-sum').value = money;
 
-            // Обновляем накопительный счетчик МКассы для следующего поезда
             appState.lastMkassaTix = parseInt(document.getElementById('trStatTickets').value) || appState.lastMkassaTix;
             appState.lastMkassaMoney = parseFloat(document.getElementById('trStatMoney').value) || appState.lastMkassaMoney;
 
@@ -1391,38 +1730,24 @@
 
             let rRows = document.querySelectorAll('#fduRightBody .benefit-slot-row');
             if(rRows.length > appState.trainsInFdu) {
-                let rInputs = rRows[appState.trainsInFdu].querySelectorAll('input');
-                rInputs[0].value = currentTrainBenefits.rzd.count > 0 ? currentTrainBenefits.rzd.count : "—";
-                rInputs[1].value = currentTrainBenefits.rzd.sum > 0 ? currentTrainBenefits.rzd.sum : "—";
-                rInputs[2].value = currentTrainBenefits.fed.count > 0 ? currentTrainBenefits.fed.count : "—";
-                rInputs[3].value = currentTrainBenefits.fed.sum > 0 ? currentTrainBenefits.fed.sum : "—";
-                rInputs[4].value = currentTrainBenefits.reg.count > 0 ? currentTrainBenefits.reg.count : "—";
-                rInputs[5].value = currentTrainBenefits.reg.sum > 0 ? currentTrainBenefits.reg.sum : "—";
-                rInputs[6].value = currentTrainBenefits.stud.count > 0 ? currentTrainBenefits.stud.count : "—";
-                rInputs[7].value = currentTrainBenefits.stud.sum > 0 ? currentTrainBenefits.stud.sum : "—";
+                let rIn = rRows[appState.trainsInFdu].querySelectorAll('input');
+                rIn[0].value = currentTrainBenefits.rzd.count || "—"; rIn[1].value = currentTrainBenefits.rzd.sum || "—";
+                rIn[2].value = currentTrainBenefits.fed.count || "—"; rIn[3].value = currentTrainBenefits.fed.sum || "—";
+                rIn[4].value = currentTrainBenefits.reg.count || "—"; rIn[5].value = currentTrainBenefits.reg.sum || "—";
+                rIn[6].value = currentTrainBenefits.stud.count || "—"; rIn[7].value = currentTrainBenefits.stud.sum || "—";
             }
 
-            // Обновляем сегодняшнюю смену в истории (билеты + льготы)
             let todayIso = new Date().toISOString().split('T')[0];
             let recIdx = appState.shiftHistory.findIndex(s => s.date === todayIso);
             let shiftEntry = recIdx >= 0 ? appState.shiftHistory[recIdx] : { date: todayIso, tariff: 0, fee: 0, tickets: 0, benefits: getEmptyBenefits() };
             shiftEntry.tickets += tix;
-            ['rzd','fed','reg','stud','vohr'].forEach(k => {
-                shiftEntry.benefits[k].count += currentTrainBenefits[k].count;
-                shiftEntry.benefits[k].sum += currentTrainBenefits[k].sum;
-            });
-            if (recIdx >= 0) appState.shiftHistory[recIdx] = shiftEntry;
-            else appState.shiftHistory.push(shiftEntry);
+            ['rzd','fed','reg','stud','vohr'].forEach(k => { shiftEntry.benefits[k].count += currentTrainBenefits[k].count; shiftEntry.benefits[k].sum += currentTrainBenefits[k].sum; });
+            if (recIdx >= 0) appState.shiftHistory[recIdx] = shiftEntry; else appState.shiftHistory.push(shiftEntry);
             localStorage.setItem('kkl_shift_history', JSON.stringify(appState.shiftHistory));
             updateDashboardTotals();
 
-            // Сброс льгот на следующий рейс
             currentTrainBenefits = getEmptyBenefits();
-            ['rzd','fed','reg','stud','vohr'].forEach(k => {
-                let lbl = document.getElementById('benSumLbl_' + k);
-                if (lbl) lbl.innerText = "0.00 ₽";
-            });
-
+            ['rzd','fed','reg','stud','vohr'].forEach(k => { let l = document.getElementById('benSumLbl_' + k); if (l) l.innerText = "0.00 ₽"; });
             appState.trainsInFdu++;
             addLog(`Поезд №${trNum} занесен в ФДУ (${tix} бил. / ${money.toFixed(2)} ₽).`);
             alert(`Поезд №${trNum} сохранен в ФДУ! За рейс: ${tix} бил., ${money.toFixed(2)} ₽.`);
@@ -1430,208 +1755,82 @@
         }
 
         function closeShiftProcess() {
-            appState.lastMkassaTix = 0;
-            appState.lastMkassaMoney = 0;
+            appState.lastMkassaTix = 0; appState.lastMkassaMoney = 0;
             if(appState.user) {
-                appState.user.shiftActive = false;
-                if(db) db.collection('workers').doc(appState.user.tab).update({ shiftActive: false }).catch(()=>{});
+                appState.user.shiftActive = false; appState.user.shiftStatus = 'closed';
+                if(db) db.collection('workers').doc(appState.user.tab).update({ shiftActive: false, shiftStatus: 'closed' }).catch(()=>{});
             }
             let btn = document.getElementById('btnMainShift'); if(btn) { btn.className = "btn-shift-status btn-danger"; btn.innerText = "🔴 Смена не открыта"; }
-            if(document.getElementById('fduShiftEndTime')) document.getElementById('fduShiftEndTime').value = new Date().toLocaleString('ru-RU');
+            document.getElementById('fduShiftEndTime').value = new Date().toLocaleString('ru-RU');
             addLog("Смена закрыта. Рапорт ФДУ сохранен."); alert("Рапорт смены сохранен!"); navTo('reports');
         }
 
         // === РЕЕСТР ===
-        function openRegistry() {
-            navTo('registry');
-            renderRegistryTable();
-        }
-
+        function openRegistry() { navTo('registry'); renderRegistryTable(); }
         function openRegistryCreateModal(prefillPrice) {
             document.getElementById('rcDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('rcMkassa').value = appState.currentShiftMkassa || '';
-            document.getElementById('rcType').value = 'Приказ №';
-            document.getElementById('rcOrderNum').value = '53';
+            document.getElementById('rcType').value = 'Приказ №'; document.getElementById('rcOrderNum').value = '53';
             document.getElementById('rcOrderNumWrap').style.display = 'block';
-            document.getElementById('rcTicketNum').value = '';
-            document.getElementById('rcFrom').value = '';
-            document.getElementById('rcTo').value = '';
-            rcTripMode = 'oneway';
-            document.getElementById('rcTripBtn').innerText = 'Туда';
-            document.getElementById('rcPrice').value = prefillPrice || '';
-            openModal('regCreateModal');
+            document.getElementById('rcTicketNum').value = ''; document.getElementById('rcFrom').value = ''; document.getElementById('rcTo').value = '';
+            rcTripMode = 'oneway'; document.getElementById('rcTripBtn').innerText = 'Туда';
+            document.getElementById('rcPrice').value = prefillPrice || ''; openModal('regCreateModal');
         }
-
-        function toggleOrderNumField() {
-            let t = document.getElementById('rcType').value;
-            document.getElementById('rcOrderNumWrap').style.display = (t === 'Приказ №') ? 'block' : 'none';
-        }
-
-        function toggleTripType() {
-            if (rcTripMode === 'oneway') {
-                rcTripMode = 'roundtrip';
-                document.getElementById('rcTripBtn').innerText = 'Туда/Обратно';
-            } else {
-                rcTripMode = 'oneway';
-                document.getElementById('rcTripBtn').innerText = 'Туда';
-            }
-            calcStationPrice();
-        }
-
+        function toggleOrderNumField() { document.getElementById('rcOrderNumWrap').style.display = (document.getElementById('rcType').value === 'Приказ №') ? 'block' : 'none'; }
+        function toggleTripType() { rcTripMode = rcTripMode === 'oneway' ? 'roundtrip' : 'oneway'; document.getElementById('rcTripBtn').innerText = rcTripMode === 'oneway' ? 'Туда' : 'Туда/Обратно'; calcStationPrice(); }
         function calcStationPrice() {
-            let from = document.getElementById('rcFrom').value.trim();
-            let to = document.getElementById('rcTo').value.trim();
-            if (!from || !to) return;
-
+            let from = document.getElementById('rcFrom').value.trim(), to = document.getElementById('rcTo').value.trim(); if (!from || !to) return;
             let basePrice = exactPairPrices[`${from}|${to}`];
-            if (!basePrice && stationZones[from] !== undefined && stationZones[to] !== undefined) {
-                let zones = Math.max(1, Math.abs(stationZones[to] - stationZones[from]));
-                basePrice = 60 + zones * 46;
-            }
-            if (basePrice) {
-                document.getElementById('rcPrice').value = (rcTripMode === 'roundtrip') ? basePrice * 2 : basePrice;
-            }
+            if (!basePrice && stationZones[from] !== undefined && stationZones[to] !== undefined) basePrice = 60 + Math.max(1, Math.abs(stationZones[to] - stationZones[from])) * 46;
+            if (basePrice) document.getElementById('rcPrice').value = (rcTripMode === 'roundtrip') ? basePrice * 2 : basePrice;
         }
-
         function saveRegistryEntry() {
-            let date = document.getElementById('rcDate').value;
-            let mkassa = document.getElementById('rcMkassa').value.trim();
-            let type = document.getElementById('rcType').value;
-            let orderNum = document.getElementById('rcOrderNum').value.trim();
+            let date = document.getElementById('rcDate').value, mkassa = document.getElementById('rcMkassa').value.trim();
+            let type = document.getElementById('rcType').value, orderNum = document.getElementById('rcOrderNum').value.trim();
             let reason = (type === 'Приказ №') ? `Приказ № ${orderNum}` : type;
-            let ticketNum = document.getElementById('rcTicketNum').value.trim();
-            let from = document.getElementById('rcFrom').value.trim();
-            let to = document.getElementById('rcTo').value.trim();
-            let price = parseFloat(document.getElementById('rcPrice').value) || 0;
-
+            let ticketNum = document.getElementById('rcTicketNum').value.trim(), from = document.getElementById('rcFrom').value.trim(), to = document.getElementById('rcTo').value.trim(), price = parseFloat(document.getElementById('rcPrice').value) || 0;
             if (!date || !from || !to) return alert("Заполните дату, станцию отправления и назначения");
-
-            let entry = {
-                id: 'reg_' + Date.now(),
-                date, mkassa, reason,
-                isOrder53: (type === 'Приказ №' && orderNum === '53'),
-                ticketNum,
-                tripMode: rcTripMode,
-                from, to, price,
-                author: appState.user?.fio || ''
-            };
-
-            if (db) {
-                db.collection('registry').doc(entry.id).set(entry).then(() => {
-                    showSyncToast("☁️ Запись добавлена в Реестр");
-                }).catch(err => alert("Ошибка: " + err.message));
-            } else {
-                cloudRegistry.push(entry);
-                renderRegistryTable();
-            }
-
-            addLog(`Реестр: ${from} → ${to} (${price} ₽, ${reason})`);
-            closeModal('regCreateModal');
+            let entry = { id: 'reg_' + Date.now(), date, mkassa, reason, isOrder53: (type === 'Приказ №' && orderNum === '53'), ticketNum, tripMode: rcTripMode, from, to, price, author: appState.user?.fio || '' };
+            if (db) db.collection('registry').doc(entry.id).set(entry).then(() => showSyncToast("☁️ Запись добавлена в Реестр"));
+            else { cloudRegistry.push(entry); renderRegistryTable(); }
+            addLog(`Реестр: ${from} → ${to} (${price} ₽)`); closeModal('regCreateModal');
         }
-
         function renderRegistryTable() {
-            let tbody = document.getElementById('registryTableBody');
-            if (!tbody) return;
-            let dFrom = document.getElementById('regFilterFrom').value;
-            let dTo = document.getElementById('regFilterTo').value;
-
-            let filtered = cloudRegistry.filter(r => {
-                if (dFrom && r.date < dFrom) return false;
-                if (dTo && r.date > dTo) return false;
-                return true;
-            });
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="11" style="padding:15px; color:#666;">Записи реестра за выбранный период отсутствуют</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = filtered.map((r, i) => {
-                let dParts = (r.date || '').split('-');
-                let ruDate = dParts.length === 3 ? `${dParts[2]}.${dParts[1]}.${dParts[0]}` : r.date;
-                return `
-                    <tr class="reg-highlight">
-                        <td>${i + 1}</td>
-                        <td>${r.mkassa || '—'}</td>
-                        <td>${ruDate}</td>
-                        <td>${r.reason}</td>
-                        <td>${r.ticketNum || '—'}</td>
-                        <td><strong>—</strong></td>
-                        <td>${r.tripMode === 'oneway' ? '.' : ''}</td>
-                        <td>${r.tripMode === 'roundtrip' ? '.' : ''}</td>
-                        <td>${r.from}</td>
-                        <td>${r.to}</td>
-                        <td>${r.price}</td>
-                    </tr>
-                `;
-            }).join('');
+            let tbody = document.getElementById('registryTableBody'); if (!tbody) return;
+            let dFrom = document.getElementById('regFilterFrom').value, dTo = document.getElementById('regFilterTo').value;
+            let filtered = cloudRegistry.filter(r => (!dFrom || r.date >= dFrom) && (!dTo || r.date <= dTo));
+            tbody.innerHTML = filtered.length === 0 ? '<tr><td colspan="11" style="padding:15px; color:#666;">Записи реестра за выбранный период отсутствуют</td></tr>'
+                : filtered.map((r, i) => {
+                    let p = (r.date || '').split('-'), ruDate = p.length === 3 ? `${p[2]}.${p[1]}.${p[0]}` : r.date;
+                    return `<tr class="reg-highlight"><td>${i+1}</td><td>${r.mkassa||'—'}</td><td>${ruDate}</td><td>${r.reason}</td><td>${r.ticketNum||'—'}</td><td><strong>—</strong></td><td>${r.tripMode==='oneway'?'.':''}</td><td>${r.tripMode==='roundtrip'?'.':''}</td><td>${r.from}</td><td>${r.to}</td><td>${r.price}</td></tr>`;
+                }).join('');
         }
-
         function exportRegistryExcel() {
-            let dFrom = document.getElementById('reDateFrom').value;
-            let dTo = document.getElementById('reDateTo').value;
-            let type = document.getElementById('reType').value;
-
-            let list = cloudRegistry.filter(r => {
-                if (dFrom && r.date < dFrom) return false;
-                if (dTo && r.date > dTo) return false;
-                return (type === 'p53') ? r.isOrder53 : !r.isOrder53;
-            });
-
+            let dFrom = document.getElementById('reDateFrom').value, dTo = document.getElementById('reDateTo').value, type = document.getElementById('reType').value;
+            let list = cloudRegistry.filter(r => (!dFrom || r.date >= dFrom) && (!dTo || r.date <= dTo) && ((type === 'p53') ? r.isOrder53 : !r.isOrder53));
             let title = (type === 'p53') ? 'Приказ_№53' : 'Оперативный_приказ';
-            let rowsHtml = list.map((r, i) => {
-                let p = (r.date || '').split('-');
-                let dRu = p.length === 3 ? `${p[2]}.${p[1]}.${p[0]}` : r.date;
-                return `<tr><td>${i+1}</td><td>${r.mkassa}</td><td>${dRu}</td><td>${r.reason}</td><td>${r.ticketNum}</td><td>-</td><td>${r.tripMode==='oneway'?'.':''}</td><td>${r.tripMode==='roundtrip'?'.':''}</td><td>${r.from}</td><td>${r.to}</td><td>${r.price}</td></tr>`;
-            }).join('');
-
-            let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"></head><body>
-                <h3>Реестр разовых билетов без доп. сбора (${title.replace('_',' ')}) с ${dFrom} по ${dTo}</h3>
-                <table border="1">
-                    <tr style="background:#9bc2e6; font-weight:bold;"><th>№ п/п</th><th>№ МКАССА</th><th>Дата</th><th>Причина</th><th>Номер билета</th><th>Доп сбор</th><th>Туда</th><th>Туда-обратно</th><th>Отправления</th><th>Назначения</th><th>Стоимость</th></tr>
-                    ${rowsHtml}
-                </table></body></html>`;
-
-            let blob = new Blob([html], { type: 'application/vnd.ms-excel' });
-            let a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `Реестр_${title}_${dFrom}_${dTo}.xls`;
-            a.click();
-            closeModal('regExportModal');
+            let rowsHtml = list.map((r, i) => { let p = (r.date || '').split('-'); return `<tr><td>${i+1}</td><td>${r.mkassa}</td><td>${p.length===3?`${p[2]}.${p[1]}.${p[0]}`:r.date}</td><td>${r.reason}</td><td>${r.ticketNum}</td><td>-</td><td>${r.tripMode==='oneway'?'.':''}</td><td>${r.tripMode==='roundtrip'?'.':''}</td><td>${r.from}</td><td>${r.to}</td><td>${r.price}</td></tr>`; }).join('');
+            let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"></head><body><h3>Реестр (${title.replace('_',' ')}) с ${dFrom} по ${dTo}</h3><table border="1"><tr style="background:#9bc2e6;font-weight:bold;"><th>№ п/п</th><th>№ МКАССА</th><th>Дата</th><th>Причина</th><th>Номер билета</th><th>Доп сбор</th><th>Туда</th><th>Туда-обратно</th><th>Отправления</th><th>Назначения</th><th>Стоимость</th></tr>${rowsHtml}</table></body></html>`;
+            let a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([html], { type: 'application/vnd.ms-excel' })); a.download = `Реестр_${title}_${dFrom}_${dTo}.xls`; a.click(); closeModal('regExportModal');
         }
 
-        // === НАСЕЛЕННОСТЬ ===
-        function openOccupancy() { 
-            document.getElementById('occTrainInput').value = '';
-            document.getElementById('occWarningBox').style.display = 'none';
-            document.getElementById('occStopsContainer').style.display = 'none';
-            document.getElementById('occRouteTitle').style.display = 'none';
-            document.getElementById('occStatusBar1').innerText = 'Маршруты загружены. Введите номер поезда.';
-            document.getElementById('occSaveBtn').style.opacity = '0.5';
-            document.getElementById('occSaveBtn').style.pointerEvents = 'none';
-            navTo('occupancy'); 
-        }
+        // === НАСЕЛЕННОСТЬ, ЧАТЫ, СИНХРОН ===
+        function openOccupancy() { document.getElementById('occTrainInput').value = ''; document.getElementById('occWarningBox').style.display = 'none'; document.getElementById('occStopsContainer').style.display = 'none'; document.getElementById('occRouteTitle').style.display = 'none'; document.getElementById('occStatusBar1').innerText = 'Маршруты загружены. Введите номер поезда.'; document.getElementById('occSaveBtn').style.opacity = '0.5'; document.getElementById('occSaveBtn').style.pointerEvents = 'none'; navTo('occupancy'); }
         function getOccDocId(train) { return `${new Date().toLocaleDateString('ru-RU').replace(/\./g, '-')}_${train}`; }
         function checkOccupancyTrain(val) {
-            let train = val.trim();
-            let warnBox = document.getElementById('occWarningBox'), stopsCont = document.getElementById('occStopsContainer'), title = document.getElementById('occRouteTitle'), saveBtn = document.getElementById('occSaveBtn'), statusBar = document.getElementById('occStatusBar1');
+            let train = val.trim(), warnBox = document.getElementById('occWarningBox'), stopsCont = document.getElementById('occStopsContainer'), title = document.getElementById('occRouteTitle'), saveBtn = document.getElementById('occSaveBtn'), statusBar = document.getElementById('occStatusBar1');
             warnBox.style.display = 'none'; stopsCont.style.display = 'none'; title.style.display = 'none'; saveBtn.style.opacity = '0.5'; saveBtn.style.pointerEvents = 'none'; statusBar.innerText = 'Поиск маршрута...';
             if (occupancyDb[train]) {
                 statusBar.innerText = 'Маршрут загружен.'; title.innerText = occupancyDb[train].title; title.style.display = 'block';
-                let docId = getOccDocId(train);
-                let parsedData = cloudOccupancy[docId] || JSON.parse(localStorage.getItem(`occ_${docId}`) || 'null');
-                if (parsedData) {
-                    document.querySelector('#occWarningBox p').innerHTML = `Последние данные внесены: <strong>${parsedData.userName}</strong>, ${parsedData.date} в ${parsedData.time}.<br>Вы можете продолжить и внести исправления.`;
-                    warnBox.style.display = 'block';
-                } else { renderOccupancyStops(train); }
+                let docId = getOccDocId(train), parsedData = cloudOccupancy[docId] || JSON.parse(localStorage.getItem(`occ_${docId}`) || 'null');
+                if (parsedData) { document.querySelector('#occWarningBox p').innerHTML = `Последние данные внесены: <strong>${parsedData.userName}</strong>, ${parsedData.date} в ${parsedData.time}.<br>Вы можете продолжить и внести исправления.`; warnBox.style.display = 'block'; }
+                else renderOccupancyStops(train);
             }
         }
         function continueOccupancy() { document.getElementById('occWarningBox').style.display = 'none'; renderOccupancyStops(document.getElementById('occTrainInput').value.trim()); }
         function renderOccupancyStops(train) {
             let list = document.getElementById('occStopsList'); list.innerHTML = '';
-            let docId = getOccDocId(train);
-            let parsedData = cloudOccupancy[docId] || JSON.parse(localStorage.getItem(`occ_${docId}`) || 'null');
-            let percentages = parsedData ? (parsedData.percentages || {}) : {};
+            let docId = getOccDocId(train), parsedData = cloudOccupancy[docId] || JSON.parse(localStorage.getItem(`occ_${docId}`) || 'null'), percentages = parsedData ? (parsedData.percentages || {}) : {};
             occupancyDb[train].stops.forEach((stop, index) => {
                 let savedVal = percentages[index] !== undefined ? percentages[index] : '';
                 list.innerHTML += `<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #2d3748;"><span style="font-weight: bold; font-size: 14px;">${stop}</span><div style="display: flex; align-items: center; background-color: #11151c; border: 1px solid #4a5568; border-radius: 8px; padding: 5px 10px;"><input type="number" id="occ_input_${index}" value="${savedVal}" placeholder="0" style="width: 40px; background: transparent; border: none; color: #fff; font-weight: bold; font-size: 16px; text-align: right; outline: none;"><span style="color: #a0aec0; margin-left: 5px; font-weight: bold;">%</span></div></div>`;
@@ -1641,63 +1840,14 @@
         }
         function saveOccupancyChanges() {
             let train = document.getElementById('occTrainInput').value.trim(); if (!occupancyDb[train]) return;
-            let user = appState.user || { fio: "Сотрудник" };
-            let timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-            let todayStr = new Date().toLocaleDateString('ru-RU');
-            let docId = getOccDocId(train);
-            let percentages = {};
+            let user = appState.user || { fio: "Сотрудник" }, timeStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }), todayStr = new Date().toLocaleDateString('ru-RU'), docId = getOccDocId(train), percentages = {};
             occupancyDb[train].stops.forEach((s, i) => { let inp = document.getElementById(`occ_input_${i}`); if(inp) percentages[i] = inp.value; });
             let record = { trainNum: train, userName: user.fio, time: timeStr, date: todayStr, percentages };
-            localStorage.setItem(`occ_${docId}`, JSON.stringify(record));
-            cloudOccupancy[docId] = record;
+            localStorage.setItem(`occ_${docId}`, JSON.stringify(record)); cloudOccupancy[docId] = record;
             if (db) db.collection('occupancy').doc(docId).set(record).then(() => showSyncToast(`☁️ Поезд №${train} сохранен`));
-            addLog(`Населенность поезда №${train} сохранена (${timeStr}).`);
-            alert(`Данные по поезду №${train} сохранены!`); navTo('main');
+            addLog(`Населенность поезда №${train} сохранена (${timeStr}).`); alert(`Данные по поезду №${train} сохранены!`); navTo('main');
         }
 
-        // === ТАБЕЛЬ ===
-        function openTabelScreen() { navTo('tabel'); }
-        function prevTabelMonth() {
-            let mSel = document.getElementById('tabelMonthSelect'), ySel = document.getElementById('tabelYearSelect');
-            let m = parseInt(mSel.value), y = parseInt(ySel.value);
-            if (m === 0) { mSel.value = 11; ySel.value = y - 1; } else { mSel.value = m - 1; }
-            renderTabel();
-        }
-        function nextTabelMonth() {
-            let mSel = document.getElementById('tabelMonthSelect'), ySel = document.getElementById('tabelYearSelect');
-            let m = parseInt(mSel.value), y = parseInt(ySel.value);
-            if (m === 11) { mSel.value = 0; ySel.value = y + 1; } else { mSel.value = m + 1; }
-            renderTabel();
-        }
-        function renderTabel() {
-            let daysRow = document.getElementById('tabelDaysHeaderRow'); if(!daysRow) return; daysRow.innerHTML = '';
-            for(let i=1; i<=31; i++) daysRow.innerHTML += `<th>${i}</th>`;
-            let tbody = document.getElementById('tabelBody'); if(!tbody) return; tbody.innerHTML = '';
-            appState.workers.forEach((w, idx) => {
-                let dot = w.shiftActive ? '<span class="status-dot active" title="На смене"></span>' : '<span class="status-dot" title="Не на смене"></span>';
-                let tr1 = `<tr><td rowspan="2">${idx+1}</td><td rowspan="2">${w.tab}</td><td rowspan="2" style="text-align:left; font-weight:bold; padding-left:4px;">${w.fio} ${dot}</td><td style="font-size:8.5px; background:#f7f7f7;">№ маршрута</td>`;
-                let tr2 = `<tr><td style="font-size:8.5px; background:#f7f7f7;">время</td>`;
-                for(let d=1; d<=31; d++) {
-                    let bg = (d===13 && w.shiftActive) ? 'class="cell-shift-active"' : '';
-                    let valM = (d===13) ? "22" : "+"; let valT = (d===13) ? "10,3" : "";
-                    tr1 += `<td ${bg} class="tabel-cell-day">${valM}</td>`; tr2 += `<td ${bg} class="tabel-cell-day">${valT}</td>`;
-                }
-                tr1 += `<td rowspan="2">1</td><td rowspan="2">10,3</td></tr>`; tr2 += `</tr>`; tbody.innerHTML += tr1 + tr2;
-            });
-        }
-        function saveAndNotifyStaff() { alert("Табель сохранен!"); addLog("Табель сохранен, персонал оповещен."); }
-        function createWorker() {
-            let t = document.getElementById('newWorkerTab').value.trim(), f = document.getElementById('newWorkerFio').value.trim();
-            if(t && f) {
-                let newWorker = { tab: t, fio: f, role: "viewer", shiftActive: false };
-                if (db) db.collection('workers').doc(t).set(newWorker).then(() => showSyncToast(`☁️ Сотрудник ${f} добавлен`));
-                else { appState.workers.push(newWorker); renderTabel(); }
-                document.getElementById('newWorkerTab').value = ''; document.getElementById('newWorkerFio').value = '';
-                closeModal('createWorkerModal');
-            }
-        }
-
-        // === ЧАТЫ И СИНХРОН ===
         function sendMsg() { let inp = document.getElementById('chatInput'); if(!inp.value.trim()) return; let msgs = document.getElementById('chatMsgs'); msgs.innerHTML += `<div class="msg-bubble msg-out">${inp.value}</div>`; inp.value = ''; msgs.scrollTop = msgs.scrollHeight; }
         function openChat(name) { document.getElementById('chatActiveName').innerText = name; }
         function openSyncLoginModal() { toggleSidebar(); openModal('syncLoginModal'); }
@@ -1707,8 +1857,7 @@
             let m = document.getElementById('saCash').value, f = document.getElementById('saFio').value || '—';
             let tin = formatTimeInp(document.getElementById('saTimeIn').value), tout = formatTimeInp(document.getElementById('saTimeOut').value);
             if(!m) return alert("Заполните № МКассы");
-            let status = !tin ? 'red' : (!tout ? 'yellow' : 'white');
-            appState.syncRecords.push({ mkassa: m, fio: f, tin, tout, status });
+            appState.syncRecords.push({ mkassa: m, fio: f, tin, tout, status: !tin ? 'red' : (!tout ? 'yellow' : 'white') });
             closeModal('syncAnalysisModal'); renderSyncList();
         }
         function renderSyncList() {
@@ -1724,7 +1873,7 @@
         function finishAllSync() {
             let err = appState.syncRecords.find(r => r.status !== 'white');
             if(err) { document.getElementById('srText').innerText = `МКасса ${err.mkassa} не завершена! Укажите причину:`; openModal('syncReasonModal'); document.getElementById('syncReasonModal').dataset.errIdx = appState.syncRecords.indexOf(err); }
-            else { alert("Все МКассы просинхронизированы!"); }
+            else alert("Все МКассы просинхронизированы!");
         }
         function resolveSyncError() { let idx = document.getElementById('syncReasonModal').dataset.errIdx; appState.syncRecords[idx].status = 'white'; appState.syncRecords[idx].tout = document.getElementById('srReason').value; closeModal('syncReasonModal'); renderSyncList(); finishAllSync(); }
 
