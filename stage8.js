@@ -1,17 +1,19 @@
 // ============================================================
-// === ЭТАП 8: РОСПИСЬ ФДУ ТОЛЬКО В ПРОФИЛЕ ОПЕРАТОРА ГУО   ===
-// === И СЧЕТЧИК ОТПРАВЛЕННЫХ ФДУ НА КНОПКЕ ГУО             ===
+// === ЭТАП 8: РОСПИСЬ ФДУ В ПРОФИЛЕ ГУО, СЧЕТЧИК НА КНОПКЕ ===
+// === И РАЗДЕЛЕНИЕ ТАБЕЛЯ ПО СПИСКАМ УЧАСТКОВ              ===
 // ============================================================
 
 let cloudPendingFdu = [];
 let st8LastPendingCount = 0;
 let st8ActiveReviewDocId = null;
+let st8SelectedSector = null;
 
 window.addEventListener('load', () => {
     injectStage8Styles();
     injectStage8Modal();
     setTimeout(() => {
         initStage8GuoWorkflow();
+        initStage8TabelBySector();
     }, 950);
 });
 
@@ -20,7 +22,6 @@ function injectStage8Styles() {
     let st = document.createElement('style');
     st.id = 'st8-styles';
     st.innerHTML = `
-        .guo-btn-wrap { position: relative; display: block; width: 100%; }
         .guo-count-badge {
             display: none;
             align-items: center;
@@ -42,6 +43,41 @@ function injectStage8Styles() {
             background: #fff8e1;
             border-left: 4px solid #e63946;
         }
+        /* ВКЛАДКИ УЧАСТКОВ В ТАБЕЛЕ */
+        .tabel-sector-bar {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px 10px;
+            background: #eef2f7;
+            border-radius: 6px;
+            border: 1px solid #cfd8e3;
+        }
+        .tabel-sector-tab {
+            width: auto !important;
+            margin: 0 !important;
+            padding: 6px 12px !important;
+            font-size: 12px !important;
+            border-radius: 16px !important;
+            background: #ffffff;
+            color: #003366;
+            border: 1px solid #b8c7dc !important;
+        }
+        .tabel-sector-tab.active {
+            background: #003366 !important;
+            color: #ffffff !important;
+            border-color: #003366 !important;
+        }
+        .tabel-sector-header-row td {
+            background: #dce6f1 !important;
+            color: #003366 !important;
+            font-weight: bold !important;
+            text-align: left !important;
+            padding: 6px 10px !important;
+            font-size: 12px !important;
+        }
     `;
     document.head.appendChild(st);
 }
@@ -55,14 +91,15 @@ function isCurrentUserGuo() {
     return role === 'guo' || (appState.user?.position || '').toLowerCase().includes('гуо');
 }
 
+// ============================================================
+// === ЧАСТЬ 1: РОСПИСЬ ФДУ В ПРОФИЛЕ ГУО + СЧЕТЧИК         ===
+// ============================================================
 function initStage8GuoWorkflow() {
-    // 1. Добавляем счетчик на кнопку «Завершение работы контролёров» в профиле ГУО
     let guoBtn = document.querySelector('#guoDashboardBox .guo-main-btn');
     if (guoBtn && !document.getElementById('guoPendingBadge')) {
         guoBtn.innerHTML = `✅ Завершение работы контролёров <span id="guoPendingBadge" class="guo-count-badge">0</span>`;
     }
 
-    // 2. Обновляем статусную кнопку на главном экране (поддержка статуса "Ожидает подписи ГУО")
     const _origUpdateShiftBtn = window.updateShiftMainButton;
     window.updateShiftMainButton = function() {
         let btn = document.getElementById('btnMainShift');
@@ -76,13 +113,10 @@ function initStage8GuoWorkflow() {
     };
     window.updateShiftMainButton();
 
-    // 3. Перехватываем кнопку «Сохранить рапорт смены» у контролёра:
-    //    теперь она НЕ открывает окно подписи в профиле контролёра, а отправляет ФДУ в ГУО
     window.openGuoSignModal = function() {
         sendControllerFduToGuo();
     };
 
-    // 4. Подписка на очередь ФДУ, отправленных контролёрами в ГУО
     if (typeof db !== 'undefined' && db) {
         db.collection('pending_fdu_reports').onSnapshot(snap => {
             cloudPendingFdu = [];
@@ -92,7 +126,6 @@ function initStage8GuoWorkflow() {
         });
     }
 
-    // Обновляем бейдж при каждом переключении экрана ГУО
     const _origApplyGuo = window.applyGuoMainScreenMode;
     window.applyGuoMainScreenMode = function() {
         if (typeof _origApplyGuo === 'function') _origApplyGuo();
@@ -101,9 +134,6 @@ function initStage8GuoWorkflow() {
     updateGuoPendingBadge();
 }
 
-// ============================================================
-// === ОТПРАВКА ФДУ КОНТРОЛЁРОМ В ОЧЕРЕДЬ НА ПОДПИСЬ В ГУО ===
-// ============================================================
 function sendControllerFduToGuo() {
     if (!appState.user) return alert("Сначала войдите в профиль!");
     if (!confirm("Отправить рапорт смены ФДУ на подпись оператору ГУО?")) return;
@@ -123,7 +153,6 @@ function sendControllerFduToGuo() {
         sum: tr.querySelector('.fdu-train-sum')?.value.trim() || ''
     })).filter(r => r.num);
 
-    // Определяем станцию заступления по первому поезду маршрута
     let routeInfo = (typeof getRouteStartStation === 'function' && route !== '—')
         ? getRouteStartStation(route)
         : { station: '', firstTrain: '' };
@@ -137,16 +166,10 @@ function sendControllerFduToGuo() {
         id: docId,
         tab: appState.user.tab,
         fio: appState.user.fio,
-        route,
-        mkassa,
-        startStation,
+        route, mkassa, startStation,
         firstTrain: routeInfo.firstTrain || (rows[0] ? `${rows[0].num} (${rows[0].route})` : '—'),
-        grandTix,
-        grandSum,
-        testTix,
-        tapeLeft,
-        rows,
-        status: 'pending', // pending | signed
+        grandTix, grandSum, testTix, tapeLeft, rows,
+        status: 'pending',
         sentAt,
         ts: Date.now()
     };
@@ -170,9 +193,6 @@ function sendControllerFduToGuo() {
     backToMain();
 }
 
-// ============================================================
-// === СЧЕТЧИК НА КНОПКЕ ГУО ===
-// ============================================================
 function getPendingFduForMyStation(showAll) {
     let myStation = (appState.user?.station || appState.user?.sector || 'Клин').trim().toLowerCase();
     return cloudPendingFdu.filter(r => {
@@ -186,9 +206,7 @@ function getPendingFduForMyStation(showAll) {
 function updateGuoPendingBadge() {
     let badge = document.getElementById('guoPendingBadge');
     if (!badge) return;
-    let pendingList = getPendingFduForMyStation(false);
-    let count = pendingList.length;
-
+    let count = getPendingFduForMyStation(false).length;
     if (count > 0) {
         badge.innerText = count;
         badge.style.display = 'inline-flex';
@@ -201,9 +219,6 @@ function updateGuoPendingBadge() {
     st8LastPendingCount = count;
 }
 
-// ============================================================
-// === ОКНО ГУО: СПИСОК ОТПРАВЛЕННЫХ ФДУ + КОНТРОЛЁРЫ УЧАСТКА ===
-// ============================================================
 window.openGuoFinishControllersModal = function(showAll) {
     let myStation = (appState.user?.station || appState.user?.sector || 'Клин').trim();
     document.getElementById('guoFilterStationTitle').innerText = showAll ? 'Все участки' : `Участок заступления: ${myStation}`;
@@ -230,8 +245,6 @@ window.openGuoFinishControllersModal = function(showAll) {
     }).filter(x => x.isWorkingToday && x.matchesStation);
 
     let html = '';
-
-    // Сначала — контролёры, которые ОТПРАВИЛИ ФДУ на подпись
     if (pendingList.length > 0) {
         html += `<div style="padding:8px 10px;background:#e63946;color:#fff;font-weight:bold;font-size:12px;">📄 Отправили ФДУ на подпись (${pendingList.length})</div>`;
         html += pendingList.map(rep => `
@@ -246,7 +259,6 @@ window.openGuoFinishControllersModal = function(showAll) {
         `).join('');
     }
 
-    // Ниже — остальные контролёры участка на смене (еще не отправили ФДУ)
     if (otherWorkers.length > 0) {
         html += `<div style="padding:8px 10px;background:#eef2f7;color:#333;font-weight:bold;font-size:12px;">🚆 На смене (ФДУ еще не отправлен)</div>`;
         html += otherWorkers.map(item => {
@@ -264,17 +276,11 @@ window.openGuoFinishControllersModal = function(showAll) {
         }).join('');
     }
 
-    if (!html) {
-        html = `<div style="text-align:center;color:#666;padding:20px;">Нет контролёров с отправленными ФДУ на участке «${st8Esc(myStation)}».</div>`;
-    }
-
+    if (!html) html = `<div style="text-align:center;color:#666;padding:20px;">Нет контролёров с отправленными ФДУ на участке «${st8Esc(myStation)}».</div>`;
     document.getElementById('guoControllersList').innerHTML = html;
     openModal('guoFinishModal');
 };
 
-// ============================================================
-// === ПРОВЕРКА И ПОДПИСЬ ФДУ В ПРОФИЛЕ ОПЕРАТОРА ГУО ===
-// ============================================================
 function openGuoReviewAndSignModal(docId) {
     let rep = cloudPendingFdu.find(x => x.id === docId);
     if (!rep) return;
@@ -299,16 +305,11 @@ function openGuoReviewAndSignModal(docId) {
         </table>
     `;
 
-    // Показываем личную подпись оператора ГУО из профиля (если есть) + холст для росписи
     let guoSig = appState.user?.signature || '';
     let savedSigBox = document.getElementById('st8GuoSavedSigBox');
     let savedSigImg = document.getElementById('st8GuoSavedSigImg');
-    if (guoSig) {
-        savedSigImg.src = guoSig;
-        savedSigBox.style.display = 'block';
-    } else {
-        savedSigBox.style.display = 'none';
-    }
+    if (guoSig) { savedSigImg.src = guoSig; savedSigBox.style.display = 'block'; }
+    else { savedSigBox.style.display = 'none'; }
 
     openModal('st8GuoReviewModal');
     setTimeout(() => { if (typeof initCanvas === 'function') initCanvas('st8GuoDrawCanvas'); }, 100);
@@ -328,11 +329,9 @@ function confirmSt8GuoSignature() {
     let guoFio = appState.user?.fio || 'Оператор ГУО';
     let closedAt = new Date().toLocaleString('ru-RU');
 
-    // Берем нарисованную подпись или сохраненную подпись из профиля ГУО
     let sigImg = appState.user?.signature || '';
     if (typeof sigCtxMap !== 'undefined' && sigCtxMap['st8GuoDrawCanvas']) {
         let c = sigCtxMap['st8GuoDrawCanvas'].c;
-        // Проверяем, рисовал ли оператор на холсте
         let blank = document.createElement('canvas'); blank.width = c.width; blank.height = c.height;
         if (c.toDataURL() !== blank.toDataURL()) sigImg = c.toDataURL();
     }
@@ -380,6 +379,179 @@ function confirmSt8GuoSignature() {
     closeModal('st8GuoReviewModal');
     showSyncToast(`✍️ ФДУ ${rep.fio} подписан, смена закрыта!`);
     setTimeout(() => window.openGuoFinishControllersModal(false), 350);
+}
+
+// ============================================================
+// === ЧАСТЬ 2: ТАБЕЛЬ — СВОЙ СПИСОК ДЛЯ КАЖДОГО УЧАСТКА    ===
+// ============================================================
+function getWorkerSectorName(w) {
+    return ((w && (w.sector || w.station)) || 'Без участка').trim();
+}
+
+function getAllTabelSectors() {
+    let set = new Set();
+    (appState.workers || []).forEach(w => set.add(getWorkerSectorName(w)));
+    if (typeof departmentsDb !== 'undefined') {
+        departmentsDb.forEach(d => { if (d && d.name) set.add(d.name.trim()); });
+    }
+    return Array.from(set).filter(Boolean).sort((a, b) => a.localeCompare(b, 'ru'));
+}
+
+function selectTabelSector(secName) {
+    st8SelectedSector = secName;
+    renderTabel();
+}
+
+function renderTabelSectorTabs() {
+    let tbl = document.querySelector('#tabel-screen table.tabel-table');
+    if (!tbl) return;
+
+    let bar = document.getElementById('tabelSectorBar');
+    if (!bar) {
+        bar = document.createElement('div');
+        bar.id = 'tabelSectorBar';
+        bar.className = 'tabel-sector-bar';
+        tbl.parentNode.insertBefore(bar, tbl);
+    }
+
+    let sectors = getAllTabelSectors();
+    let mySec = getWorkerSectorName(appState.user || {});
+
+    // По умолчанию открываем участок текущего сотрудника (или первый доступный)
+    if (!st8SelectedSector || (st8SelectedSector !== '__grouped__' && !sectors.includes(st8SelectedSector))) {
+        st8SelectedSector = sectors.includes(mySec) ? mySec : (sectors[0] || 'Без участка');
+    }
+
+    let canSeeAll = typeof canCreateWorker === 'function' && canCreateWorker();
+    let html = `<span style="font-size:12px;font-weight:bold;color:#003366;margin-right:4px;">🏢 Участок:</span>`;
+
+    sectors.forEach(sec => {
+        let cnt = (appState.workers || []).filter(w => getWorkerSectorName(w) === sec).length;
+        let isActive = st8SelectedSector === sec;
+        let safeSec = st8Esc(sec).replace(/'/g, "\\'");
+        html += `<button type="button" class="tabel-sector-tab ${isActive ? 'active' : ''}" onclick="selectTabelSector('${safeSec}')">${st8Esc(sec)} (${cnt})</button>`;
+    });
+
+    if (canSeeAll && sectors.length > 1) {
+        html += `<button type="button" class="tabel-sector-tab ${st8SelectedSector === '__grouped__' ? 'active' : ''}" onclick="selectTabelSector('__grouped__')">📋 Все по участкам</button>`;
+    }
+
+    bar.innerHTML = html;
+}
+
+function buildWorkerTabelRowsHtml(w, idx, dim, y, m, md, isCurM, tNum) {
+    let st = getWorkerTodayStatus(w), wd = 0, th = 0, c1 = '', c2 = '', wDays = md[w.tab] || {};
+    for (let d = 1; d <= dim; d++) {
+        let allowed = isDateAllowedForWorker(w, y, m, d);
+        let cell = allowed ? wDays[String(d)] : null;
+        let rTxt = !allowed ? '—' : (cell?.route ? (cell.senior ? `⭐${cell.route}` : cell.route) : '+');
+        let hTxt = cell?.hours || '';
+        if (cell?.route && cell.route !== 'В') {
+            wd++;
+            th += parseFloat(String(hTxt || '0').replace(',', '.')) || 0;
+        }
+        let cls = 'tabel-cell-day'
+            + (!allowed ? ' cell-locked' : '')
+            + (isCurM && d === tNum ? ' cell-today-col' : '')
+            + (cell?.route === 'В' ? ' cell-weekend' : '')
+            + (isCurM && d === tNum && st.code === 'open' ? ' cell-shift-active' : '');
+        let clk = (allowed && canEditTabel()) ? `onclick="openTabelDrawer('${w.tab}',${d})"` : '';
+        c1 += `<td class="${cls}" ${clk}>${rTxt}</td>`;
+        c2 += `<td class="${cls}" ${clk}>${hTxt}</td>`;
+    }
+    return `<tr><td rowspan="2">${idx + 1}</td><td rowspan="2">${st8Esc(w.tab)}</td><td rowspan="2" style="text-align:left;font-weight:bold;padding-left:4px;">${st8Esc(w.fio)} <span class="status-dot ${st.dotClass}" title="${st.label}"></span></td><td style="font-size:8.5px;background:#f7f7f7;">маршр.</td>${c1}<td rowspan="2"><strong>${wd}</strong></td><td rowspan="2"><strong>${th.toFixed(1).replace('.', ',')}</strong></td></tr><tr><td style="font-size:8.5px;background:#f7f7f7;">часы</td>${c2}</tr>`;
+}
+
+function initStage8TabelBySector() {
+    // 1. Переопределяем renderTabel — сотрудники строго в списках своих участков
+    window.renderTabel = function() {
+        renderTabelSectorTabs();
+
+        let m = +document.getElementById('tabelMonthSelect').value;
+        let y = +document.getElementById('tabelYearSelect').value;
+        let dim = new Date(y, m + 1, 0).getDate();
+        let ym = getSelectedMonthKey();
+        let md = cloudTabelByMonth[ym] || {};
+        let fv = document.getElementById('tabelStatusFilter')?.value || 'all';
+        let now = new Date(), isCurM = now.getFullYear() === y && now.getMonth() === m, tNum = now.getDate();
+
+        document.getElementById('tabelDaysColspan').colSpan = dim;
+        let dr = document.getElementById('tabelDaysHeaderRow'); if (!dr) return;
+        dr.innerHTML = '';
+        for (let d = 1; d <= dim; d++) dr.innerHTML += `<th ${isCurM && d === tNum ? 'style="background:#ffe599;"' : ''}>${d}</th>`;
+
+        let tb = document.getElementById('tabelBody'); if (!tb) return;
+        tb.innerHTML = '';
+
+        let statusFiltered = (appState.workers || []).filter(w => fv === 'all' || getWorkerTodayStatus(w).code === fv);
+        let totalCols = dim + 6;
+
+        if (st8SelectedSector === '__grouped__') {
+            let sectors = getAllTabelSectors();
+            let html = '';
+            sectors.forEach(sec => {
+                let list = statusFiltered.filter(w => getWorkerSectorName(w) === sec);
+                if (!list.length) return;
+                html += `<tr class="tabel-sector-header-row"><td colspan="${totalCols}">🏢 Участок: ${st8Esc(sec)} — ${list.length} сотр.</td></tr>`;
+                list.forEach((w, idx) => { html += buildWorkerTabelRowsHtml(w, idx, dim, y, m, md, isCurM, tNum); });
+            });
+            tb.innerHTML = html || `<tr><td colspan="${totalCols}" style="padding:14px;color:#666;">Нет сотрудников по выбранному фильтру</td></tr>`;
+        } else {
+            let list = statusFiltered.filter(w => getWorkerSectorName(w) === st8SelectedSector);
+            let html = `<tr class="tabel-sector-header-row"><td colspan="${totalCols}">🏢 Участок: ${st8Esc(st8SelectedSector)} — ${list.length} сотр.</td></tr>`;
+            if (!list.length) {
+                html += `<tr><td colspan="${totalCols}" style="padding:14px;color:#666;">В участке «${st8Esc(st8SelectedSector)}» нет сотрудников по выбранному фильтру</td></tr>`;
+            } else {
+                list.forEach((w, idx) => { html += buildWorkerTabelRowsHtml(w, idx, dim, y, m, md, isCurM, tNum); });
+            }
+            tb.innerHTML = html;
+        }
+
+        document.getElementById('btnTabelCreateWorker').style.display = canCreateWorker() ? 'inline-block' : 'none';
+        document.getElementById('btnTabelLoadFile').style.display = canEditTabel() ? 'inline-block' : 'none';
+        document.getElementById('btnTabelDistribute').style.display = canEditTabel() ? 'inline-block' : 'none';
+        document.getElementById('btnTabelNotify').style.display = (appState.tabelDirty && canEditTabel()) ? 'inline-block' : 'none';
+    };
+
+    // 2. При создании сотрудника из Табеля автоматически подставляем открытый участок
+    const _origOpenWorkerModal = window.openWorkerModal;
+    window.openWorkerModal = function(tab) {
+        if (typeof _origOpenWorkerModal === 'function') _origOpenWorkerModal(tab);
+        if (!tab && st8SelectedSector && st8SelectedSector !== '__grouped__') {
+            let secInp = document.getElementById('newWorkerSector');
+            if (secInp && !secInp.value) secInp.value = st8SelectedSector;
+        }
+    };
+
+    // 3. В «Раскидать по маршрутам» показываем сотрудников текущего участка
+    window.renderDistributeList = function() {
+        let { dObj, ymKey, day } = getDistTargetDate();
+        let opts = `<option value="">— Выходной —</option>` + routesDb.map(r => `<option value="${r.num}">Маршрут ${r.num}</option>`).join('');
+        let workersForDist = (appState.workers || []).filter(w => {
+            if (!isDateAllowedForWorker(w, dObj.getFullYear(), dObj.getMonth(), dObj.getDate())) return false;
+            if (st8SelectedSector && st8SelectedSector !== '__grouped__') {
+                return getWorkerSectorName(w) === st8SelectedSector;
+            }
+            return true;
+        });
+
+        let headerNote = (st8SelectedSector && st8SelectedSector !== '__grouped__')
+            ? `<div style="padding:6px 8px;background:#eef6ff;border-radius:4px;font-size:12px;font-weight:bold;color:#003366;margin-bottom:6px;">🏢 Участок: ${st8Esc(st8SelectedSector)}</div>`
+            : '';
+
+        document.getElementById('distWorkersList').innerHTML = headerNote + (workersForDist.length
+            ? workersForDist.map(w => {
+                let cur = cloudTabelByMonth[ymKey]?.[w.tab]?.[day]?.route || '';
+                return `<div class="dist-row"><div style="flex:1.5;"><strong>${st8Esc(w.fio)}</strong><br><small>${st8Esc(getWorkerSectorName(w))}</small></div><select class="form-input dist-route-sel" data-tab="${w.tab}" style="flex:1;margin:0;" onchange="checkSharedRoutesForSenior()">${opts.replace(`value="${cur}"`, `value="${cur}" selected`)}</select></div>`;
+            }).join('')
+            : '<div style="padding:12px;text-align:center;color:#666;">Нет доступных сотрудников на этом участке</div>');
+        checkSharedRoutesForSenior();
+    };
+
+    // Перерисовываем Табель, если он уже открыт
+    if (document.getElementById('tabel-screen')?.classList.contains('active-screen')) {
+        window.renderTabel();
+    }
 }
 
 function injectStage8Modal() {
