@@ -616,3 +616,55 @@ function initStage13ReadTicks() {
 window.addEventListener('load', () => {
     setTimeout(initStage13ReadTicks, 2050);
 });
+// ============================================================
+// === ПЕРЕХОД ПО ССЫЛКЕ ПРИГЛАШЕНИЯ -> ВСЕГДА ЭКРАН ВХОДА  ===
+// ============================================================
+(function handleInviteLinkEarly() {
+    let params = new URLSearchParams(window.location.search);
+    if (params.get('invite') === '1') {
+        // Сбрасываем авто-вход, чтобы всегда открылся начальный экран (№ таб. и фамилия)
+        localStorage.removeItem('kkl_profile');
+        if (window.history && window.history.replaceState) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                if (typeof hideAllScreens === 'function') hideAllScreens();
+                let menuBtn = document.getElementById('menuBtn');
+                let bellBtn = document.getElementById('bellBtn');
+                if (menuBtn) menuBtn.style.display = 'none';
+                if (bellBtn) bellBtn.style.display = 'none';
+
+                let loginScr = document.getElementById('login-screen');
+                if (loginScr) loginScr.classList.add('active-screen');
+                if (typeof resetLogin === 'function') resetLogin();
+
+                let tabInp = document.getElementById('loginTab');
+                let lastInp = document.getElementById('loginLast');
+                if (tabInp) tabInp.value = '';
+                if (lastInp) lastInp.value = '';
+            }, 1850);
+        });
+    }
+})();
+
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        // Обновляем функцию приглашения, чтобы ссылка всегда шла с ?invite=1
+        window.sendAppInvite = async function(name, tel) {
+            let url = window.location.origin + window.location.pathname + '?invite=1';
+            let text = `Привет, ${name || 'коллега'}! Подключайся к приложению «Ласточка МТППК»: ${url}`;
+            if (navigator.share) {
+                try { await navigator.share({ title: 'Ласточка МТППК', text, url }); return; } catch (e) {}
+            }
+            if (tel) {
+                window.open(`sms:${tel.replace(/[^\d+]/g, '')}?body=${encodeURIComponent(text)}`, '_blank');
+            } else if (navigator.clipboard) {
+                await navigator.clipboard.writeText(text);
+                alert("Ссылка-приглашение скопирована! Отправьте её другу.");
+            } else {
+                prompt("Скопируйте приглашение:", text);
+            }
+        };
+    }, 2100);
+});
