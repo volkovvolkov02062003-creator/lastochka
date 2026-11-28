@@ -668,3 +668,120 @@ window.addEventListener('load', () => {
         };
     }, 2100);
 });
+// ============================================================
+// === СТАТУС «В СЕТИ» ПО УСТРОЙСТВУ: СИНИЙ — ТЕЛЕФОН,      ===
+// === ЗЕЛЁНЫЙ — КОМПЬЮТЕР, БЕЗ КРУЖКА — НЕ В СЕТИ          ===
+// ============================================================
+(function initStage13DevicePresence() {
+    if (!document.getElementById('st13-device-dot-styles')) {
+        let st = document.createElement('style');
+        st.id = 'st13-device-dot-styles';
+        st.innerHTML = `
+            .wa-online-green-dot {
+                background: #22c55e !important;
+                box-shadow: 0 0 4px rgba(34, 197, 94, 0.85) !important;
+            }
+        `;
+        document.head.appendChild(st);
+    }
+
+    function detectSt13Device() {
+        let ua = navigator.userAgent || '';
+        let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(ua)
+            || (window.matchMedia && window.matchMedia('(max-width: 768px)').matches && ('ontouchstart' in window || navigator.maxTouchPoints > 0));
+        return isMobile ? 'mobile' : 'desktop';
+    }
+
+    // Отправляем в Firebase не только статус онлайн, но и тип устройства (mobile / desktop)
+    window.sendOnlineHeartbeat = function(isOnline) {
+        let tab = getSt13CurrentTab();
+        if (!tab || typeof db === 'undefined' || !db) return;
+        db.collection('workers').doc(tab).set({
+            online: !!isOnline,
+            device: detectSt13Device(),
+            lastSeen: Date.now()
+        }, { merge: true }).catch(() => {});
+    };
+
+    function setDeviceDotOnAvatar(avatarEl, worker) {
+        if (!avatarEl) return;
+        let isOnline = isWorkerOnlineSt13(worker);
+        let existing = avatarEl.querySelector('.wa-online-blue-dot');
+
+        if (!isOnline) {
+            if (existing) existing.remove();
+            return;
+        }
+
+        let isDesktop = worker?.device === 'desktop';
+        let dot = existing;
+        if (!dot) {
+            dot = document.createElement('span');
+            avatarEl.appendChild(dot);
+        }
+        dot.className = isDesktop ? 'wa-online-blue-dot wa-online-green-dot' : 'wa-online-blue-dot';
+        dot.title = isDesktop ? 'В сети (компьютер)' : 'В сети (телефон)';
+    }
+
+    window.decorateOnlineBlueDots = function() {
+        let workers = appState?.workers || [];
+        const findW = tab => workers.find(w => w.tab === tab);
+
+        // 1. Список личных чатов слева
+        document.querySelectorAll('#cloudChatListBox .wa-chat-row').forEach(row => {
+            let oc = row.getAttribute('onclick') || '';
+            let m = oc.match(/openCloudChat\('([^']+)'\)/);
+            if (!m) return;
+            let c = (cloudChatsList || []).find(x => x.id === m[1]);
+            let av = row.querySelector('.wa-avatar');
+            if (!c || c.isGroup !== false) { setDeviceDotOnAvatar(av, null); return; }
+            let meta = typeof getChatDisplayMeta === 'function' ? getChatDisplayMeta(c) : null;
+            setDeviceDotOnAvatar(av, meta?.peerTab ? findW(meta.peerTab) : null);
+        });
+
+        // 2. Шапка открытого личного чата (кружок + текстовый статус)
+        let headerAv = document.getElementById('waHeaderAvatar');
+        let headerSub = document.getElementById('waHeaderSub');
+        if (headerAv && typeof activeChatId !== 'undefined') {
+            let c = (cloudChatsList || []).find(x => x.id === activeChatId);
+            if (c && c.isGroup === false && typeof getChatDisplayMeta === 'function') {
+                let meta = getChatDisplayMeta(c);
+                let peerW = meta?.peerTab ? findW(meta.peerTab) : null;
+                setDeviceDotOnAvatar(headerAv, peerW);
+                if (headerSub) {
+                    if (isWorkerOnlineSt13(peerW)) {
+                        headerSub.innerText = peerW?.device === 'desktop'
+                            ? 'в сети (компьютер) · инфо'
+                            : 'в сети (телефон) · инфо';
+                    } else {
+                        headerSub.innerText = 'не в сети · инфо';
+                    }
+                }
+            } else {
+                setDeviceDotOnAvatar(headerAv, null);
+            }
+        }
+
+        // 3. Мини-аватарки в сообщениях группового чата
+        document.querySelectorAll('#chatMsgs .wa-msg-mini-av').forEach(av => {
+            let oc = av.getAttribute('onclick') || '';
+            let m = oc.match(/openSt12UserProfilePopup\('([^']+)'\)/);
+            if (!m) return;
+            setDeviceDotOnAvatar(av, findW(m[1]));
+        });
+
+        // 4. Список участников в карточке группы
+        document.querySelectorAll('#waInfoModalBody .st12-member-row').forEach(row => {
+            let oc = row.getAttribute('onclick') || '';
+            let m = oc.match(/onSt12GroupMemberClick\('([^']+)'\)/);
+            if (!m) return;
+            setDeviceDotOnAvatar(row.querySelector('.wa-avatar'), findW(m[1]));
+        });
+
+        // 5. Карточка профиля сотрудника при клике на ФИО
+        let popAv = document.getElementById('st12PopAv');
+        if (popAv && st13State.lastPopupTab) {
+            setDeviceDotOnAvatar(popAv, findW(st13State.lastPopupTab));
+        }
+    };
+})();
