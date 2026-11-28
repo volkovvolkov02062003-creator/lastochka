@@ -251,3 +251,221 @@ function injectStage14Modal() {
     `;
     document.body.appendChild(wrap);
 }
+// ============================================================
+// === ЗЕЛЕНАЯ КНОПКА «+» ВНИЗУ ЧАТОВ + 3 КНОПКИ ВВЕРХ      ===
+// === И РАЗДЕЛЕНИЕ ТЕЛЕФОННОЙ КНИГИ (ЕСТЬ / НЕТ В ПРОГРАММЕ)===
+// ============================================================
+function injectStage14FabStyles() {
+    if (document.getElementById('st14-fab-styles')) return;
+    let st = document.createElement('style');
+    st.id = 'st14-fab-styles';
+    st.innerHTML = `
+        .wa-sidebar { position: relative !important; }
+        /* Скрываем старую кнопку «бумага с карандашом» сверху */
+        .wa-side-header button[onclick*="openWaNewChatMenu"] { display: none !important; }
+
+        /* Зеленая круглая кнопка «+» внизу списка чатов */
+        .wa-fab-plus {
+            position: absolute;
+            bottom: 18px;
+            right: 18px;
+            width: 54px !important;
+            height: 54px !important;
+            min-width: 54px !important;
+            border-radius: 50% !important;
+            background: #25d366 !important;
+            color: #ffffff !important;
+            font-size: 30px !important;
+            line-height: 1 !important;
+            font-weight: 400 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+            z-index: 30;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        .wa-fab-plus:hover { background: #1ebe5d !important; transform: scale(1.06); }
+        .wa-fab-plus.open { transform: rotate(45deg); background: #008069 !important; }
+
+        /* 3 кнопки, выезжающие вверх над зеленым «+» */
+        .wa-fab-menu {
+            display: none;
+            position: absolute;
+            bottom: 82px;
+            right: 18px;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 31;
+            width: 255px;
+            max-width: calc(100% - 36px);
+        }
+        .wa-fab-menu.open { display: flex; }
+        .wa-fab-action-btn {
+            display: flex !important;
+            align-items: center;
+            gap: 10px;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 11px 14px !important;
+            border-radius: 12px !important;
+            background: #ffffff !important;
+            color: #111b21 !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            text-align: left !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+            border: 1px solid #d1d7db !important;
+        }
+        .wa-fab-action-btn:hover { background: #e7fce3 !important; color: #008069 !important; }
+        body.dark-theme .wa-fab-action-btn {
+            background: #233138 !important;
+            color: #e9edef !important;
+            border-color: #2a3942 !important;
+        }
+    `;
+    document.head.appendChild(st);
+}
+
+function mountWaGreenFab() {
+    let sidebar = document.querySelector('#chats-screen .wa-sidebar');
+    if (!sidebar) return;
+    let isChatsTab = typeof waState === 'undefined' || waState.tab === 'chats';
+
+    let oldFab = document.getElementById('waFabPlusBtn');
+    let oldMenu = document.getElementById('waFabUpMenu');
+    if (!isChatsTab) {
+        if (oldFab) oldFab.remove();
+        if (oldMenu) oldMenu.remove();
+        return;
+    }
+    if (oldFab) return;
+
+    let menu = document.createElement('div');
+    menu.id = 'waFabUpMenu';
+    menu.className = 'wa-fab-menu';
+    menu.innerHTML = `
+        <button type="button" class="wa-fab-action-btn" onclick="closeWaFabMenu();openSt12CreateGroupModal();">
+            <span>👥</span> <span>1. Создать новую группу</span>
+        </button>
+        <button type="button" class="wa-fab-action-btn" onclick="closeWaFabMenu();openSt14DmPickerModal();">
+            <span>💬</span> <span>2. Написать личное сообщение</span>
+        </button>
+        <button type="button" class="wa-fab-action-btn" onclick="closeWaFabMenu();openContactsInviteModal();">
+            <span>📱</span> <span>3. Найти друга по телефонной книге</span>
+        </button>
+    `;
+
+    let fab = document.createElement('button');
+    fab.type = 'button';
+    fab.id = 'waFabPlusBtn';
+    fab.className = 'wa-fab-plus';
+    fab.title = 'Новый чат';
+    fab.innerText = '+';
+    fab.onclick = toggleWaFabMenu;
+
+    sidebar.appendChild(menu);
+    sidebar.appendChild(fab);
+}
+
+function toggleWaFabMenu() {
+    let m = document.getElementById('waFabUpMenu');
+    let b = document.getElementById('waFabPlusBtn');
+    if (!m || !b) return;
+    let open = m.classList.toggle('open');
+    b.classList.toggle('open', open);
+}
+
+function closeWaFabMenu() {
+    let m = document.getElementById('waFabUpMenu');
+    let b = document.getElementById('waFabPlusBtn');
+    if (m) m.classList.remove('open');
+    if (b) b.classList.remove('open');
+}
+
+// Модалка выбора коллеги для личного сообщения (кнопка 2)
+function openSt14DmPickerModal() {
+    let inp = document.getElementById('st14DmSearchInp');
+    if (inp) inp.value = '';
+    renderSt14DmPickerList('');
+    openModal('st14DmPickerModal');
+}
+
+function renderSt14DmPickerList(q) {
+    let box = document.getElementById('st14DmPickerList');
+    if (!box) return;
+    let myTab = appState.user?.tab || '';
+    let query = (q || '').trim().toLowerCase();
+    let list = (appState.workers || []).filter(w =>
+        w.tab !== myTab && (!query || (w.fio || '').toLowerCase().includes(query) || (w.tab || '').includes(query) || (w.phone || '').includes(query))
+    );
+    box.innerHTML = list.length === 0
+        ? '<div style="padding:14px;text-align:center;color:#666;font-size:13px;">Сотрудники не найдены</div>'
+        : list.map(w => {
+            let init = (w.fio || 'С').split(/\s+/).map(p => p[0]).join('').slice(0, 2).toUpperCase();
+            return `
+                <div class="st12-member-row" onclick="closeModal('st14DmPickerModal');startPrivateDmWithWorker(appState.workers.find(x=>x.tab==='${st14Esc(w.tab)}'))">
+                    <div class="wa-avatar" style="width:36px;height:36px;min-width:36px;font-size:12px;overflow:hidden;">${renderAvatarInner(w.avatar, init)}</div>
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-size:13px;font-weight:600;">${st14Esc(w.fio)}</div>
+                        <div style="font-size:11px;color:#666;">${st14Esc(w.sector \vert{}\vert{} w.station \vert{}\vert{} '')}${w.phone ? ' • ' + st14Esc(w.phone) : ''}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+}
+
+// Улучшенный вывод телефонной книги: отдельно «Есть в программе» и «Нет в программе»
+function initStage14FabAndPhonebook() {
+    injectStage14FabStyles();
+
+    // Инъекция модалки выбора собеседника для ЛС
+    if (!document.getElementById('st14DmPickerModal')) {
+        let wrap = document.createElement('div');
+        wrap.innerHTML = `
+            <div id="st14DmPickerModal" class="modal">
+                <div class="modal-content" style="max-width:420px;">
+                    <h3 style="margin-top:0;">💬 Написать личное сообщение</h3>
+                    <input id="st14DmSearchInp" class="form-input" placeholder="Поиск по фамилии, табельному или телефону..." oninput="renderSt14DmPickerList(this.value)" style="margin-bottom:10px;">
+                    <div id="st14DmPickerList" style="max-height:300px;overflow-y:auto;border:1px solid #eee;border-radius:6px;"></div>
+                    <button class="btn-secondary" style="margin-top:10px;" onclick="closeModal('st14DmPickerModal')">Отмена</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(wrap);
+    }
+
+    // Переопределяем отображение контактов из телефонной книги (разделяем на «Есть в программе» и «Нет»)
+    window.renderPickedContacts = function(list) {
+        let box = document.getElementById('pickedContactsList');
+        if (!box || !list || !list.length) return;
+
+        let inApp = [];
+        let notInApp = [];
+        list.forEach(c => {
+            let digits = (c.tel || '').replace(/\D/g, '').slice(-10);
+            let existing = digits.length >= 7
+                ? (appState.workers || []).find(w => w.phone && w.phone.replace(/\D/g, '').slice(-10) === digits)
+                : null;
+            if (existing) inApp.push({ c, w: existing });
+            else notInApp.push(c);
+        });
+
+        let html = '';
+        if (inApp.length > 0) {
+            html += `<div style="padding:5px 8px;background:#e7fce3;color:#008069;font-weight:bold;font-size:12px;border-radius:4px;margin-bottom:4px;">✅ Есть в нашей программе (${inApp.length})</div>`;
+            html += inApp.map(({ c, w }) => `
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 6px;border-bottom:1px solid #eee;font-size:13px;">
+                    <div><strong>${st14Esc(w.fio)}</strong><br><small style="color:#666;">${st14Esc(c.tel)} •${st14Esc(w.sector || w.station || '')}</small></div>
+                    <button class="btn-success" style="width:auto;margin:0;padding:5px 10px;font-size:12px;" onclick="closeModal('contactsInviteModal');startPrivateDmWithWorker(appState.workers.find(x=>x.tab==='${st14Esc(w.tab)}'))">Написать</button>
+                </div>
+            `).join('');
+        }
+        if (notInApp.length > 0) {
+            html += `<div style="padding:5px 8px;background:#f4f6f9;color:#555;font-weight:bold;font-size:12px;border-radius:4px;margin:8px 0 4px;">📩 Нет в программе — можно пригласить (${notInApp.length})</div>`;
+            html += notInApp.map(c => `
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 6px;border-bottom:1px solid #eee;font-size:13px;">
+                    <div><strong>${st14Esc(c.name)}</strong><br><small style="color:#666;">${st14Esc(c.tel)}</small></div>
+                    <button class="btn-action" style="width:auto;margin:0;padding:5px 10px;font-size:12px;"
