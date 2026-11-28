@@ -14,7 +14,7 @@
       "src": "train.jpg",
       "sizes": "48x48",
       "type": "image/jpeg",
-      "purpose": "any"
+      "purpose": "maskable"
     }
   ]
 }
