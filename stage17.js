@@ -247,3 +247,99 @@
         }, 1200);
     });
 })();
+// ============================================================
+// === ЗАЩИТА: «УДАЛИТЬ У ВСЕХ» ТОЛЬКО ДЛЯ СВОИХ СООБЩЕНИЙ  ===
+// ============================================================
+(function initStage17OwnMsgDeleteOnly() {
+    let lastSelectedMsgIsMine = true;
+
+    function detectIsMyMessage(target) {
+        if (!target) return null;
+        const chatBox = target.closest('#chatMsgs');
+        if (!chatBox) return null;
+
+        const el = target.closest('[data-msg-id], .wa-msg-row, .msg-row, .wa-msg-bubble, .msg-bubble');
+        if (!el) return null;
+
+        // Проверяем явные классы исходящего / входящего сообщения
+        const chain = [el, el.parentElement, el.querySelector('.msg-bubble, .wa-msg-bubble')].filter(Boolean);
+        for (const node of chain) {
+            const cls = node.classList;
+            if (!cls) continue;
+            if (cls.contains('msg-out') || cls.contains('wa-msg-out') || cls.contains('mine') || cls.contains('out')) {
+                return true;
+            }
+            if (cls.contains('msg-in') || cls.contains('wa-msg-in') || cls.contains('in')) {
+                return false;
+            }
+        }
+
+        // Резервная проверка по data-атрибутам отправителя
+        const myTab = (typeof appState !== 'undefined' && appState.user?.tab) ? String(appState.user.tab) : '';
+        const senderTab = el.getAttribute('data-tab') || el.getAttribute('data-sender-tab');
+        if (myTab && senderTab) return senderTab === myTab;
+
+        // Резервная проверка по выравниванию (свои сообщения справа)
+        const st = window.getComputedStyle(el);
+        if (st.alignSelf === 'flex-end' || st.justifyContent === 'flex-end') return true;
+        if (st.alignSelf === 'flex-start' || st.justifyContent === 'flex-start') return false;
+
+        return null;
+    }
+
+    function rememberMsgOwner(e) {
+        const res = detectIsMyMessage(e.target);
+        if (res !== null) {
+            lastSelectedMsgIsMine = res;
+            setTimeout(syncDeleteForAllButtons, 0);
+            setTimeout(syncDeleteForAllButtons, 80);
+        }
+    }
+
+    document.addEventListener('contextmenu', rememberMsgOwner, true);
+    document.addEventListener('touchstart', rememberMsgOwner, { capture: true, passive: true });
+    document.addEventListener('mousedown', rememberMsgOwner, true);
+
+    function isDeleteForEveryoneMessageBtn(el) {
+        if (!el || el.closest('#st14ChatCtxOverlay')) return false;
+        const txt = (el.innerText || el.textContent || '').trim();
+        if (!txt || txt.length > 60) return false;
+        if (/групп/i.test(txt)) return false; // не трогаем «Удалить группу у всех»
+        return /удалить.*(у|для)\s*всех/i.test(txt);
+    }
+
+    function syncDeleteForAllButtons() {
+        const candidates = document.querySelectorAll('button, .st12-ctx-item, .st12-dots-opt, [onclick]');
+        candidates.forEach(el => {
+            if (!isDeleteForEveryoneMessageBtn(el)) return;
+            if (!lastSelectedMsgIsMine) {
+                if (el.getAttribute('data-st17-hide-del-all') !== '1') {
+                    el.setAttribute('data-st17-prev-display', el.style.display || '');
+                    el.setAttribute('data-st17-hide-del-all', '1');
+                }
+                el.style.setProperty('display', 'none', 'important');
+            } else if (el.getAttribute('data-st17-hide-del-all') === '1') {
+                const prev = el.getAttribute('data-st17-prev-display') || '';
+                el.style.display = prev;
+                el.removeAttribute('data-st17-hide-del-all');
+            }
+        });
+    }
+
+    // Двойная страховка на случай прямого клика
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('button, .st12-ctx-item, [onclick]');
+        if (btn && isDeleteForEveryoneMessageBtn(btn) && !lastSelectedMsgIsMine) {
+            e.stopImmediatePropagation();
+            e.preventDefault();
+            if (typeof showSyncToast === 'function') {
+                showSyncToast('⚠️ Удалить у всех можно только свои сообщения');
+            }
+        }
+    }, true);
+
+    window.addEventListener('load', () => {
+        const obs = new MutationObserver(() => syncDeleteForAllButtons());
+        obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'] });
+    });
+})();
