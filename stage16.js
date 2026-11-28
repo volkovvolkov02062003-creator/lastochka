@@ -508,3 +508,99 @@ function initStage16PermTree() {
 
     applySt16TreePermissions();
 }
+// ============================================================
+// === ДОБАВЛЕНИЕ КНОПКИ «ДОБАВИТЬ ТЕХ. ЗАНЯТИЕ» (ТОЛЬКО ИНСТРУКТОР)
+// ============================================================
+(function patchTechAddPermission() {
+    let techNode = ST16_PERM_TREE.find(n => n.key === 'tech');
+    if (techNode && !techNode.children.some(c => c.key === 'tech.add')) {
+        techNode.children.push({
+            key: 'tech.add',
+            label: '➕ Добавить тех. занятие (только Инструктор)',
+            instructorOnly: true
+        });
+    }
+})();
+
+function syncSt16InstructorOnlyCheckboxes() {
+    let roleVal = document.getElementById('posRoleInput')?.value || 'viewer';
+    let allowInstructorOnly = (roleVal === 'instructor' || roleVal === 'founder');
+    let cb = document.querySelector('#posPermsGrid .st16-child-cb[value="tech.add"]');
+    if (!cb) return;
+
+    let lbl = cb.closest('label');
+    if (allowInstructorOnly) {
+        cb.disabled = false;
+        if (lbl) lbl.style.opacity = '1';
+    } else {
+        cb.checked = false;
+        cb.disabled = true;
+        if (lbl) lbl.style.opacity = '0.45';
+    }
+}
+
+function applySt16TechAddButtonRule() {
+    let techScr = document.getElementById('tech-screen');
+    if (!techScr) return;
+
+    let role = typeof getUserRole === 'function' ? getUserRole() : 'viewer';
+    let allowed = (role === 'founder') || (role === 'instructor' && st16HasPerm('tech.add'));
+
+    techScr.querySelectorAll('button').forEach(btn => {
+        let txt = (btn.innerText || '').toLowerCase();
+        let oc = (btn.getAttribute('onclick') || '').toLowerCase();
+        let isAddTechBtn =
+            (txt.includes('добавить') && txt.includes('занят')) ||
+            (txt.includes('создать') && txt.includes('занят')) ||
+            oc.includes('openaddtech') ||
+            oc.includes('opentechmodal') ||
+            oc.includes('addtechlesson');
+
+        if (!isAddTechBtn) return;
+
+        if (allowed) {
+            btn.classList.remove('st16-perm-hidden');
+            if (btn.style.display === 'none') btn.style.display = 'inline-block';
+        } else {
+            btn.classList.add('st16-perm-hidden');
+        }
+    });
+}
+
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        // Не даём «Выбрать все» и родительской галочке включать заблокированный квадратик
+        const _origParChange = window.onSt16ParentCheckChange;
+        window.onSt16ParentCheckChange = function(parentKey, isChecked) {
+            if (typeof _origParChange === 'function') _origParChange(parentKey, isChecked);
+            syncSt16InstructorOnlyCheckboxes();
+        };
+
+        const _origCheckAll = window.st16CheckAllTree;
+        window.st16CheckAllTree = function(val) {
+            if (typeof _origCheckAll === 'function') _origCheckAll(val);
+            syncSt16InstructorOnlyCheckboxes();
+        };
+
+        // Синхронизируем доступность квадратика при открытии должности и смене роли
+        const _origOpenPos16 = window.openPositionModal;
+        window.openPositionModal = function(id) {
+            if (typeof _origOpenPos16 === 'function') _origOpenPos16(id);
+            syncSt16InstructorOnlyCheckboxes();
+        };
+
+        let roleSel = document.getElementById('posRoleInput');
+        if (roleSel && !roleSel.dataset.st16TechBound) {
+            roleSel.dataset.st16TechBound = '1';
+            roleSel.addEventListener('change', syncSt16InstructorOnlyCheckboxes);
+        }
+
+        // Применяем правило скрытия/показа самой кнопки в «Тех. Занятии»
+        const _origApply16 = window.applyRolePermissions;
+        window.applyRolePermissions = function() {
+            if (typeof _origApply16 === 'function') _origApply16();
+            applySt16TechAddButtonRule();
+        };
+        applySt16TechAddButtonRule();
+    }, 2400);
+});
