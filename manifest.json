@@ -1,8 +1,12 @@
 {
+  "id": "./",
   "name": "Ласточка МТППК",
   "short_name": "Ласточка",
+  "description": "Служебное приложение Ласточка МТППК",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#1a1e29",
   "theme_color": "#003366",
   "icons": [
