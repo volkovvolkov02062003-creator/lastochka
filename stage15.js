@@ -504,3 +504,146 @@ function injectStage15TelegramStyles() {
     `;
     document.head.appendChild(st);
 }
+// ============================================================
+// === СТАТУСЫ: 48 ЧАСОВ АКТИВНОСТИ -> АВТОПЕРЕНОС В ВОСПОМИНАНИЯ
+// ============================================================
+const ST15_STATUS_TTL_MS = 48 * 60 * 60 * 1000; // 48 часов
+let st15MemoriesOpen = false;
+
+function isStatusActive48h(st) {
+    if (!st || !st.ts) return false;
+    return (Date.now() - Number(st.ts)) <= ST15_STATUS_TTL_MS;
+}
+
+function formatStatusLeft48h(ts) {
+    let leftMs = ST15_STATUS_TTL_MS - (Date.now() - Number(ts || 0));
+    if (leftMs <= 0) return 'архив';
+    let hours = Math.floor(leftMs / (60 * 60 * 1000));
+    let mins = Math.floor((leftMs % (60 * 60 * 1000)) / (60 * 1000));
+    return hours > 0 ? `осталось ${hours} ч` : `осталось ${Math.max(1, mins)} мин`;
+}
+
+function toggleSt15Memories() {
+    st15MemoriesOpen = !st15MemoriesOpen;
+    if (typeof renderChatSidebarList === 'function') renderChatSidebarList();
+}
+
+function deleteSt15Memory(id) {
+    if (!confirm('Удалить этот статус из воспоминаний?')) return;
+    if (typeof cloudStatusesList !== 'undefined') {
+        cloudStatusesList = cloudStatusesList.filter(x => x.id !== id);
+    }
+    if (typeof db !== 'undefined' && db) {
+        db.collection('chat_statuses').doc(id).delete().catch(() => {});
+    }
+    if (typeof renderChatSidebarList === 'function') renderChatSidebarList();
+    if (typeof showSyncToast === 'function') showSyncToast('🗑️ Статус удалён из воспоминаний');
+}
+
+function initStage15Status48hMemories() {
+    if (typeof window.renderChatSidebarList !== 'function') return;
+    const _origRenderSidebar15 = window.renderChatSidebarList;
+
+    window.renderChatSidebarList = function() {
+        if (typeof waState === 'undefined' || waState.tab !== 'updates') {
+            return _origRenderSidebar15();
+        }
+
+        let box = document.getElementById('cloudChatListBox');
+        if (!box) return;
+
+        let u = appState.user || {};
+        let myTab = u.tab || '';
+        let myInit = (u.fio || 'Я').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+
+        let allStatuses = Array.isArray(cloudStatusesList) ? cloudStatusesList : [];
+        let activeStatuses = allStatuses.filter(isStatusActive48h);
+        let myActiveLatest = activeStatuses.find(s => s.tab === myTab);
+        let myMemories = allStatuses.filter(s => s.tab === myTab && !isStatusActive48h(s));
+
+        let html = `
+            <div class="wa-chat-row" onclick="openWaStatusCamera()">
+                <div class="wa-status-ring"><div class="wa-avatar" style="overflow:hidden;">${renderAvatarInner(u.avatar, myInit)}</div></div>
+                <div class="wa-row-body">
+                    <div class="wa-row-name">Мой статус</div>
+                    <div class="wa-row-preview">${myActiveLatest ? `Активен · ${formatStatusLeft48h(myActiveLatest.ts)}` : 'Доступен 48 ч · нажмите, чтобы снять'}</div>
+                </div>
+                ${myActiveLatest ? `<button class="wa-pill active" onclick="event.stopPropagation();viewWaStatus('${myActiveLatest.id}')">Смотреть</button>` : ''}
+            </div>
+
+            <div style="padding:10px 14px 4px;font-size:12px;font-weight:bold;color:#3390ec;">НЕДАВНИЕ ОБНОВЛЕНИЯ (48 Ч)</div>
+        `;
+
+        html += activeStatuses.length === 0
+            ? '<div style="padding:14px;font-size:13px;color:#707579;text-align:center;">Активных статусов за последние 48 часов нет</div>'
+            : activeStatuses.map(st => `
+                <div class="wa-chat-row" onclick="viewWaStatus('${st.id}')">
+                    <div class="wa-status-ring"><div class="wa-avatar" style="overflow:hidden;">${renderAvatarInner(st.img || st.avatarImg, st.avatar || 'К')}</div></div>
+                    <div class="wa-row-body">
+                        <div class="wa-row-top">
+                            <span class="wa-row-name">${escapeHtmlStage6(st.sender)}</span>
+                            <span class="wa-row-time">${st.time || ''}</span>
+                        </div>
+                        <div class="wa-row-preview">${st.img ? '📷 ' : ''}${escapeHtmlStage6(st.text || 'Фото-статус')} · <small>${formatStatusLeft48h(st.ts)}</small></div>
+                    </div>
+                </div>
+            `).join('');
+
+        // Личный раздел «Воспоминания» (статусы старше 48 часов)
+        html += `
+            <div onclick="toggleSt15Memories()" style="padding:11px 14px;margin-top:8px;background:rgba(51,144,236,0.08);border-top:1px solid #e4e7eb;border-bottom:1px solid #e4e7eb;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-size:13px;font-weight:600;color:#3390ec;">
+                <span>🕰️ Воспоминания (${myMemories.length})</span>
+                <span>${st15MemoriesOpen ? '▼' : '▶'}</span>
+            </div>
+        `;
+
+        if (st15MemoriesOpen) {
+            html += myMemories.length === 0
+                ? '<div style="padding:14px;font-size:12.5px;color:#707579;text-align:center;">Здесь автоматически появятся ваши статусы спустя 48 часов</div>'
+                : myMemories.map(st => {
+                    let dateStr = st.ts ? new Date(Number(st.ts)).toLocaleDateString('ru-RU') : '';
+                    return `
+                        <div class="wa-chat-row" onclick="viewWaStatus('${st.id}')">
+                            <div class="wa-avatar" style="width:42px !important;height:42px !important;min-width:42px !important;overflow:hidden;opacity:0.88;">${renderAvatarInner(st.img || st.avatarImg, st.avatar || 'Я')}</div>
+                            <div class="wa-row-body">
+                                <div class="wa-row-top">
+                                    <span class="wa-row-name">${dateStr} ${st.time || ''}</span>
+                                    <button type="button" class="wa-icon-btn" style="width:26px !important;height:26px;font-size:13px;color:#dc3545 !important;" onclick="event.stopPropagation();deleteSt15Memory('${st.id}')" title="Удалить из воспоминаний">✕</button>
+                                </div>
+                                <div class="wa-row-preview">${st.img ? '📷 ' : ''}${escapeHtmlStage6(st.text || 'Фото из воспоминаний')}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+        }
+
+        box.innerHTML = html;
+    };
+
+    // Обновляем отображение даты/времени в полноэкранном просмотре статуса
+    if (typeof window.viewWaStatus === 'function') {
+        const _origView15 = window.viewWaStatus;
+        window.viewWaStatus = function(id) {
+            _origView15(id);
+            let st = (cloudStatusesList || []).find(x => x.id === id);
+            let tEl = document.getElementById('stViewTime');
+            if (st && tEl) {
+                let dStr = st.ts ? new Date(Number(st.ts)).toLocaleDateString('ru-RU') : '';
+                tEl.innerText = isStatusActive48h(st)
+                    ? `${dStr} ${st.time || ''} · ${formatStatusLeft48h(st.ts)}`
+                    : `🕰️ Воспоминание · ${dStr} ${st.time || ''}`;
+            }
+        };
+    }
+
+    // Проверяем истечение 48 часов раз в минуту, если открыта вкладка «Актуальное»
+    setInterval(() => {
+        if (typeof waState !== 'undefined' && waState.tab === 'updates') {
+            window.renderChatSidebarList();
+        }
+    }, 60000);
+}
+
+window.addEventListener('load', () => {
+    setTimeout(initStage15Status48hMemories, 2350);
+});
