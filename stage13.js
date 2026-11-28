@@ -324,3 +324,118 @@ function fireOsNotification(title, body) {
         try { new Notification(title, opts); } catch (e) {}
     }
 }
+// ============================================================
+// === КАРТОЧКА СОТРУДНИКА: «СОХРАНИТЬ» -> «ИЗМЕНИТЬ СОХРАНЕНИЯ»
+// ============================================================
+let st13WorkerInitial = null;
+
+function getWorkerModalSnapshot() {
+    return {
+        tab: document.getElementById('newWorkerTab')?.value.trim() || '',
+        sector: document.getElementById('newWorkerSector')?.value.trim() || '',
+        fio: document.getElementById('newWorkerFio')?.value.trim() || '',
+        station: document.getElementById('newWorkerStation')?.value.trim() || '',
+        pos: document.getElementById('newWorkerPos')?.value || '',
+        hire: document.getElementById('newWorkerHire')?.value || '',
+        fire: document.getElementById('newWorkerFire')?.value || ''
+    };
+}
+
+function updateWorkerSaveButtonLabel() {
+    let modal = document.getElementById('createWorkerModal');
+    if (!modal) return;
+    let btn = modal.querySelector('button[onclick*="saveWorkerForm"]');
+    if (!btn) return;
+
+    if (!appState.editingId || !st13WorkerInitial) {
+        btn.innerText = 'Сохранить';
+        btn.className = 'btn-success';
+        return;
+    }
+
+    let cur = getWorkerModalSnapshot();
+    let changed = Object.keys(st13WorkerInitial).some(k => cur[k] !== st13WorkerInitial[k]);
+    if (changed) {
+        btn.innerText = 'Изменить сохранения';
+        btn.className = 'btn-warning';
+    } else {
+        btn.innerText = 'Сохранить';
+        btn.className = 'btn-success';
+    }
+}
+
+function initStage13WorkerEditButton() {
+    let modal = document.getElementById('createWorkerModal');
+    if (!modal) return;
+
+    modal.querySelectorAll('input, select').forEach(el => {
+        if (el.dataset.st13Bound) return;
+        el.dataset.st13Bound = '1';
+        el.addEventListener('input', updateWorkerSaveButtonLabel);
+        el.addEventListener('change', updateWorkerSaveButtonLabel);
+    });
+
+    const _origOpenWorker = window.openWorkerModal;
+    window.openWorkerModal = function(tab) {
+        if (typeof _origOpenWorker === 'function') _origOpenWorker(tab);
+        let h3 = modal.querySelector('h3');
+        if (h3) h3.innerText = tab ? 'Редактировать сотрудника' : 'Создать сотрудника';
+        st13WorkerInitial = tab ? getWorkerModalSnapshot() : null;
+        updateWorkerSaveButtonLabel();
+    };
+
+    window.saveWorkerForm = function() {
+        let tab = document.getElementById('newWorkerTab').value.trim();
+        let fio = document.getElementById('newWorkerFio').value.trim();
+        if (!tab || !fio) return alert('Заполните Табельный и ФИО');
+
+        let oldTab = appState.editingId || null;
+        let existing = (appState.workers || []).find(w => w.tab === (oldTab || tab)) || {};
+        let posName = document.getElementById('newWorkerPos').value;
+        let posObj = (positionsDb || []).find(p => p.name === posName);
+
+        let obj = {
+            ...existing,
+            tab,
+            fio,
+            sector: document.getElementById('newWorkerSector').value.trim() || 'УФОСЭ Клин',
+            station: document.getElementById('newWorkerStation').value.trim() || 'Клин',
+            position: posName,
+            role: tab === '8065' ? 'founder' : (posObj?.role || existing.role || 'viewer'),
+            hireDate: document.getElementById('newWorkerHire').value,
+            fireDate: document.getElementById('newWorkerFire').value,
+            shiftStatus: existing.shiftStatus || 'none'
+        };
+
+        let isEdit = !!oldTab;
+        if (typeof db !== 'undefined' && db) {
+            if (oldTab && oldTab !== tab) {
+                db.collection('workers').doc(oldTab).delete().catch(() => {});
+            }
+            db.collection('workers').doc(tab).set(obj, { merge: true }).then(() => {
+                showSyncToast(isEdit ? `☁️ Изменения по ${fio} сохранены` : `☁️ Сотрудник ${fio} сохранен`);
+            });
+        } else {
+            let idx = (appState.workers || []).findIndex(x => x.tab === (oldTab || tab));
+            if (idx >= 0) appState.workers[idx] = obj;
+            else appState.workers.push(obj);
+            if (typeof renderTabel === 'function') renderTabel();
+            if (typeof renderOrgTable === 'function') renderOrgTable();
+        }
+
+        if (appState.user && appState.user.tab === (oldTab || tab)) {
+            appState.user = { ...appState.user, ...obj, completed: true };
+            localStorage.setItem('kkl_profile', JSON.stringify(appState.user));
+            localStorage.setItem('kkl_profile_' + tab, JSON.stringify(appState.user));
+            if (typeof applyRolePermissions === 'function') applyRolePermissions();
+        }
+
+        st13WorkerInitial = null;
+        appState.editingId = null;
+        closeModal('createWorkerModal');
+    };
+}
+
+window.addEventListener('load', () => {
+    setTimeout(initStage13WorkerEditButton, 1950);
+});
