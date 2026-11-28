@@ -439,3 +439,121 @@ function initStage13WorkerEditButton() {
 window.addEventListener('load', () => {
     setTimeout(initStage13WorkerEditButton, 1950);
 });
+// ============================================================
+// === ПОДПИСЬ В ПРОФИЛЕ, ПЕРВЫЙ ВХОД БЕЗ ПАРОЛЯ, ПРИМЕР 1111 ===
+// ============================================================
+function initStage13ProfileSigAndLogin() {
+    // 1. Примеры на начальном экране входа: 1111 и Иванов
+    let loginTabInp = document.getElementById('loginTab');
+    let loginLastInp = document.getElementById('loginLast');
+    if (loginTabInp) loginTabInp.placeholder = 'Например, 1111';
+    if (loginLastInp) loginLastInp.placeholder = 'Например, Иванов';
+
+    let regPassInp = document.getElementById('regPass');
+    if (regPassInp) regPassInp.placeholder = 'Придумайте личный пароль для входа';
+
+    // 2. Первый вход без пароля -> пароль придумывается при регистрации профиля
+    window.checkUserStep1 = function() {
+        let tab = document.getElementById('loginTab').value.trim();
+        let last = document.getElementById('loginLast').value.trim();
+        let found = (appState.workers || []).find(w => w.tab === tab && w.fio.toLowerCase().includes(last.toLowerCase()));
+        if (!found) return alert('Сотрудник не найден! (Пример: 1111 и Иванов)');
+
+        appState.user = found;
+        document.getElementById('loginStep1').style.display = 'none';
+        document.getElementById('logFoundName').innerText = last;
+        document.getElementById('logFoundTab').innerText = tab;
+        document.getElementById('logFoundFull').innerText = found.fio;
+
+        let savedLocal = JSON.parse(localStorage.getItem('kkl_profile_' + tab) || 'null');
+        let hasPass = !!(found.password || savedLocal?.password);
+
+        let passInp = document.getElementById('loginPassInput');
+        let passBox = passInp ? passInp.parentElement : null;
+        if (passBox) passBox.style.display = hasPass ? 'block' : 'none';
+        if (passInp) passInp.value = '';
+        let passLbl = document.getElementById('loginPassLabel');
+        if (passLbl) passLbl.innerText = 'Введите ваш пароль:';
+
+        document.getElementById('loginStep2').style.display = 'block';
+    };
+
+    window.confirmLoginUser = function() {
+        let tab = appState.user.tab;
+        let savedLocal = JSON.parse(localStorage.getItem('kkl_profile_' + tab) || 'null');
+        let storedPass = appState.user.password || savedLocal?.password || '';
+
+        if (storedPass) {
+            let enteredPass = document.getElementById('loginPassInput').value.trim();
+            if (enteredPass !== storedPass) return alert('Неверный пароль!');
+            let merged = { ...(savedLocal || {}), ...appState.user, password: storedPass, completed: true };
+            appState.user = merged;
+            localStorage.setItem('kkl_profile', JSON.stringify(merged));
+            if (merged.profileCompleted || savedLocal?.completed) showMainScreen(merged);
+            else openRegistrationForUser(merged);
+        } else {
+            // Первый вход без пароля -> сразу в регистрацию, где сотрудник задает свой пароль
+            openRegistrationForUser({ ...(savedLocal || {}), ...appState.user });
+        }
+    };
+
+    // 3. Редактирование личной подписи в Профиле (при нажатии на карандаш ✏️)
+    let pfSigImg = document.getElementById('pfSigImg');
+    if (pfSigImg && !document.getElementById('pfSigEditWrap')) {
+        let wrap = document.createElement('div');
+        wrap.id = 'pfSigEditWrap';
+        wrap.style.cssText = 'display:none;margin-top:8px;text-align:left;';
+        wrap.innerHTML = `
+            <div style="font-size:12px;color:#555;margin-bottom:4px;">Нарисуйте новую подпись (если нужно изменить):</div>
+            <canvas id="pfSigCanvas" style="border:2px dashed #003366;background:#fafafa;width:100%;height:95px;cursor:crosshair;display:block;"></canvas>
+            <button type="button" class="btn-danger" style="width:auto;padding:4px 10px;font-size:11px;margin-top:6px;" onclick="clearPfSignature()">Очистить подпись</button>
+        `;
+        pfSigImg.insertAdjacentElement('afterend', wrap);
+    }
+
+    const _origOpenProf13 = window.openProfileScreen;
+    window.openProfileScreen = function() {
+        if (typeof _origOpenProf13 === 'function') _origOpenProf13();
+        let w = document.getElementById('pfSigEditWrap');
+        if (w) w.style.display = 'none';
+    };
+
+    const _origEnableProf13 = window.enableProfileEdit;
+    window.enableProfileEdit = function() {
+        if (typeof _origEnableProf13 === 'function') _origEnableProf13();
+        let w = document.getElementById('pfSigEditWrap');
+        if (w) {
+            w.style.display = 'block';
+            setTimeout(() => { if (typeof initCanvas === 'function') initCanvas('pfSigCanvas'); }, 40);
+        }
+    };
+
+    const _origSaveProf13 = window.saveProfileEdit;
+    window.saveProfileEdit = function() {
+        if (appState.user && typeof sigCtxMap !== 'undefined' && sigCtxMap['pfSigCanvas']) {
+            let c = sigCtxMap['pfSigCanvas'].c;
+            let blank = document.createElement('canvas');
+            blank.width = c.width;
+            blank.height = c.height;
+            if (c.toDataURL() !== blank.toDataURL()) {
+                appState.user.signature = c.toDataURL();
+                let img = document.getElementById('pfSigImg');
+                if (img) img.src = appState.user.signature;
+            }
+        }
+        if (typeof _origSaveProf13 === 'function') _origSaveProf13();
+        let w = document.getElementById('pfSigEditWrap');
+        if (w) w.style.display = 'none';
+    };
+}
+
+function clearPfSignature() {
+    if (typeof sigCtxMap !== 'undefined' && sigCtxMap['pfSigCanvas']) {
+        let s = sigCtxMap['pfSigCanvas'];
+        s.ctx.clearRect(0, 0, s.c.width, s.c.height);
+    }
+}
+
+window.addEventListener('load', () => {
+    setTimeout(initStage13ProfileSigAndLogin, 2000);
+});
