@@ -557,3 +557,62 @@ function clearPfSignature() {
 window.addEventListener('load', () => {
     setTimeout(initStage13ProfileSigAndLogin, 2000);
 });
+// ============================================================
+// === ГАЛОЧКИ СТАТУСА СООБЩЕНИЙ: ✓ ДОСТАВЛЕНО / ✓✓ ПРОЧИТАНО ===
+// ============================================================
+function injectStage13TickStyles() {
+    if (document.getElementById('st13-tick-styles')) return;
+    let st = document.createElement('style');
+    st.id = 'st13-tick-styles';
+    st.innerHTML = `
+        .wa-ticks-delivered { color: #8696a0 !important; font-weight: bold; font-size: 12px; }
+        .wa-ticks-read { color: #53bdeb !important; font-weight: bold; font-size: 12px; }
+    `;
+    document.head.appendChild(st);
+}
+
+function updateStage13MessageTicks() {
+    let msgs = (typeof st7State !== 'undefined' && Array.isArray(st7State.activeChatMsgs))
+        ? st7State.activeChatMsgs : [];
+    if (!msgs.length) return;
+
+    document.querySelectorAll('#chatMsgs .wa-bubble.out').forEach(bubble => {
+        let tickEl = bubble.querySelector('.wa-ticks');
+        if (!tickEl) return;
+
+        let oc = bubble.getAttribute('oncontextmenu') || '';
+        let match = oc.match(/openSt12MsgContextMenu\('([^']+)'\)/);
+        if (!match) return;
+
+        let m = msgs.find(x => x.id === match[1]);
+        if (!m) return;
+
+        let readBy = m.readBy || {};
+        let isRead = Object.keys(readBy).some(tab => tab && tab !== m.tab);
+
+        let targetText = isRead ? '✓✓' : '✓';
+        let targetClass = isRead ? 'wa-ticks wa-ticks-read' : 'wa-ticks wa-ticks-delivered';
+        let targetTitle = isRead ? 'Прочитано' : 'Доставлено';
+
+        if (tickEl.innerText !== targetText) tickEl.innerText = targetText;
+        if (tickEl.className !== targetClass) tickEl.className = targetClass;
+        if (tickEl.title !== targetTitle) tickEl.title = targetTitle;
+    });
+}
+
+function initStage13ReadTicks() {
+    injectStage13TickStyles();
+    let timer = null;
+    const scheduleTicks = () => {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(updateStage13MessageTicks, 30);
+    };
+
+    const obs = new MutationObserver(scheduleTicks);
+    obs.observe(document.body, { childList: true, subtree: true });
+    updateStage13MessageTicks();
+}
+
+window.addEventListener('load', () => {
+    setTimeout(initStage13ReadTicks, 2050);
+});
