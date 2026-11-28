@@ -717,3 +717,233 @@ window.addEventListener('load', () => {
         window.applyRolePermissions();
     }, 2500);
 });
+// ============================================================
+// === СОВМЕСТИМОСТЬ РОЛЕЙ В ДОЛЖНОСТИ + ЗАЩИТА ОСНОВАТЕЛЯ 8065
+// ============================================================
+function isMeFounder8065() {
+    return String(appState?.user?.tab || '').trim() === '8065';
+}
+
+function isTargetFounder8065(tab, fio) {
+    let t = String(tab || '').trim();
+    let f = String(fio || '').trim().toLowerCase();
+    return t === '8065' || f.includes('волков виктор сергеевич');
+}
+
+function getSt16MyPositionObj() {
+    let role = typeof getUserRole === 'function' ? getUserRole() : 'viewer';
+    return (positionsDb || []).find(p =>
+        (appState.user?.position && p.name === appState.user.position) || p.role === role
+    ) || null;
+}
+
+function st16UserHasRoleOrCompat(targetRole) {
+    let mainRole = typeof getUserRole === 'function' ? getUserRole() : 'viewer';
+    if (mainRole === targetRole) return true;
+    let posObj = getSt16MyPositionObj();
+    return !!(posObj && posObj.compatRole === targetRole);
+}
+
+function syncPosCompatSelectOptions() {
+    let roleSel = document.getElementById('posRoleInput');
+    let compatSel = document.getElementById('posCompatRoleInput');
+    if (!roleSel || !compatSel) return;
+
+    let prevVal = compatSel.value;
+    let html = '<option value="">— Нет —</option>';
+    Array.from(roleSel.options).forEach(opt => {
+        if (!isMeFounder8065() && opt.value === 'founder') return;
+        html += `<option value="${opt.value}">${opt.textContent}</option>`;
+    });
+    compatSel.innerHTML = html;
+    if (prevVal && compatSel.querySelector(`option[value="${prevVal}"]`)) {
+        compatSel.value = prevVal;
+    }
+}
+
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        // 1. Добавляем поле «Совместимость» (берется из списка ролей) в окно должности
+        let roleSel = document.getElementById('posRoleInput');
+        if (roleSel && !document.getElementById('posCompatRoleInput')) {
+            let fg = document.createElement('div');
+            fg.className = 'form-group';
+            fg.id = 'posCompatRoleWrap';
+            fg.innerHTML = `
+                <label>Совместимость (доп. роль):</label>
+                <select id="posCompatRoleInput" class="form-input"></select>
+            `;
+            let parentFg = roleSel.closest('.form-group');
+            if (parentFg) parentFg.insertAdjacentElement('afterend', fg);
+            else roleSel.insertAdjacentElement('afterend', fg);
+
+            syncPosCompatSelectOptions();
+            document.getElementById('posCompatRoleInput').addEventListener('change', () => {
+                if (typeof syncSt16InstructorOnlyCheckboxes === 'function') syncSt16InstructorOnlyCheckboxes();
+            });
+        }
+
+        // 2. Учитываем совместимость при проверке квадратика «Добавить тех. занятие»
+        window.syncSt16InstructorOnlyCheckboxes = function() {
+            let r1 = document.getElementById('posRoleInput')?.value || 'viewer';
+            let r2 = document.getElementById('posCompatRoleInput')?.value || '';
+            let allow = (r1 === 'instructor' || r1 === 'founder' || r2 === 'instructor' || r2 === 'founder');
+            let cb = document.querySelector('#posPermsGrid .st16-child-cb[value="tech.add"]');
+            if (!cb) return;
+            let lbl = cb.closest('label');
+            if (allow) {
+                cb.disabled = false;
+                if (lbl) lbl.style.opacity = '1';
+            } else {
+                cb.checked = false;
+                cb.disabled = true;
+                if (lbl) lbl.style.opacity = '0.45';
+            }
+        };
+
+        // 3. Объединяем права основной должности и роли совместимости
+        window.getCurrentUserPermsSet = function() {
+            let role = typeof getUserRole === 'function' ? getUserRole() : 'viewer';
+            let posObj = getSt16MyPositionObj();
+            if (!posObj) return role === 'founder' ? null : new Set();
+
+            let merged = new Set(posObj.perms || []);
+            if (posObj.compatRole) {
+                let compatPos = (positionsDb || []).find(p => p.role === posObj.compatRole);
+                if (compatPos && Array.isArray(compatPos.perms)) {
+                    compatPos.perms.forEach(k => merged.add(k));
+                }
+            }
+            return merged;
+        };
+
+        // Поддержка совместимости для ГУО, Инструктора и «Добавить тех. занятие»
+        const _origIsGuo = window.isCurrentUserGuo;
+        window.isCurrentUserGuo = function() {
+            if (st16UserHasRoleOrCompat('guo')) return true;
+            return typeof _origIsGuo === 'function' ? _origIsGuo() : false;
+        };
+
+        const _origCanViewOthers = window.canViewOtherReports;
+        window.canViewOtherReports = function() {
+            if (st16UserHasRoleOrCompat('instructor') || st16UserHasRoleOrCompat('admin') || st16UserHasRoleOrCompat('founder')) return true;
+            return typeof _origCanViewOthers === 'function' ? _origCanViewOthers() : false;
+        };
+
+        const _origTechRule = window.applySt16TechAddButtonRule;
+        window.applySt16TechAddButtonRule = function() {
+            let techScr = document.getElementById('tech-screen');
+            if (!techScr) return;
+            let allowed = (st16UserHasRoleOrCompat('founder') || st16UserHasRoleOrCompat('instructor')) && st16HasPerm('tech.add');
+            techScr.querySelectorAll('button').forEach(btn => {
+                let txt = (btn.innerText || '').toLowerCase();
+                let oc = (btn.getAttribute('onclick') || '').toLowerCase();
+                let isAddTechBtn =
+                    (txt.includes('добавить') && txt.includes('занят')) ||
+                    (txt.includes('создать') && txt.includes('занят')) ||
+                    oc.includes('openaddtech') || oc.includes('opentechmodal') || oc.includes('addtechlesson');
+                if (!isAddTechBtn) return;
+                if (allowed) {
+                    btn.classList.remove('st16-perm-hidden');
+                    if (btn.style.display === 'none') btn.style.display = 'inline-block';
+                } else {
+                    btn.classList.add('st16-perm-hidden');
+                }
+            });
+        };
+
+        // 4. Открытие и сохранение должности (с полем Совместимость + защитой Основателя)
+        const _origOpenPos = window.openPositionModal;
+        window.openPositionModal = function(id) {
+            let ex = (positionsDb || []).find(p => p.id === id);
+            if (ex && ex.role === 'founder' && !isMeFounder8065()) {
+                return alert('⛔ Должность «Основатель» защищена. Изменять её может только Основатель (8065)!');
+            }
+            if (typeof _origOpenPos === 'function') _origOpenPos(id);
+            syncPosCompatSelectOptions();
+            let compatSel = document.getElementById('posCompatRoleInput');
+            if (compatSel) compatSel.value = ex?.compatRole || '';
+            if (typeof syncSt16InstructorOnlyCheckboxes === 'function') syncSt16InstructorOnlyCheckboxes();
+        };
+
+        window.savePosition = function() {
+            let name = document.getElementById('posNameInput').value.trim();
+            if (!name) return alert('Введите название должности');
+            let role = document.getElementById('posRoleInput').value;
+            let compatRole = document.getElementById('posCompatRoleInput')?.value || '';
+            let ex = (positionsDb || []).find(p => p.id === appState.editingId);
+
+            if (!isMeFounder8065() && (role === 'founder' || compatRole === 'founder' || ex?.role === 'founder')) {
+                return alert('⛔ Назначать или изменять роль «Основатель» может только Основатель (8065)!');
+            }
+
+            let perms = Array.from(document.querySelectorAll('#posPermsGrid .st16-tree-cb:checked')).map(c => c.value);
+            let obj = {
+                id: appState.editingId || ('pos_' + Date.now()),
+                name,
+                role,
+                compatRole,
+                perms
+            };
+            if (typeof db !== 'undefined' && db) {
+                db.collection('positions').doc(obj.id).set(obj);
+            } else {
+                let i = positionsDb.findIndex(x => x.id === obj.id);
+                if (i >= 0) positionsDb[i] = obj; else positionsDb.push(obj);
+                if (typeof renderOrgTable === 'function') renderOrgTable();
+            }
+            closeModal('positionModal');
+            if (typeof window.applyRolePermissions === 'function') window.applyRolePermissions();
+            if (typeof showSyncToast === 'function') showSyncToast(`☁️ Должность «${name}» сохранена`);
+        };
+
+        // 5. ЖЁСТКАЯ ЗАЩИТА 8065 (Волков Виктор Сергеевич — Основатель)
+        const _origOpenWorker16 = window.openWorkerModal;
+        window.openWorkerModal = function(tab) {
+            let w = tab ? (appState.workers || []).find(x => x.tab === tab) : null;
+            if (tab && isTargetFounder8065(tab, w?.fio) && !isMeFounder8065()) {
+                return alert('⛔ Профиль Основателя (8065 — Волков Виктор Сергеевич) защищён! Ни одна другая должность не может его изменять.');
+            }
+            if (typeof _origOpenWorker16 === 'function') _origOpenWorker16(tab);
+        };
+
+        const _origSaveWorker16 = window.saveWorkerForm;
+        window.saveWorkerForm = function() {
+            let newTab = document.getElementById('newWorkerTab')?.value.trim() || '';
+            let newFio = document.getElementById('newWorkerFio')?.value.trim() || '';
+            let oldTab = appState.editingId || '';
+            let oldW = oldTab ? (appState.workers || []).find(x => x.tab === oldTab) : null;
+
+            if ((isTargetFounder8065(oldTab, oldW?.fio) || isTargetFounder8065(newTab, newFio)) && !isMeFounder8065()) {
+                closeModal('createWorkerModal');
+                return alert('⛔ Изменение данных Основателя (8065 — Волков Виктор Сергеевич) запрещено!');
+            }
+            if (typeof _origSaveWorker16 === 'function') _origSaveWorker16();
+        };
+
+        // Защита от удаления 8065 и должности Основателя в Орг. Структуре
+        const _origOrgDel16 = window.orgDeleteClick;
+        window.orgDeleteClick = function() {
+            let blocked = false;
+            document.querySelectorAll('#org-screen input[type="checkbox"]:checked').forEach(cb => {
+                let rowTxt = (cb.closest('tr')?.innerText || '').toLowerCase();
+                let val = String(cb.value || '').trim();
+                let posObj = (positionsDb || []).find(p => p.id === val);
+                let isFounderWorker = val === '8065' || rowTxt.includes('8065') || rowTxt.includes('волков виктор сергеевич');
+                let isFounderPos = posObj?.role === 'founder' || (!isMeFounder8065() && rowTxt.includes('основатель'));
+
+                if (isFounderWorker || isFounderPos) {
+                    cb.checked = false;
+                    blocked = true;
+                }
+            });
+            if (blocked) {
+                alert('⛔ Удаление Основателя (8065 — Волков Виктор Сергеевич) и его должности запрещено!');
+                if (document.querySelectorAll('#org-screen input[type="checkbox"]:checked').length === 0) return;
+            }
+            if (typeof _origOrgDel16 === 'function') _origOrgDel16();
+        };
+
+        if (typeof window.applyRolePermissions === 'function') window.applyRolePermissions();
+    }, 2600);
+});
