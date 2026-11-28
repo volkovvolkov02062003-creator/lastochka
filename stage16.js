@@ -604,3 +604,116 @@ window.addEventListener('load', () => {
         applySt16TechAddButtonRule();
     }, 2400);
 });
+// ============================================================
+// === ПРАВА ПО КВАДРАТИКАМ ✅ РАБОТАЮТ И ДЛЯ ОСНОВАТЕЛЯ     ===
+// ============================================================
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        // 1. Добавляем роль «Основатель» в выпадающий список ролей должности
+        let roleSel = document.getElementById('posRoleInput');
+        if (roleSel && !roleSel.querySelector('option[value="founder"]')) {
+            let opt = document.createElement('option');
+            opt.value = 'founder';
+            opt.innerText = 'Основатель';
+            roleSel.insertBefore(opt, roleSel.firstChild);
+        }
+
+        // 2. Основатель больше не обходит галочки — если его должность настроена, берем её квадратики
+        window.getCurrentUserPermsSet = function() {
+            let role = typeof getUserRole === 'function' ? getUserRole() : 'viewer';
+            let posObj = (positionsDb || []).find(p =>
+                (appState.user?.position && p.name === appState.user.position) || p.role === role
+            );
+            if (!posObj) {
+                return role === 'founder' ? null : new Set();
+            }
+            return new Set(posObj.perms || []);
+        };
+
+        // 3. Применение прав ко всем кнопкам и меню без исключения для Основателя
+        window.applySt16TreePermissions = function() {
+            document.querySelectorAll('[data-perm]').forEach(el => {
+                let k = el.getAttribute('data-perm');
+                if (k === 'main') return;
+                if (st16HasPerm(k)) {
+                    el.classList.remove('st16-perm-hidden');
+                    if (el.id === 'menuSettings') el.style.display = 'block';
+                    else el.style.display = '';
+                } else {
+                    el.classList.add('st16-perm-hidden');
+                }
+            });
+
+            ST16_BUTTON_SELECTORS.forEach(item => {
+                let allowed = st16HasPerm(item.key);
+                document.querySelectorAll(item.sel).forEach(el => {
+                    if (allowed) el.classList.remove('st16-perm-hidden');
+                    else el.classList.add('st16-perm-hidden');
+                });
+            });
+
+            const tabelBtns = [
+                { id: 'btnTabelCreateWorker', key: 'tabel.create' },
+                { id: 'btnTabelMaster', key: 'tabel.master' },
+                { id: 'btnTabelLoadFile', key: 'tabel.load' },
+                { id: 'btnTabelDistribute', key: 'tabel.distribute' }
+            ];
+            tabelBtns.forEach(b => {
+                let el = document.getElementById(b.id);
+                if (!el) return;
+                if (st16HasPerm(b.key)) {
+                    el.classList.remove('st16-perm-hidden');
+                    el.style.display = 'inline-block';
+                } else {
+                    el.classList.add('st16-perm-hidden');
+                }
+            });
+
+            let notifyBtn = document.getElementById('btnTabelNotify');
+            if (notifyBtn) {
+                if (appState.tabelDirty && st16HasPerm('tabel.notify')) {
+                    notifyBtn.classList.remove('st16-perm-hidden');
+                    notifyBtn.style.display = 'inline-block';
+                } else {
+                    notifyBtn.classList.add('st16-perm-hidden');
+                }
+            }
+        };
+
+        // 4. Кнопка «Добавить тех. занятие» у Основателя тоже подчиняется квадратику
+        window.applySt16TechAddButtonRule = function() {
+            let techScr = document.getElementById('tech-screen');
+            if (!techScr) return;
+
+            let role = typeof getUserRole === 'function' ? getUserRole() : 'viewer';
+            let allowed = (role === 'founder' || role === 'instructor') && st16HasPerm('tech.add');
+
+            techScr.querySelectorAll('button').forEach(btn => {
+                let txt = (btn.innerText || '').toLowerCase();
+                let oc = (btn.getAttribute('onclick') || '').toLowerCase();
+                let isAddTechBtn =
+                    (txt.includes('добавить') && txt.includes('занят')) ||
+                    (txt.includes('создать') && txt.includes('занят')) ||
+                    oc.includes('openaddtech') ||
+                    oc.includes('opentechmodal') ||
+                    oc.includes('addtechlesson');
+
+                if (!isAddTechBtn) return;
+
+                if (allowed) {
+                    btn.classList.remove('st16-perm-hidden');
+                    if (btn.style.display === 'none') btn.style.display = 'inline-block';
+                } else {
+                    btn.classList.add('st16-perm-hidden');
+                }
+            });
+        };
+
+        window.applyRolePermissions = function() {
+            window.applySt16TreePermissions();
+            window.applySt16TechAddButtonRule();
+        };
+
+        window.applyRolePermissions();
+    }, 2500);
+});
